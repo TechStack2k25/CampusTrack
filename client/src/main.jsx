@@ -3,9 +3,8 @@ import { createRoot } from 'react-dom/client'
 import './index.css';
 import{ Route,RouterProvider, createBrowserRouter, createRoutesFromElements} from 'react-router-dom'
 import App from './App.jsx'
-import Home from './components/Home.jsx';
-import Signup from './components/Signup.jsx';
-import Login from './components/Login.jsx';
+import { Home, Login, Signup, ForgotPassword } from './components/index.js';
+
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -13,6 +12,7 @@ const router = createBrowserRouter(
        <Route path='' element={<Home />}/>
        <Route path='login' element={<Login />}/>
        <Route path='signup' element={<Signup />}/>
+       <Route path='forgot-password' element={<ForgotPassword />}/>
     </Route>
   )
 )
