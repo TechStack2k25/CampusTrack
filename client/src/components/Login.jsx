@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { useForm } from "react-hook-form";
+import { useDispatch, useSelector } from "react-redux";
 
 const Login = () => {
   const {
@@ -9,8 +10,13 @@ const Login = () => {
     formState: { errors },
   }=useForm();
 
+  const dispatch = useDispatch();
+  const { loading, error } = useSelector((state) => state.user);
+
   const handleSubmission=(data)=>{
     console.log(data);
+    //after login API
+    // dispatch changes to store
   }
   
   return (
@@ -85,6 +91,11 @@ const Login = () => {
               Login
             </button>
             {/* conditional loading and google Oauth */}
+            {error.length>0 && (
+                <p className="mt-1 text-sm text-red-500">
+                  {error}
+                </p>
+              )}
           </form>
           <p className="mt-6 text-center text-sm text-gray-600">
             Don't have an account?{' '}

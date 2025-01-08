@@ -1,9 +1,11 @@
-import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import './index.css';
 import{ Route,RouterProvider, createBrowserRouter, createRoutesFromElements} from 'react-router-dom'
 import App from './App.jsx'
-import { Home, Login, Signup, ForgotPassword } from './components/index.js';
+import { Home, Login, Signup, ForgotPassword, Loading } from './components/index.js';
+import { Provider } from 'react-redux';
+import { PersistGate } from 'redux-persist/integration/react';
+import store, { persistor } from './store/store.js';
 
 
 const router = createBrowserRouter(
@@ -18,7 +20,9 @@ const router = createBrowserRouter(
 )
 
 createRoot(document.getElementById('root')).render(
-  <StrictMode>
-  <RouterProvider router={router}/>
-  </StrictMode>,
+  <Provider store={store}>
+    <PersistGate loading={<Loading/>} persistor={persistor}>
+      <RouterProvider router={router}/>
+    </PersistGate>
+  </Provider>
 )
