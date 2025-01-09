@@ -3,6 +3,9 @@ import Signup from './Signup.jsx';
 import Login from './Login.jsx';
 import ForgotPassword from './ForgotPassword.jsx';
 import Loading from './Loading.jsx';
+import Sidebar from './Sidebar.jsx';
+import Notfound from './Notfound.jsx';
+import { DashboardContent } from './userComponents/index.js';
 
 
 export {
@@ -10,5 +13,10 @@ export {
     Signup,
     Login,
     ForgotPassword,
-    Loading
+    Loading,
+    Notfound,
+    Sidebar,
+    DashboardContent,
+    
+
 }
