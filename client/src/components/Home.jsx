@@ -3,7 +3,6 @@ import React from 'react'
 import Main from "./Main";
 import Features from "./Features";
 import Roles from "./Roles";
-import Sidebar from './Sidebar';
 
 
 function Home() {

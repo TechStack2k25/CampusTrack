@@ -11,7 +11,7 @@ function Header() {
   
 
   return (
-    <header className="bg-gray-900 text-white">
+    <header className="sticky top-0 z-50 bg-gray-900 text-white">
       <div className="container mx-auto flex justify-between items-center p-5">
         <h1 className="text-2xl font-bold">CampusTrack</h1>
         {location.pathname==='/' && <nav className='hidden sm:block'>

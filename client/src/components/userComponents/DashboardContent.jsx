@@ -10,17 +10,17 @@ const DashboardContent = () => {
         <div className="bg-white shadow-md rounded p-4">
           <h3 className="text-xl font-semibold">Courses</h3>
           <p className="text-sm text-gray-600">View your active and completed courses.</p>
-          <Link to={'/courses'} className="text-blue-500 text-sm mt-2 inline-block">View More</Link>
+          <Link to={'/courses'} className="text-blue-500 text-sm mt-2 inline-block hover:underline ">View More</Link>
         </div>
         <div className="bg-white shadow-md rounded p-4">
           <h3 className="text-xl font-semibold">Assignments</h3>
           <p className="text-sm text-gray-600">Check pending and submitted assignments.</p>
-          <Link to={'/assignments'} className="text-blue-500 text-sm mt-2 inline-block">View More</Link>
+          <Link to={'/assignments'} className="text-blue-500 text-sm mt-2 inline-block hover:underline ">View More</Link>
         </div>
         <div className="bg-white shadow-md rounded p-4">
           <h3 className="text-xl font-semibold">Event Schedules</h3>
           <p className="text-sm text-gray-600">Keep track of upcoming events.</p>
-          <Link to={'/events'} className="text-blue-500 text-sm mt-2 inline-block">View More</Link>
+          <Link to={'/events'} className="text-blue-500 text-sm mt-2 inline-block hover:underline ">View More</Link>
         </div>
         {/* Add other sections similarly */}
       </div>
