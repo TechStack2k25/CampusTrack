@@ -8,7 +8,7 @@ const Sidebar = () => {
     const [open,setOpen]=useState(false);
   return (
     <>
-        <aside className={`absolute sm:rounded-none rounded top-16 left-0 sm:static bg-gray-800 text-white sm:w-56 sm:mx-0 mx-1 sm:pl-4 pr-2 flex flex-col ${open ? 'block' : 'hidden'} sm:block`}>
+        <aside className={`absolute z-50 sm:rounded-none rounded top-16 left-0 sm:static bg-gray-800 text-white sm:w-56 sm:mx-0 mx-1 sm:pl-4 pr-2 flex flex-col ${open ? 'block' : 'hidden'} sm:block`}>
         <div className='flex my-2 px-2 py-2 space-x-4 items-center'>
                     <div className="h-8 text-xl aspect-square bg-blue-500 rounded-full flex items-center justify-center text-white font-bold">
                         U

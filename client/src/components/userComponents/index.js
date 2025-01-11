@@ -3,6 +3,8 @@ import Courses from './Courses'
 import Assignments from './Assignments'
 import Leaderboard from './Leaderboard'
 import Lectures from './Lectures'
+import Events from './Events'
+import Calendar from './Calender'
 
 export {
     DashboardContent,
@@ -10,5 +12,7 @@ export {
     Assignments,
     Leaderboard,
     Lectures,
+    Events,
+    Calendar,
     
 }

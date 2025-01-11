@@ -6,8 +6,8 @@ import { Home, Login, Signup, ForgotPassword, Loading, Notfound, DashboardConten
 import { Provider } from 'react-redux';
 import { PersistGate } from 'redux-persist/integration/react';
 import store, { persistor } from './store/store.js';
-import Dashboard from './pages/Dashboard.jsx';
-import { Assignments, Courses } from './components/userComponents/index.js';
+import { Dashboard, Schedule }from './pages/index.js';
+import { Assignments, Courses, Events } from './components/userComponents/index.js';
 
 
 const router = createBrowserRouter(
@@ -24,6 +24,8 @@ const router = createBrowserRouter(
           <Route path='dashboard' element={<DashboardContent />} />
           <Route path='courses' element={<Courses />} />
           <Route path='assignments' element={<Assignments />} />
+          <Route path='events' element={<Events />} />
+          <Route path='schedule' element={<Schedule />} />
         </Route>
       </Route>
       <Route path="*" element={<Notfound />} />
