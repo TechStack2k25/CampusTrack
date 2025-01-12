@@ -39,7 +39,7 @@ const UserMenu = () => {
         onClick={toggleMenu}
         className="flex items-center rounded-full"
       >
-        <div className="h-10 aspect-square bg-blue-500 rounded-full flex items-center justify-center text-white font-bold">
+        <div className="cursor-pointer h-10 aspect-square bg-blue-500 rounded-full flex items-center justify-center text-white font-bold">
           U
         </div>
       </button>

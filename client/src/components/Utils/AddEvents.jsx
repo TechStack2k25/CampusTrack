@@ -18,7 +18,7 @@ const AddEvent = ({ addEvent, openForm, setOpenForm }) => {
       <h2 className="text-2xl font-bold text-center text-gray-800 mb-4">
         New Event
       </h2>
-      {openForm && <div onClick={()=>setOpenForm(false)} className="absolute top-6 right-8 hover:text-gray-900 text-white bg-blue-500 font-medium text-2xl hover:bg-gray-100 h-8 text-center aspect-square rounded-lg">
+      {openForm && <div onClick={()=>setOpenForm(false)} className="absolute cursor-pointer top-6 right-8 hover:text-gray-900 text-white bg-blue-500 font-medium text-2xl hover:bg-gray-100 h-8 text-center aspect-square rounded-lg">
         X
       </div>}
 
