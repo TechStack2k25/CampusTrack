@@ -26,28 +26,30 @@ const Sidebar = () => {
     
   return (
     <>
-        <aside className={`absolute z-50 sm:rounded-none rounded top-16 left-0 sm:static bg-gray-800 text-white sm:w-56 sm:mx-0 mx-1 sm:pl-4 pr-2 flex flex-col ${open ? 'block' : 'hidden'} sm:block`}>
-        <div ref={ref} className='flex my-2 px-2 py-2 space-x-4 items-center'>
-                    <div onClick={()=>navigate('/dashboard')} className="cursor-pointer h-8 text-xl aspect-square bg-blue-500 rounded-full flex items-center justify-center text-white font-bold">
-                        U
+        <aside className={`absolute z-25 sm:rounded-none rounded top-16 left-0 sm:static  text-white ${open ? 'block' : 'hidden'} sm:block`}>
+            <div className='bg-gray-800  sm:w-56 mx-1 sm:pl-4 px-2 sm:py-4 py-1 sm:my-1 rounded-md'>
+                <div ref={ref} className='flex my-2 px-2 space-x-4 items-center'>
+                            <div onClick={()=>navigate('/dashboard')} className="cursor-pointer h-8 sm:h-12 text-xl aspect-square bg-blue-500 rounded-full flex items-center justify-center text-white font-bold">
+                                U
+                            </div>
+                            <span className="text-white text-xl font-semibold">Username</span>
                     </div>
-                    <span className="text-white text-xl font-semibold">Username</span>
-            </div>
-        <ul>
-            {menuItems.map((item) => (
-                <NavLink to={item.link} className={({ isActive }) =>
-                    isActive
-                    ? ' text-blue-400'
-                    : ' hover:text-blue-400'
-                } >
-                    <li key={item.name} className="py-2 px-4 rounded-full hover:bg-gray-700">
-                            <span>
-                                <span>{item.name}</span>
-                            </span>
-                    </li>
-                </NavLink>
-            ))}
-        </ul>
+                <ul>
+                    {menuItems.map((item) => (
+                        <NavLink key={item.name+item.link} to={item.link} className={({ isActive }) =>
+                            isActive
+                            ? ' text-blue-400'
+                            : ' hover:text-blue-400'
+                        } >
+                            <li key={item.name} className="py-2 px-4 rounded-full hover:bg-gray-700">
+                                    <span>
+                                        <span>{item.name}</span>
+                                    </span>
+                            </li>
+                        </NavLink>
+                    ))}
+                </ul>
+        </div>
         </aside>
 
         <div

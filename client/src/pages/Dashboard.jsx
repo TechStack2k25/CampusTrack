@@ -4,7 +4,7 @@ import { Outlet } from 'react-router-dom'
 
 function Dashboard() {
   return (
-    <div className="relative flex flex-1 min-h-screen">
+    <div className="relative flex flex-1 min-h-screen bg-gray-100">
         <Sidebar />
         <Outlet />
     </div>
