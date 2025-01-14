@@ -1,15 +1,15 @@
 import React from 'react'
 import { Sidebar } from '../components'
 import { Outlet } from 'react-router-dom'
-import { scholarMenu } from '../data/scholarMenu.js'
+import { facultyMenu } from '../data/scholarMenu.js'
 
-function Dashboard() {
+function DashboardFaculty() {
   return (
     <div className="relative flex flex-1 min-h-screen bg-gray-100">
-        <Sidebar menuItems={scholarMenu} />
+        <Sidebar menuItems={facultyMenu} />
         <Outlet />
     </div>
   )
 }
 
-export default Dashboard
+export default DashboardFaculty

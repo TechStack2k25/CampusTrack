@@ -1,10 +1,9 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { menuItems } from '../data/scholarMenu.js'
 import { NavLink, useNavigate } from 'react-router-dom'
 import { MdOutlineMenu } from "react-icons/md";
 import { IoCloseSharp } from "react-icons/io5";
 
-const Sidebar = () => {
+const Sidebar = ({menuItems}) => {
     const [open,setOpen]=useState(false);
 
     const navigate=useNavigate();
@@ -26,9 +25,9 @@ const Sidebar = () => {
     
   return (
     <>
-        <aside className={`absolute z-25 sm:rounded-none rounded top-16 left-0 sm:static  text-white ${open ? 'block' : 'hidden'} sm:block`}>
-            <div className='bg-gray-800  sm:w-56 mx-1 sm:pl-4 px-2 sm:py-4 py-1 sm:my-1 rounded-md'>
-                <div ref={ref} className='flex my-2 px-2 space-x-4 items-center'>
+        <aside className={`absolute z-40 sm:rounded-none rounded top-16 left-0 sm:static  text-white ${open ? 'block' : 'hidden'} sm:block`}>
+            <div ref={ref} className='bg-gray-800  sm:w-56 mx-1 sm:pl-4 px-2 sm:py-4 py-1 sm:my-1 rounded-md'>
+                <div className='flex my-2 px-2 space-x-4 items-center'>
                             <div onClick={()=>navigate('/dashboard')} className="cursor-pointer h-8 sm:h-12 text-xl aspect-square bg-blue-500 rounded-full flex items-center justify-center text-white font-bold">
                                 U
                             </div>
