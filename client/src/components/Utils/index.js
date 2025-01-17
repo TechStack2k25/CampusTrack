@@ -6,6 +6,8 @@ import CalendarModal from "./CalendarModal";
 import UpcomingLectures from "./UpcomingLectures";
 import AttendanceOverview from "./AttendanceOverview";
 import AttendanceRecords from "./AttendanceRecords";
+import Pagination from "./Pagination";
+import DataList from "./DataList";
 
 export {
     CourseCard,
@@ -15,6 +17,8 @@ export {
     CalendarModal,
     UpcomingLectures,
     AttendanceOverview,
-    AttendanceRecords
+    AttendanceRecords,
+    DataList,
+    Pagination,
     
 }

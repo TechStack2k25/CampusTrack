@@ -20,3 +20,16 @@ export const facultyMenu = [
   { name: 'Submissions', link: '/submissions' },
   { name: 'Notifications', link: '/notifications' },
 ];
+
+
+export const adminMenu = [
+  { name: 'Dashboard', link: '/dashboard' },
+  { name: 'Courses', link: '/courses' },
+  { name: 'Departments', link: '/Departments' },
+  { name: 'Faculty', link: '/faculty' },
+  { name: 'Scholars', link: '/scholars' },
+  { name: 'Events', link: '/events' },
+  { name: 'Schedule', link: '/schedule' },
+  { name: 'Approvals', link: '/approvals' },
+  { name: 'Notifications', link: '/notifications' },
+];
