@@ -4,7 +4,7 @@ import ApiError from '../utils/apierror.js';
 
 //to create acess and refreshtoken
 const createacessandrefreshtoken = (id) => {
-  //await is not uzsed it is synchronous it generate token and return immediately
+  //await is not used it is synchronous it generate token and return immediately
   //use header(consist metadata) payload and secret string create signature
   const acesstoken = jwt.sign({ id: id }, process.env.ACESS_SECRET_STR, {
     expiresIn: process.env.ACESS_SECRET_EXPIRES,
@@ -56,6 +56,45 @@ export const signup = asynchandler(async (req, res, next) => {
   });
 });
 
-export const login = asynchandler((req, res, next) => {});
+export const login = asynchandler(async (req, res, next) => {
+  const { email, password } = req.body();
+
+  //check email password and confiem password are not missing
+  if (!email || !password) {
+    return next(new ApiError('All field are required', 400));
+  }
+
+  // check the user already exist or not
+  const existeduser = await User.findOne({ email: email });
+
+  //if user is not exist
+  if (!existeduser) {
+    return next(new ApiError('Please Sign up account does not exist'), 401);
+  }
+
+  //find the user who are requested
+  const requser = await User.findOne({ email });
+
+  //compare the  pasword to authenticate the user
+  if (!(await requser.comparepassword(password))) {
+    return next(new ApiError('Password is incorrect', 400));
+  }
+
+  const [acesstoken, refreshtoken] = createacessandrefreshtoken(requser._id);
+
+  //check the acess and refreshtoken is generated or not
+  if (!refreshtoken || !acesstoken) {
+    return next(new ApiError('token cannot generated', 400));
+  }
+
+  res.status(201).json({
+    message: 'User login succesfully',
+    data: {
+      user: requser,
+      acesstoken,
+      refreshtoken,
+    },
+  });
+});
 
 export const forgotpassword = asynchandler((req, res, next) => {});

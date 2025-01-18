@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
 import validator from 'validator';
-
+import bcrypt from 'bcryptjs';
 const userSchema = new mongoose.Schema({
   // is used to create the account for each user it must be unique
   email: {
@@ -30,5 +30,19 @@ const userSchema = new mongoose.Schema({
 });
 
 const User = mongoose.model('User', userSchema);
+//bcrypt hash the password not encrypt
+userSchema.pre('save', async function (next) {
+  //check password is changed or not if changed then hash otherwise skip
+  if (!this.isModified('password')) return next();
+  this.password = await bcrypt.hash(this.password, 12);
+  this.confirm_password = undefined;
+  this.passwordchangedat = Date.now();
+  next();
+});
+
+//create the instance method to compare the pasword
+User.methods.comparedbpassword = async function (password) {
+  return await bcrypt.compare(password, this.password);
+};
 
 export default User;
