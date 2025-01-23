@@ -12,4 +12,4 @@ router.post('/create', addcollege);
 //delete
 router.delete('/del', delcollege);
 //update
-router.patch('/update', updatecollege);
+router.patch('/update/:id', updatecollege);

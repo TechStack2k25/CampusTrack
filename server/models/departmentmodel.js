@@ -20,7 +20,11 @@ const deparmentSchema= mongoose.Schema({
             type: mongoose.Schema.Types.ObjectId,
             ref: 'User', 
           }, 
-    ]
+    ],
+    hod:{
+      type: mongoose.Schema.Types.ObjectId,
+       ref: 'User', 
+    }
 });
 
 const Department=new mongoose.model('Department',deparmentSchema)
