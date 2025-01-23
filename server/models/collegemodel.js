@@ -10,6 +10,7 @@ const collegeSchema=mongoose.Schema({
         require:true,
         unique:true
     },
+    degree:[String],
     department:[{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Department', 

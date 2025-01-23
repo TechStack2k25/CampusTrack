@@ -16,3 +16,5 @@ router.get('/all', getall);
 router.delete('/del', delcourse);
 //update
 router.patch('/update/:id', updatecourse);
+
+export default router;

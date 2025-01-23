@@ -10,6 +10,8 @@ const router = express.Router();
 //create
 router.post('/create', addcollege);
 //delete
-router.delete('/del', delcollege);
+router.delete('/del/:id', delcollege);
 //update
 router.patch('/update/:id', updatecollege);
+
+export default router;

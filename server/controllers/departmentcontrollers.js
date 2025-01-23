@@ -42,10 +42,6 @@ export const adddepartment = asynchandler(async (req, res, next) => {
   });
 });
 
-export const getall = asynchandler(async (req, res, next) => {});
-
-export const deldepartment = asynchandler(async (req, res, next) => {});
-
 export const updatedepartment = asynchandler(async (req, res, next) => {
   //take the id of the department
   const dep_id = req.params.id;
@@ -77,3 +73,9 @@ export const updatedepartment = asynchandler(async (req, res, next) => {
     },
   });
 });
+
+export const getall = asynchandler(async (req, res, next) => {});
+
+export const deldepartment = asynchandler(async (req, res, next) => {});
+
+export const deleteall_department = asynchandler(async (req, res, next) => {});

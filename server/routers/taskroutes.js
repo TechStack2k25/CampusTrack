@@ -16,3 +16,5 @@ router.get('/all', getall);
 router.delete('/del', deltask);
 //update
 router.patch('/update', updatetask);
+
+export default router;

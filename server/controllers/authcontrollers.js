@@ -48,6 +48,7 @@ export const signup = asynchandler(async (req, res, next) => {
   if (!refreshtoken || !acesstoken) {
     return next(new ApiError('token cannot generated', 400));
   }
+  //return sucess mesage
   res.status(201).json({
     message: 'User Account created Succesfully',
     data: {
@@ -97,4 +98,10 @@ export const login = asynchandler(async (req, res, next) => {
   });
 });
 
+export const protect = asynchandler(async (req, res, next) => {});
+export const restrict_to = (role) => asynchandler(async (req, res, next) => {});
+export const isloggedin = asynchandler(async (req, res, next) => {});
 export const forgotpassword = asynchandler((req, res, next) => {});
+export const resetpassword = asynchandler(async (req, res, next) => {});
+export const updatepassword = asynchandler(async (req, res, next) => {});
+export const logout = asynchandler(async (req, res, next) => {});
