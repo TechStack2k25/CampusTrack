@@ -9,10 +9,10 @@ import {
 
 const router = express.Router();
 //create
-router.post('/create', addcourse);
+router.post('/create/:id', addcourse);
 //get all course
 router.get('/all', getall);
 //delete
 router.delete('/del', delcourse);
 //update
-router.patch('/update', updatecourse);
+router.patch('/update/:id', updatecourse);

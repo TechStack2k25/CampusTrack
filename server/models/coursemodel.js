@@ -31,7 +31,7 @@ const courseSchema = new mongoose.Schema({
       ref: 'User',
     },
   ],
-  creatror: {
+  coordinator: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
   },

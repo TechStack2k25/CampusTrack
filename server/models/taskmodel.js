@@ -45,6 +45,12 @@ const taskSchema = new mongoose.Schema(
     deadline: {
       type: Date,
     },
+    submitted_by: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+      },
+    ],
   },
   { timestamps: true }
 );
