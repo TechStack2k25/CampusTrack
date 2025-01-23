@@ -73,7 +73,7 @@ export const login = asynchandler(async (req, res, next) => {
   }
 
   //find the user who are requested
-  const requser = await User.findOne({ email });
+  const requser = await User.findOne({ email }).select('+password');
 
   //compare the  pasword to authenticate the user
   if (!(await requser.comparepassword(password))) {

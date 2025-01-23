@@ -27,6 +27,35 @@ const userSchema = new mongoose.Schema({
       message: 'Password and confirm password is not same',
     },
   },
+  name: {
+    type: String,
+    require: [true, 'Please enter your name'],
+  },
+  surname: {
+    type: String,
+  },
+  sem: {
+    type: Number,
+  },
+  year: {
+    type: Number,
+  },
+  currentdegree: String,
+  pastdegree: [String],
+  department: [{ type: mongoose.Schema.ObjectId, ref: 'Department' }],
+  currentcollege: [{ type: mongoose.Schema.ObjectId, ref: 'College' }],
+  pastcolleges: [{ type: mongoose.Schema.ObjectId, ref: 'College' }],
+  qualification: [String],
+  course: [{ type: mongoose.Schema.ObjectId, ref: 'Course' }],
+  pastcourse: [{ type: mongoose.Schema.ObjectId, ref: 'Course' }],
+  role: {
+    type: String,
+    enum: ['', 'Student', 'facilty', 'cc', 'HOD', 'admin'],
+    default: '',
+  },
+
+  acheivement: [{ type: mongoose.Schema.ObjectId, ref: 'Acheivement' }],
+  passwordchangedat: Date,
 });
 
 const User = mongoose.model('User', userSchema);

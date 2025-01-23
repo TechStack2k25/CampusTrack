@@ -9,4 +9,4 @@ router.get('/all', getall);
 //delete
 router.delete('/del', deluser);
 //update
-router.patch('/update', updateuser);
+router.patch('/update/:id', updateuser);
