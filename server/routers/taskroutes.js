@@ -9,7 +9,7 @@ import {
 
 const router = express.Router();
 //create
-router.post('/create', addtask);
+router.post('/create/:id', addtask);
 //get all task
 router.get('/all', getall);
 //delete

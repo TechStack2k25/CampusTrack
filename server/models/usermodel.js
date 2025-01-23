@@ -54,7 +54,7 @@ const userSchema = new mongoose.Schema({
     default: '',
   },
 
-  acheivement: [{ type: mongoose.Schema.ObjectId, ref: 'Acheivement' }],
+  reward: [{ type: mongoose.Schema.ObjectId, ref: 'Reward' }],
   passwordchangedat: Date,
 });
 
