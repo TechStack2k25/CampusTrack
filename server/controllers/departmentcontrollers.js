@@ -125,14 +125,6 @@ export const deldepartment = asynchandler(async (req, res, next) => {
   //store the no. of courses of that department
   const num_course = find_dep.courses.length;
 
-  //to delete the department first delete the courses
-  const result = deleteall_courses();
-
-  //check all courses delete successfully
-  if (result !== num_course) {
-    return next(new ApiError('error in deleted course of department ', 422));
-  }
-
   //delete the department
   const dele_or_not = await findByIdAndDelete(dep_id);
 
