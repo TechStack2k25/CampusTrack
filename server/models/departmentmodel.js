@@ -1,6 +1,7 @@
 import asynchandler from "../utils/asynchandler";
 import mongoose from mongoose
 import Course from "./coursemodel";
+import User from "./usermodel";
 
 const deparmentSchema= mongoose.Schema({
     name:{
@@ -41,7 +42,10 @@ export default Department
 deparmentSchema.pre('remove',asynchandler(async function(next){
   //delete all the course of department
   const courseIds=this.courses
-
+   
+  //change the role of hod to  user
+  await User.findByIdAndUpdate(this.hod,{role:'User'})
+  
   //store the total number of course
   const num_course=courseIds.length;
 

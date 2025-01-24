@@ -43,6 +43,11 @@ const Course = mongoose.model('Course', courseSchema);
 courseSchema.pre(
   'remove',
   asynchandler(async function (next) {
+    //remove the user from facility
+    const userId = this.teacher;
+
+    //now change the role of it
+    await User.updateOne({ _id: userId }, { $set: { role: 'User' } });
     //delete all task of course
     const taskIds = this.task;
 
