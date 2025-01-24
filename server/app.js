@@ -1,6 +1,6 @@
 import express from 'express';
 import morgan from 'morgan';
-import globalerrorhandler from './controller/errorcontroller.js';
+import globalerrorhandler from './controllers/errorcontroller.js';
 import authroutes from './routers/authrouters.js';
 import collegeroutes from './routers/collegeroutes.js';
 import departmentroutes from './routers/departmentroutes.js';

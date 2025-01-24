@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-import asynchandler from '../utils/asynchandler';
+import asynchandler from '../utils/asynchandler.js';
 
 const courseSchema = new mongoose.Schema({
   name: {

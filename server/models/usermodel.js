@@ -68,8 +68,17 @@ userSchema.pre('save', async function (next) {
 });
 
 //create the instance method to compare the pasword
-User.methods.comparedbpassword = async function (password) {
+userSchema.methodscomparedbpassword = async function (password) {
   return await bcrypt.compare(password, this.password);
+};
+
+//check the user change the password or not
+userSchema.methodsispasswordChanged = async function (requested_time) {
+  //here get time return time in millisecond while decoded acess token give time in sec
+  const password_change_time = parseInt(
+    this.passwordchangedat.getTime() / 1000
+  );
+  return password_change_time > requested_time;
 };
 
 export default User;

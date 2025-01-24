@@ -1,6 +1,7 @@
 import asynchandler from '../utils/asynchandler.js';
 import User from '../models/usermodel.js';
 import ApiError from '../utils/apierror.js';
+import { promisify } from 'util';
 
 //to create acess and refreshtoken
 const createacessandrefreshtoken = (id) => {
@@ -52,6 +53,8 @@ export const signup = asynchandler(async (req, res, next) => {
   res.status(201).json({
     message: 'User Account created Succesfully',
     data: {
+      acesstoken,
+      refreshtoken,
       email,
     },
   });
@@ -98,10 +101,90 @@ export const login = asynchandler(async (req, res, next) => {
   });
 });
 
-export const protect = asynchandler(async (req, res, next) => {});
-export const restrict_to = (role) => asynchandler(async (req, res, next) => {});
-export const isvaliduser = (user, authorised_user) => {};
-export const isloggedin = asynchandler(async (req, res, next) => {});
+export const protect = asynchandler(async (req, res, next) => {
+  //test token store header
+  const test_token = req.headers.authorization;
+
+  //to store acess and refrshtoken either from header or cookies
+  let acesstoken, refreshtoken;
+
+  //if header have token the store it
+  if (test_token && test_token.startsWith('Bearer')) {
+    acesstoken = test_token.split(' ')[1];
+    refreshtoken = test_token.split(' ')[2];
+  }
+
+  //if there is not header then take it from cookie
+  else {
+    acesstoken = req.cookies?.acesstoken;
+    refreshtoken = req.cookies?.refreshtoken;
+  }
+
+  //if we does not get either the acess or refresh token
+  if (!acesstoken || !refreshtoken) {
+    return next(new ApiError('Unauthorised Error', 401));
+  }
+
+  //check the acess token is valid
+  let decodedtoken = await promisify(jwt.verify)(
+    acesstoken,
+    process.env.ACESS_SECRET_STR
+  );
+
+  //if acess token is not valid check the refresh token
+  if (!decodedtoken) {
+    decodedtoken = await promisify(jwt.verify)(
+      refreshtoken,
+      process.env.REFRESH_SECRET_STR
+    );
+  }
+
+  //if refresh token is invalid return the error message unautheticated
+  if (!decodedtoken) {
+    return next(new ApiError('You are unautheticated', 400));
+  }
+
+  //how send new acesstoken when it expire and refresh token is valid
+
+  //if token match find the user which try to acess
+  const requser = await User.findById(decodedtoken.id);
+
+  //if user not found return error
+  if (!requser) {
+    return next(new ApiError('USer Not found', 404));
+  }
+
+  //check the user change the passwordor not
+  if (await requser.ispasswordChanged(decodedtoken.iat)) {
+    return next(new ApiError('Your password is changed . Login again!', 401));
+  }
+
+  //authorise the user
+  req.user = requser;
+
+  next();
+});
+export const restrict_to = (role) =>
+  asynchandler(async (req, res, next) => {
+    //get the role of the user
+    const user_role = req.user.role;
+
+    //check the user is quthorised to perform action
+    if (role !== user_role) {
+      return next(new ApiError('You Cannot perform that action', 401));
+    }
+
+    //if authorised give permission
+    next();
+  });
+export const isvaliduser = (user, authorised_user) => {
+  //check the user is quthorised or not
+  if (user !== authorised_user) {
+    return next(new ApiError('You Cannot perform that action', 401));
+  }
+  //if authorised then perform action
+  else next();
+};
 export const forgotpassword = asynchandler((req, res, next) => {});
 export const resetpassword = asynchandler(async (req, res, next) => {});
 export const updatepassword = asynchandler(async (req, res, next) => {});
