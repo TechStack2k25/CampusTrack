@@ -5,7 +5,7 @@ import asynchandler from '../utils/asynchandler.js';
 import { deleteall_department } from './departmentcontrollers.js';
 export const addcollege = asynchandler(async (req, res, next) => {
   //get the data from req to create new entity
-  const { name, id } = req.body();
+  const { name, id, degree } = req.body();
 
   //check get all the field
   if (!name || !id) {
@@ -84,12 +84,12 @@ export const updatecollege = asynchandler(async (req, res, next) => {
   }
 
   //if exist get info and update the college
-  const { name, id } = req.body();
+  const { name, id, degree } = req.body();
 
   //update the college
   const updatedcollege = await College.findByIdAndUpdate(
     college_id,
-    { name, id },
+    { name, id, degree },
     { new: true }
   );
 

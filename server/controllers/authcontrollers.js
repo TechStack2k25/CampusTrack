@@ -100,6 +100,7 @@ export const login = asynchandler(async (req, res, next) => {
 
 export const protect = asynchandler(async (req, res, next) => {});
 export const restrict_to = (role) => asynchandler(async (req, res, next) => {});
+export const isvaliduser = (user, authorised_user) => {};
 export const isloggedin = asynchandler(async (req, res, next) => {});
 export const forgotpassword = asynchandler((req, res, next) => {});
 export const resetpassword = asynchandler(async (req, res, next) => {});

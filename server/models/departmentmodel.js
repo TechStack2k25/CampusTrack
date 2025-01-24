@@ -25,6 +25,7 @@ const deparmentSchema= mongoose.Schema({
       type: mongoose.Schema.Types.ObjectId,
        ref: 'User', 
     },
+    
     college:{
       type: mongoose.Schema.Types.ObjectId,
        ref: 'College', 

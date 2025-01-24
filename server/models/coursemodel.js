@@ -31,7 +31,7 @@ const courseSchema = new mongoose.Schema({
       ref: 'User',
     },
   ],
-  coordinator: {
+  teacher: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
   },
