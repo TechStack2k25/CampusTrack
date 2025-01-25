@@ -24,7 +24,7 @@ const Departments = () => {
   };
 
   return (
-    <div className="flex-1 relative p-6 bg-gray-100 min-h-screen">
+    <div className="flex-1 p-6 bg-gray-100 min-h-screen">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold text-gray-700">Departments</h1>
         <button
@@ -52,7 +52,7 @@ const Departments = () => {
 
       {/* Modal for Adding Department */}
       {isModalOpen && (
-        <div className="absolute inset-0 bg-black bg-opacity-50 flex justify-center items-center">
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
           <div className="bg-white w-96 p-6 rounded shadow-lg relative">
             <button
               onClick={() => setIsModalOpen(false)}

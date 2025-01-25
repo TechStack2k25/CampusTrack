@@ -6,7 +6,7 @@ export const scholarMenu = [
     { name: 'Schedule', link: '/schedule' },
     { name: 'Lectures', link: '/lectures' },
     { name: 'Leaderboard', link: '/leaderboard' },
-    { name: 'Challenges', link: '/challenges' },
+    // { name: 'Challenges', link: '/challenges' },
   ];
 
 export const facultyMenu = [
@@ -15,7 +15,6 @@ export const facultyMenu = [
   { name: 'Assignments', link: '/assignments' },
   { name: 'Events', link: '/events' },
   { name: 'Schedule', link: '/schedule' },
-  { name: 'Lectures', link: '/lectures' },
   { name: 'Attendance', link: '/attendance' },
   { name: 'Submissions', link: '/submissions' },
   { name: 'Notifications', link: '/notifications' },
