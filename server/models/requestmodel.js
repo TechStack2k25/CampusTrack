@@ -5,6 +5,10 @@ const requestSchema = mongoose.Schema({
     type: String,
     required: true,
   },
+  request_role: {
+    type: String,
+    enum: ['User', 'Student', 'facilty', 'HOD', 'admin'],
+  },
   request_college: {
     type: mongoose.Types.ObjectId,
     ref: 'College',

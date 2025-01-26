@@ -81,6 +81,10 @@ export const updatecourse = asynchandler(async (req, res, next) => {
     return next(new ApiError('course not found', 404));
   }
 
+  //check user is authorised or not
+  if (!isvaliduser(reqdepartment.hod, user_id)) {
+    return next(new ApiError('You are unauthorised to add course'));
+  }
   //take the info from request
   const { name, coursecode, credit, teacher } = req.body();
   //if exist update the course
@@ -105,8 +109,8 @@ export const updatecourse = asynchandler(async (req, res, next) => {
 });
 
 export const getall = asynchandler(async (req, res, next) => {
-  //get the id of department for which get course
-  const department_id = req.params.id;
+  //get the id of department for which get course or from the user
+  const department_id = req.params.id || req.user.department;
 
   //check the department exist or not
   const reqdepartment = await Department.findById(department_id).populate(
@@ -161,4 +165,17 @@ export const delcourse = asynchandler(async (req, res, next) => {
   });
 });
 
-export const deleteall_courses = asynchandler(async (req, res, next) => {});
+export const add_course_by_student = asynchandler(async (req, res, next) => {
+  const course_id = req.params.id;
+  const reqcourse = await Course.findById(course_id);
+  if (!reqcourse) {
+    return next(new ApiError('Error in found the course', 404));
+  }
+  req.body.requestType = 'Add Course';
+  req.body.course = course_id;
+  create_request(req, res, next);
+
+  res.status(201).json({
+    message: 'request generated succesfully',
+  });
+});

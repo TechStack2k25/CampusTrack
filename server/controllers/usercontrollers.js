@@ -1,5 +1,7 @@
 import asynchandler from '../utils/asynchandler.js';
 import ApiError from '../utils/apierror.js';
+import { create_request } from './requestcontrollers.js';
+import College from '../models/collegemodel.js';
 
 export const getall = asynchandler(async (req, res, next) => {});
 
@@ -30,7 +32,16 @@ export const updateuser = asynchandler(async (req, res, next) => {
   }
 
   //if role is present then create a request
-  if (role) create_request(req, res, next);
+  if (role) {
+    req.body.requestType = 'Add user';
+    const { id } = req.body;
+    const college = await College.findOne({ id });
+    if (!college) {
+      return next(new ApiError('college not found', 404));
+    }
+    req.body.college = college._id;
+    create_request(req, res, next);
+  }
   //update the user by id
   const updateduser = await findByIdAndUpdate(
     id,

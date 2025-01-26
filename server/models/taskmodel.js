@@ -11,44 +11,30 @@ const taskSchema = new mongoose.Schema(
     },
     tasktype: {
       type: String,
-      enum: ['Assignment', 'Lectures', 'Project'],
+      enum: ['Assignment', 'Project'],
       default: 'Assignment',
-    },
-    chapterno: {
-      type: Number,
-      min: 1,
-    },
-    chaptername: {
-      type: String,
     },
     reward_point: {
       type: Number,
       default: 0,
-    },
-    duration: {
-      type: Date,
     },
     status: {
       type: String,
       enum: ['Completed', 'Pending', 'OverDue'],
       default: 'Pending',
     },
-    setgoal: {
-      type: Boolean,
-      default: false,
-    },
-    goaltype: {
-      type: String,
-      enum: ['', 'Daily', 'Weekly'],
-      default: '',
-    },
     deadline: {
       type: Date,
     },
     submitted_by: [
       {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'User',
+        userId: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: 'User',
+        },
+        file: {
+          type: String,
+        },
       },
     ],
   },
