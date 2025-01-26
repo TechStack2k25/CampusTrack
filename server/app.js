@@ -7,6 +7,7 @@ import departmentroutes from './routers/departmentroutes.js';
 import courseroutes from './routers/courseroutes.js';
 import taskroutes from './routers/taskroutes.js';
 import userroutes from './routers/userrouters.js';
+import requestroutes from './routers/requestroutes.js';
 import { restrict_to, protect } from './controllers/authcontrollers.js';
 
 const app = express();
@@ -25,6 +26,8 @@ app.use('/api/user', userroutes);
 app.use('/api/task', restrict_to('facility'), taskroutes);
 //all course routes and only hod can make change in courses
 app.use('/api/course', restrict_to('HOD'), courseroutes);
+//to accept and get all request
+app.use('/api/request', requestroutes);
 //restrict college and department routes to admin
 app.use(restrict_to('admin'));
 //all departmentroute

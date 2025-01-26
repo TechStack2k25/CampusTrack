@@ -29,6 +29,8 @@ export const updateuser = asynchandler(async (req, res, next) => {
     return next(new ApiError('NO user found ! ,Sign up', 404));
   }
 
+  //if role is present then create a request
+  if (role) create_request(req, res, next);
   //update the user by id
   const updateduser = await findByIdAndUpdate(
     id,
@@ -40,7 +42,6 @@ export const updateuser = asynchandler(async (req, res, next) => {
       currentdegree,
       degree,
       qualifaication,
-      role,
     },
     { new: true, runValidators: true }
   );

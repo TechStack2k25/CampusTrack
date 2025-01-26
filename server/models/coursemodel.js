@@ -6,10 +6,6 @@ const courseSchema = new mongoose.Schema({
     type: String,
     require: [true, 'Please enter the subject name'],
   },
-  department: {
-    type: String,
-    require: [true, 'Please enter the department'],
-  },
   coursecode: {
     type: String,
     require: [true, 'Please enter the subject code'],
