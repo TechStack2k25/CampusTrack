@@ -4,51 +4,42 @@ import Task from '../models/taskmodel.js';
 import User from '../models/usermodel.js';
 import ApiError from '../utils/apierror.js';
 import Reward from '../models/rewardmodel.js';
+import { isvaliduser } from './authcontrollers.js';
 
 export const addtask = asynchandler(async (req, res, next) => {
-  //get the id from params
-  const id = req.params.id;
+  //get the course id
+  const course_id = req.params.id;
 
-  //get  the course to add task
-  const reqcourse = await Course.findById(id);
+  //check the course exist or not
+  const reqcourse = await Course.findById(course_id);
 
-  //check course exist or not if not exist give error
+  //check course is exist or not
   if (!reqcourse) {
-    next(new ApiError('Course does not exist', 404));
+    return next(new ApiError('Course not found', 404));
+  }
+  //check authorised or not
+  if (req.user._id !== reqcourse.teacher) {
+    return next(new ApiError('You are unauthorised to add task', 401));
   }
 
-  //create the task to add the course
-  //1-get the data from the request
-  const {
-    title,
-    description,
-    tasktype,
-    chapterno,
-    chaptername,
-    setgoal,
-    goaltype,
-    deadline,
-    duration,
-    status,
-  } = req.body;
+  //create task and add to course
+  //get the data from the request
+  const { title, description, tasktype, reward_point, deadline } = req.body;
 
-  //2-create task
-  if (!title || !tasktype || !(deadline || duration)) {
+  //check all required field get or not
+  if (!title || !tasktype || !deadline || !reward_point) {
     return next(new ApiError('Enter the required field', 422));
   }
 
-  const newtask = await Task.create(
+  //create task
+  const newtask = await Task.create({
     title,
     description,
     tasktype,
-    chapterno,
-    chaptername,
-    setgoal,
-    goaltype,
     deadline,
-    duration,
-    status
-  );
+    reward_point,
+    course: reqcourse,
+  });
 
   // add the id of the task in course
   reqcourse.task.push(newtask._id);
@@ -63,41 +54,99 @@ export const addtask = asynchandler(async (req, res, next) => {
   });
 });
 
-export const getall = asynchandler(async (req, res, next) => {});
+export const getall = asynchandler(async (req, res, next) => {
+  const course_id = req.params.id;
+  let alltasks = [];
+  //check we want all task or task of specific course
+  if (course_id) {
+    const reqcourse = await Course.findById(course_id);
 
-export const deltask = asynchandler(async (req, res, next) => {});
+    //check course exist or not
+    if (!reqcourse) {
+      return next(new ApiError('Course not found', 404));
+    }
+
+    //get all courses
+    alltasks = reqcourse.populate('tasks');
+  }
+
+  const courseIds = req.user.course;
+  //  get all the course of all ids
+  const reqcourses = await Course.find({ _id: { $in: courseIds } }).populate(
+    'tasks'
+  );
+
+  //get all the tasks
+  reqcourses.forEach((course) => {
+    alltasks.push(...course.task);
+  });
+
+  res.status(201).json({
+    message: 'tasks fetch suceesfully',
+    data: {
+      data: alltasks,
+    },
+  });
+});
+
+export const deltask = asynchandler(async (req, res, next) => {
+  const task_id = req.params.id;
+
+  //check the task is exist or not
+  const reqtask = await Task.findById(task_id);
+
+  //if not exist give error
+  if (!reqtask) {
+    return next(new ApiError('Task not found to delete', 404));
+  }
+
+  //get the course for get id of authorisd user
+  const reqcourse = await Course.findById(reqtask.course);
+
+  //if course not found give error
+  if (!reqcourse) {
+    return next(new ApiError('Course not found', 404));
+  }
+
+  //check the user is authorised or not
+  isvaliduser(req.user._id, reqcourse.teacher);
+
+  //delete the task
+  const result = await Task.findByIdAndDelete(task_id);
+
+  //check the task is deleted or not
+  if (result.deletedCount === 0) {
+    return next(new ApiError('error in deleting the task', 422));
+  }
+
+  //return sucess message
+  res.status(201).json({
+    message: 'task deleted sucessfully',
+  });
+});
 
 export const updatetask = asynchandler(async (req, res, next) => {
-  //get the id of the task
+  // get the id of the task
   const id = req.params.id;
-
   //search the task to check it exist or not
   const reqtask = await Task.findById(id);
-
   //if not exist return error message of not found
   if (!reqtask) {
     return next(new ApiError('Task is not found'), 404);
   }
-
   //take the data from request
-  const {
-    title,
-    description,
-    tasktype,
-    chapterno,
-    chaptername,
-    setgoal,
-    goaltype,
-    deadline,
-    duration,
-    status,
-  } = req.body;
+  const { title, description, tasktype, deadline, reward_point } = req.body;
 
-  //check the previous status task is alredy submit or submit now
-  const prevstatus = reqtask.status;
+  //find the course
+  const reqcourse = await Course.findById(reqtask.course);
 
-  //to check previous task is set as goal or ot
-  const prevgoal = reqtask.setgoal;
+  //check the course is exist or not
+  if (!reqcourse) {
+    return next(new ApiError('Coursse not found', 404));
+  }
+
+  //check the user is authorised or not
+  isvaliduser(req.user._id, reqcourse.teacher);
 
   //now update the task
   const updatedTask = await Task.findByIdAndUpdate(
@@ -106,102 +155,85 @@ export const updatetask = asynchandler(async (req, res, next) => {
       title,
       description,
       tasktype,
-      chapterno,
-      chaptername,
-      setgoal,
-      status,
-      goaltype,
       deadline,
-      duration,
+      reward_point,
     },
     { new: true, runValidators: true }
   );
-
-  //check the assignment status change or not
-  //if change to completed add the rewardpoint
-  if (status && status === 'Completed' && prevstatus === 'Pending') {
-    //take the id of user from req
-    const id = req.user._id;
-
-    //find thre user by it id
-    const addrewarduser = await User.findById(id);
-
-    //get the id of model of reward of user
-    const reward_id = addrewarduser.reward;
-
-    //find the id of reward model
-    let userreward = await Reward.findById(reward_id);
-
-    //check the reward is exist or not
-    let reward_model;
-    if (!userreward) {
-      //if not exist create the reward
-      userreward = await Reward.create();
-    }
-
-    //take two variable for submission and another for how early or late he submitted
-    let fixedpoint, varpoint;
-    if (updatedTask.tasktype === 'Assignment') {
-      fixedpoint = 70.0;
-      varpoint = 1.0;
-    } else if (tasktype === 'Project') {
-      fixedpoint = 150.0;
-      varpoint = 1.5;
-    } else {
-      fixedpoint = 50.0;
-      varpoint = 1.0;
-    }
-    //to adjust the global time to indian time
-    const istOffset = 5.5 * 60 * 60 * 1000;
-    const newdeadline = new Date(updatedTask.deadline - istOffset).getTime();
-    const newDate = new Date(Date.now()).getTime();
-    const variable = (newdeadline - newDate) / (1000 * 3600);
-
-    //add the point to the user total point on thne basis of time he submit
-    fixedpoint + varpoint * variable > fixedpoint / 2
-      ? (userreward.total_point = Math.ceil(
-          userreward.total_point + fixedpoint + varpoint * variable
-        ))
-      : (userreward.total_point = Math.ceil(fixedpoint / 2));
-
-    //now save the user reward
-    userreward.save();
-  }
-
-  //check the user completed your goal
-  if (setgoal && !prevgoal) {
-    //take the id of user from req
-    const id = req.user._id;
-
-    //find thre user by it id
-    const addrewarduser = await User.findById(id);
-
-    //get the id of model of reward of user
-    const reward_id = addrewarduser.reward;
-
-    //find the id of reward model
-    let userreward = await Reward.findById(reward_id);
-
-    //check the reward is exist or not
-    let reward_model;
-    if (!userreward) {
-      //if not exist create the reward
-      userreward = await Reward.create();
-    }
-    let point = 0;
-    if (goaltype === 'Daily') point = 60;
-    else point = 20;
-
-    userreward.total_point = userreward.total_point + point;
-
-    //now save the user reward
-    userreward.save();
-  }
-
   res.status(201).json({
     message: 'Task Updated Sucessfully',
     data: {
-      updatedTask,
+      data: updatedTask,
     },
   });
 });
+
+export const submittask = asynchandler(async (req, res, next) => {});
+
+// //check the previous status task is alredy submit or submit now
+// const prevstatus = reqtask.status;
+// //to check previous task is set as goal or ot
+// const prevgoal = reqtask.setgoal;
+//take the id of user from req
+//    const id = req.user._id;
+//    //find thre user by it id
+//    const addrewarduser = await User.findById(id);
+//    //get the id of model of reward of user
+//    const reward_id = addrewarduser.reward;
+//    //find the id of reward model
+//    let userreward = await Reward.findById(reward_id);
+//    //check the reward is exist or not
+//    let reward_model;
+//    if (!userreward) {
+//      //if not exist create the reward
+//      userreward = await Reward.create();
+//    }
+//    //take two variable for submission and another for how early or late he submitted
+//    let fixedpoint, varpoint;
+//    if (updatedTask.tasktype === 'Assignment') {
+//      fixedpoint = 70.0;
+//      varpoint = 1.0;
+//    } else if (tasktype === 'Project') {
+//      fixedpoint = 150.0;
+//      varpoint = 1.5;
+//    } else {
+//      fixedpoint = 50.0;
+//      varpoint = 1.0;
+//    }
+//    //to adjust the global time to indian time
+//    const istOffset = 5.5 * 60 * 60 * 1000;
+//    const newdeadline = new Date(updatedTask.deadline - istOffset).getTime();
+//    const newDate = new Date(Date.now()).getTime();
+//    const variable = (newdeadline - newDate) / (1000 * 3600);
+//    //add the point to the user total point on thne basis of time he submit
+//    fixedpoint + varpoint * variable > fixedpoint / 2
+//      ? (userreward.total_point = Math.ceil(
+//          userreward.total_point + fixedpoint + varpoint * variable
+//        ))
+//      : (userreward.total_point = Math.ceil(fixedpoint / 2));
+//    //now save the user reward
+//    userreward.save();
+//  }
+//  //check the user completed your goal
+//  if (setgoal && !prevgoal) {
+//    //take the id of user from req
+//    const id = req.user._id;
+//    //find thre user by it id
+//    const addrewarduser = await User.findById(id);
+//    //get the id of model of reward of user
+//    const reward_id = addrewarduser.reward;
+//    //find the id of reward model
+//    let userreward = await Reward.findById(reward_id);
+//    //check the reward is exist or not
+//    let reward_model;
+//    if (!userreward) {
+//      //if not exist create the reward
+//      userreward = await Reward.create();
+//    }
+//    let point = 0;
+//    if (goaltype === 'Daily') point = 60;
+//    else point = 20;
+//    userreward.total_point = userreward.total_point + point;
+//    //now save the user reward
+//    userreward.save();
+//  }

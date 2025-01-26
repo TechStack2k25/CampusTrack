@@ -16,12 +16,6 @@ const taskSchema = new mongoose.Schema(
     },
     reward_point: {
       type: Number,
-      default: 0,
-    },
-    status: {
-      type: String,
-      enum: ['Completed', 'Pending', 'OverDue'],
-      default: 'Pending',
     },
     deadline: {
       type: Date,
@@ -37,6 +31,10 @@ const taskSchema = new mongoose.Schema(
         },
       },
     ],
+    course: {
+      type: mongoose.Types.ObjectId,
+      ref: 'Course',
+    },
   },
   { timestamps: true }
 );

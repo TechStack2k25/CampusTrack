@@ -15,9 +15,7 @@ export const addcourse = asynchandler(async (req, res, next) => {
   const user_id = req.user._id;
 
   //check user is authorised or not
-  if (!isvaliduser(reqdepartment.hod, user_id)) {
-    return next(new ApiError('You are unauthorised to add course'));
-  }
+  isvaliduser(reqdepartment.hod, user_id);
 
   //check the department exist or not
   if (!reqdepartment) {
@@ -81,10 +79,20 @@ export const updatecourse = asynchandler(async (req, res, next) => {
     return next(new ApiError('course not found', 404));
   }
 
-  //check user is authorised or not
-  if (!isvaliduser(reqdepartment.hod, user_id)) {
-    return next(new ApiError('You are unauthorised to add course'));
+  //get the  id of department
+  const dep_id = req.user.department;
+
+  //check the department is exist or not
+  const reqdepartment = await Department.findById(dep_id);
+
+  //if not exist give error
+  if (!reqdepartment) {
+    return next(new ApiError('Department does not found', 404));
   }
+
+  //check user is authorised or not
+  isvaliduser(reqdepartment.hod, user_id);
+
   //take the info from request
   const { name, coursecode, credit, teacher } = req.body();
   //if exist update the course
@@ -109,21 +117,35 @@ export const updatecourse = asynchandler(async (req, res, next) => {
 });
 
 export const getall = asynchandler(async (req, res, next) => {
-  //get the id of department for which get course or from the user
-  const department_id = req.params.id || req.user.department;
+  //check it is hod or not
+  let allcourses;
+  if (req.user.role == 'HOD') {
+    //get the id of department for which get course or from the user
+    const department_id = req.params.id || req.user.department;
 
-  //check the department exist or not
-  const reqdepartment = await Department.findById(department_id).populate(
-    'courses'
-  );
+    //check the department exist or not
+    const reqdepartment = await Department.findById(department_id).populate(
+      'courses'
+    );
 
-  //if not exist give error
-  if (!reqdepartment) {
-    return next(new ApiError('Unable to fetch the department retry it', 422));
+    //if not exist give error
+    if (!reqdepartment) {
+      return next(new ApiError('Unable to fetch the department retry it', 422));
+    }
+
+    //asign value of course to it
+    allcourses = reqdepartment.courses;
   }
 
-  //asign value of course to it
-  const allcourses = reqdepartment.courses;
+  //if the user is facilty
+  else if (req.user.role === 'facilty') {
+    allcourses = await Course.find({ teacher: req.user._id });
+  }
+
+  //if the user is student
+  else if (req.user.role === 'Student') {
+    allcourses = req.user.populate('course');
+  }
 
   //check the course is exist or not
   if (!allcourses) {

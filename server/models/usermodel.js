@@ -49,6 +49,12 @@ const userSchema = new mongoose.Schema({
     Ref: 'College',
   },
   currentdegree: String,
+  course: [
+    {
+      type: mongoose.Types.ObjectId,
+      ref: 'Course',
+    },
+  ],
   pastdegree: [String],
   pastcolleges: [{ type: mongoose.Schema.ObjectId, ref: 'College' }],
   qualification: [String],

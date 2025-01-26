@@ -22,12 +22,6 @@ const courseSchema = new mongoose.Schema({
       ref: 'Task',
     },
   ],
-  user: [
-    {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'User',
-    },
-  ],
   teacher: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',

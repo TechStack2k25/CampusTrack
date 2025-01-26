@@ -130,9 +130,17 @@ const updaterequest = asynchandler(async (req, res, next) => {
       return next(new ApiError('error in updated request', 422));
     }
 
+    //get the user for which we update
+    const requser = await User.findById(require_request.request_by);
+
+    //check user is exist or not
+    if (!requser) {
+      return next(new ApiError('User not found', 404));
+    }
+
     //add the user in course and save it
-    reqcourse.user.push(require_request.request_by);
-    reqcourse.save();
+    requser.course.push(require_request.request_by);
+    requser.save();
 
     //get the request to deleted
     const deleted_request = Request.findByIdAndDelete(request_id);
@@ -140,8 +148,8 @@ const updaterequest = asynchandler(async (req, res, next) => {
     //check the request is deleted or not
     if (deleted_request.deletedCount === 0) {
       //if not deleted change the update and give error
-      reqcourse.user.pop();
-      reqcourse.save();
+      requser.course.pop();
+      requser.save();
       return next(new ApiError('Error in updating request', 422));
     }
   }
