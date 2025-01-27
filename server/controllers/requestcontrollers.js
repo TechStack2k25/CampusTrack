@@ -1,12 +1,14 @@
 import College from '../models/collegemodel.js';
 import Course from '../models/coursemodel.js';
 import Request from '../models/requestmodel.js';
+import Task from '../models/taskmodel.js';
 import ApiError from '../utils/apierror.js';
 import asynchandler from '../utils/asynchandler.js';
+import { isvaliduser } from './authcontrollers.js';
 
 const create_request = asynchandler(async (req, res, next) => {
   // extract data from req.body
-  const { requestType, course, college } = req.body();
+  const { requestType, course, college, task, file } = req.body();
 
   //get the data of user from req.user
   const requser = req.user;
@@ -17,7 +19,7 @@ const create_request = asynchandler(async (req, res, next) => {
   }
 
   //if course is exist
-  if (course) {
+  if (requestType === 'Add Course') {
     //check the course is exist or not
     const reqcourse = await Course.findById(course);
 
@@ -41,7 +43,7 @@ const create_request = asynchandler(async (req, res, next) => {
   }
 
   //check the we get college or not
-  else if (college) {
+  else if (requestType === 'Add User') {
     //check the college exist or not
     const reqcollege = await College.findById(college);
 
@@ -61,6 +63,26 @@ const create_request = asynchandler(async (req, res, next) => {
     ///check the request is created or not
     if (!newrequest) {
       return next(new ApiError('Error in generated request.Try again', 404));
+    }
+  }
+
+  //create request for submissin of task
+  else if (requestType === 'Submit Task') {
+    if (!task) {
+      return next(new ApiError('To submit task it not found', 404));
+    }
+    const newrequest = await Request.create({
+      requestType,
+      request_course: course,
+      request_task: task,
+      request_by: req.user._id,
+      request_file: file,
+    });
+
+    if (!newrequest) {
+      return next(
+        new ApiError('Error in create request for submit assignment', 422)
+      );
     }
   }
   return 1;
@@ -180,6 +202,50 @@ const updaterequest = asynchandler(async (req, res, next) => {
     }
   }
 
+  //update the request of submit assignment
+  else if (
+    require_request.requestType === 'Submit Task' &&
+    new_status === 'Approved'
+  ) {
+    //get the id of the task
+    const task_id = require_request.request_task;
+
+    //check the task is exist or not
+    const reqtask = await Task.findById(task_id);
+
+    //if task is not exist give error
+    if (!reqtask) {
+      next(new ApiError('Task is not found to update request', 404));
+    }
+
+    //get the course for the id of the teacher
+    const reqcourse = await Course.findById(require_request.request_course);
+
+    //if course not found give error
+    if (!reqcourse) {
+      return next(new ApiError('Course not found', 404));
+    }
+
+    //check the user is valid or not
+    isvaliduser(req.user._id, reqcourse.teacher);
+
+    //if user is authorised add submit status of user and delete it
+    const user_id = require_request.request_by;
+    const file = require_request.request_file;
+    reqtask.submitted_by.push({ user: user_id, file });
+    reqtask.save();
+
+    //if update request then delete it
+    const deleted_request = Request.findByIdAndDelete(request_id);
+
+    //check the request is deleted or not
+    if (deleted_request.deletedCount === 0) {
+      //if not delete update the change
+      reqtask.submitted_by.pop();
+      reqtask.save();
+      return next(new ApiError('Error in updating request', 422));
+    }
+  }
   //return sucess message
   res.status(201).json({
     message: 'request Updated Succesfully',

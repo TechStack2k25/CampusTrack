@@ -21,6 +21,10 @@ const requestSchema = mongoose.Schema({
     type: mongoose.Types.ObjectId,
     ref: 'Department',
   },
+  request_task: {
+    type: mongoose.Types.ObjectId,
+    ref: 'Task',
+  },
   request_by: {
     type: mongoose.Types.ObjectId,
     ref: 'User',
@@ -30,6 +34,7 @@ const requestSchema = mongoose.Schema({
     enum: ['pending', 'approved', 'rejected'],
     default: 'pending',
   },
+  request_file: {},
 });
 
 const Request = mongoose.model('Request', requestSchema);

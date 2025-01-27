@@ -4,6 +4,7 @@ import Task from '../models/taskmodel.js';
 import User from '../models/usermodel.js';
 import ApiError from '../utils/apierror.js';
 import Reward from '../models/rewardmodel.js';
+import { create_request } from './requestcontrollers.js';
 import { isvaliduser } from './authcontrollers.js';
 
 export const addtask = asynchandler(async (req, res, next) => {
@@ -168,7 +169,31 @@ export const updatetask = asynchandler(async (req, res, next) => {
   });
 });
 
-export const submittask = asynchandler(async (req, res, next) => {});
+export const submittask = asynchandler(async (req, res, next) => {
+  //get the task_id from params
+  const task_id = req.params.id;
+
+  //find the task from task id
+  const reqtask = await Task.findById(task_id);
+
+  //if task not found give error
+  if (!reqtask) {
+    return next(new ApiError('Task not found', 404));
+  }
+
+  //add some point in request object
+  req.body.requestType = 'Submit Task';
+  req.body.course = reqtask.course;
+  req.body.task = task_id;
+
+  //create request for submit task
+  create_request(req, res, next);
+
+  //on sucessfull return sucesss message
+  res.status(201).json({
+    message: 'request for submit assignment created sucessfully',
+  });
+});
 
 // //check the previous status task is alredy submit or submit now
 // const prevstatus = reqtask.status;

@@ -10,7 +10,7 @@ import {
 
 const router = express.Router();
 //submit the assignment
-router.post('/submit', submittask);
+router.post('/submit/:id', submittask);
 //allow facilty to change in task
 router.use(restrict_to('facility'));
 //create
