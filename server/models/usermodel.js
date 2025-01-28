@@ -61,7 +61,7 @@ const userSchema = new mongoose.Schema({
   pastcourse: [{ type: mongoose.Schema.ObjectId, ref: 'Course' }],
   role: {
     type: String,
-    enum: ['User', 'Student', 'facilty', 'HOD', 'admin'],
+    enum: ['User', 'Student', 'facilty', 'HOD', 'Admin'],
     default: 'User',
   },
 
@@ -69,7 +69,6 @@ const userSchema = new mongoose.Schema({
   passwordchangedat: Date,
 });
 
-const User = mongoose.model('User', userSchema);
 //bcrypt hash the password not encrypt
 userSchema.pre('save', async function (next) {
   //check password is changed or not if changed then hash otherwise skip
@@ -81,17 +80,20 @@ userSchema.pre('save', async function (next) {
 });
 
 //create the instance method to compare the pasword
-userSchema.methodscomparedbpassword = async function (password) {
-  return await bcrypt.compare(password, this.password);
+userSchema.methods.comparedbpassword = async function (password) {
+  const flag = await bcrypt.compare(password, this.password);
+  return flag;
 };
 
 //check the user change the password or not
-userSchema.methodsispasswordChanged = async function (requested_time) {
+userSchema.methods.ispasswordChanged = async function (requested_time) {
   //here get time return time in millisecond while decoded acess token give time in sec
   const password_change_time = parseInt(
     this.passwordchangedat.getTime() / 1000
   );
   return password_change_time > requested_time;
 };
+
+const User = mongoose.model('User', userSchema);
 
 export default User;

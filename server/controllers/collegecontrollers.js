@@ -2,10 +2,10 @@ import College from '../models/collegemodel.js';
 import Department from '../models/departmentmodel.js';
 import ApiError from '../utils/apierror.js';
 import asynchandler from '../utils/asynchandler.js';
-import { deleteall_department } from './departmentcontrollers.js';
+import { isvaliduser } from './authcontrollers.js';
 export const addcollege = asynchandler(async (req, res, next) => {
   //get the data from req to create new entity
-  const { name, id, degree } = req.body();
+  const { name, id, degree } = req.body;
 
   //check get all the field
   if (!name || !id) {
@@ -21,7 +21,12 @@ export const addcollege = asynchandler(async (req, res, next) => {
   }
 
   //if not exist create the college
-  const newcollege = await College.create({ name, id });
+  const newcollege = await College.create({
+    name,
+    id,
+    degree,
+    admin: req.user._id,
+  });
 
   //if error in created in entity
   if (!newcollege) {
@@ -41,24 +46,17 @@ export const delcollege = asynchandler(async (req, res, next) => {
   //get the info of the college
   const college_id = req.params.id;
 
+  console.log(college_id);
   //check the college is find to delete
-  const reqcollege = College.findById(college_id);
+  const reqcollege = await College.findById(college_id);
 
   //if not found due to some error
-  return next(new ApiError("College can't delete ", 422));
-
-  //count total no of department
-  const total_department = reqcollege.department.length;
-  //if found first delete all the department
-  const result = await deleteall_department();
-
-  //check all department are deleted or not
-  if (!(result === total_department)) {
-    return next(new ApiError('Error in delete the college Try again', 401));
+  if (!reqcollege) {
+    return next(new ApiError("College can't delete ", 422));
   }
 
   //delete the college
-  const dele_or_not = await findByIdAndDelete(college_id);
+  const dele_or_not = await College.findByIdAndDelete(college_id);
 
   //if  error in deleted college  then return error
   if (dele_or_not.deletedCount === 0) {
@@ -83,8 +81,11 @@ export const updatecollege = asynchandler(async (req, res, next) => {
     return next(new ApiError('College not found', 404));
   }
 
+  //check valid user or not
+  isvaliduser(req.user._id, reqcollege.admin, next);
+
   //if exist get info and update the college
-  const { name, id, degree } = req.body();
+  const { name, id, degree } = req.body;
 
   //update the college
   const updatedcollege = await College.findByIdAndUpdate(
@@ -97,7 +98,7 @@ export const updatecollege = asynchandler(async (req, res, next) => {
   res.status(201).json({
     message: 'College updated sucessfully',
     data: {
-      data: updatecollege,
+      data: updatedcollege,
     },
   });
 });

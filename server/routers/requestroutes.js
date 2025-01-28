@@ -6,6 +6,6 @@ import {
 
 const router = express.Router();
 router.post('/getall', getall_request);
-router.post('/update', updaterequest);
+router.patch('/update', updaterequest);
 
 export default router;

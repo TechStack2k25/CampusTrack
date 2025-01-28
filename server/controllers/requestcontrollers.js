@@ -6,7 +6,7 @@ import ApiError from '../utils/apierror.js';
 import asynchandler from '../utils/asynchandler.js';
 import { isvaliduser } from './authcontrollers.js';
 
-const create_request = asynchandler(async (req, res, next) => {
+export const create_request = asynchandler(async (req, res, next) => {
   // extract data from req.body
   const { requestType, course, college, task, file } = req.body();
 
@@ -88,7 +88,7 @@ const create_request = asynchandler(async (req, res, next) => {
   return 1;
 });
 
-const getall_request = asynchandler(async (req, res, next) => {
+export const getall_request = asynchandler(async (req, res, next) => {
   //take the data of user from req.user
   const user_id = req.user._id;
 
@@ -124,7 +124,7 @@ const getall_request = asynchandler(async (req, res, next) => {
   });
 });
 
-const updaterequest = asynchandler(async (req, res, next) => {
+export const updaterequest = asynchandler(async (req, res, next) => {
   //get the updated status from body
   const { new_status } = req.body();
 

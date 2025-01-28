@@ -2,7 +2,6 @@ import College from '../models/collegemodel.js';
 import Department from '../models/departmentmodel.js';
 import ApiError from '../utils/apierror.js';
 import asynchandler from '../utils/asynchandler.js';
-import { deleteall_courses } from './coursecontrollers.js';
 
 export const adddepartment = asynchandler(async (req, res, next) => {
   //get thed id of college
@@ -24,20 +23,22 @@ export const adddepartment = asynchandler(async (req, res, next) => {
   }
 
   //check the department is exist or not
-  const existed_department = Department.findOne({ name, code });
+  const existed_department = await Department.findOne({ name, code });
 
   //if exist return the error message
-  return next(new ApiError('Department already exist', 409));
+  if (existed_department) {
+    return next(new ApiError('Department already exist', 409));
+  }
 
   const newdepartment = await Department.create({
     name,
     code,
     hod,
-    college: reqcollege,
+    college: reqcollege._id,
   });
 
   //add the department in college
-  reqcollege.push_back(newdepartment._id);
+  reqcollege.department.push(newdepartment._id);
   reqcollege.save();
   //return sucesss message
   res.status(201).json({
@@ -53,7 +54,7 @@ export const updatedepartment = asynchandler(async (req, res, next) => {
   const dep_id = req.params.id;
 
   //check the department is exist or not
-  const existed_dep = await Department.findById(id);
+  const existed_dep = await Department.findById(dep_id);
 
   //if exit return error message
   if (!existed_dep) {
@@ -81,11 +82,11 @@ export const updatedepartment = asynchandler(async (req, res, next) => {
 });
 
 export const getall = asynchandler(async (req, res, next) => {
-  //get the id of college
-  const college_id = req.body;
+  //to get the id of college
+  const user_id = req.user._id;
 
   //check the college exist or not
-  const reqcollege = await College.findById(college_id);
+  const reqcollege = await College.findOne({ admin: user_id });
 
   //if not exist return error
   if (!reqcollege) {
@@ -93,9 +94,9 @@ export const getall = asynchandler(async (req, res, next) => {
   }
 
   //if exist return all department
-  const all_department = await Department.findMany({
-    college: college_id,
-  }).populate('department');
+  const all_department = await Department.find({
+    college: reqcollege._id,
+  }).populate('college');
 
   //check department fetch successfull or not
   if (!all_department) {
@@ -123,13 +124,13 @@ export const deldepartment = asynchandler(async (req, res, next) => {
     return next(new ApiError('Department not found to delete', 404));
   }
   //store the no. of courses of that department
-  const num_course = find_dep.courses.length;
+  const num_course = find_dep.courses?.length;
 
   //delete the department
-  const dele_or_not = await findByIdAndDelete(dep_id);
+  const dele_or_not = await Department.findByIdAndDelete(dep_id);
 
   //check department is deleted or not
-  if (dele_or_not.deletedCount === 0) {
+  if (!dele_or_not || dele_or_not.deletedCount === 0) {
     return next(new ApiError('Error in deleted department', 422));
   }
 
@@ -138,6 +139,3 @@ export const deldepartment = asynchandler(async (req, res, next) => {
     message: 'department deleted sucessfully',
   });
 });
-
-export const deleteall_department = (college_id) =>
-  asynchandler(async (req, res, next) => {});

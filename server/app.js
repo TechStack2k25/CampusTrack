@@ -29,10 +29,11 @@ app.use('/api/course', restrict_to('HOD'), courseroutes);
 //to accept and get all request
 app.use('/api/request', requestroutes);
 //restrict college and department routes to admin
-app.use(restrict_to('admin'));
+app.use(restrict_to('Admin'));
 //all departmentroute
 app.use('/api/department', departmentroutes);
 //all college routes
 app.use('/api/college', collegeroutes);
-app.use(globalerrorhandler); // to handle the error
+// to handle the error
+app.use(globalerrorhandler);
 export default app;

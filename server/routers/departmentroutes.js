@@ -11,7 +11,7 @@ const router = express.Router();
 //create
 router.post('/create/:id', adddepartment);
 //get all department
-router.get('/all/:id', getall);
+router.get('/all', getall);
 //delete
 router.delete('/del/:id', deldepartment);
 //update

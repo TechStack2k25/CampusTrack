@@ -2,6 +2,7 @@ import asynchandler from '../utils/asynchandler.js';
 import User from '../models/usermodel.js';
 import ApiError from '../utils/apierror.js';
 import { promisify } from 'util';
+import jwt from 'jsonwebtoken';
 
 //to create acess and refreshtoken
 const createacessandrefreshtoken = (id) => {
@@ -20,7 +21,7 @@ const createacessandrefreshtoken = (id) => {
 //add username for signup later
 export const signup = asynchandler(async (req, res, next) => {
   //take the value from request
-  const { email, password, confirmpassword } = req.body();
+  const { email, password, confirmpassword } = req.body;
 
   //check email password and confiem password are not missing
   if (!email || !password || !confirmpassword) {
@@ -61,7 +62,7 @@ export const signup = asynchandler(async (req, res, next) => {
 });
 
 export const login = asynchandler(async (req, res, next) => {
-  const { email, password } = req.body();
+  const { email, password } = req.body;
 
   //check email password and confiem password are not missing
   if (!email || !password) {
@@ -79,8 +80,13 @@ export const login = asynchandler(async (req, res, next) => {
   //find the user who are requested
   const requser = await User.findOne({ email }).select('+password');
 
+  //check the user is found or not
+  if (!requser) {
+    return next(new ApiError('User not found', 404));
+  }
+
   //compare the  pasword to authenticate the user
-  if (!(await requser.comparepassword(password))) {
+  if (!(await requser.comparedbpassword(password))) {
     return next(new ApiError('Password is incorrect', 400));
   }
 
@@ -122,7 +128,7 @@ export const protect = asynchandler(async (req, res, next) => {
 
   //if we does not get either the acess or refresh token
   if (!acesstoken || !refreshtoken) {
-    return next(new ApiError('Unauthorised Error', 401));
+    return next(new ApiError('Unauthorised user', 401));
   }
 
   //check the acess token is valid
@@ -168,7 +174,7 @@ export const restrict_to = (role) =>
   asynchandler(async (req, res, next) => {
     //get the role of the user
     const user_role = req.user.role;
-
+    console.log(user_role);
     //check the user is quthorised to perform action
     if (role !== user_role) {
       return next(new ApiError('You Cannot perform that action', 401));
@@ -177,13 +183,12 @@ export const restrict_to = (role) =>
     //if authorised give permission
     next();
   });
-export const isvaliduser = (user, authorised_user) => {
+export const isvaliduser = (user, authorised_user, next) => {
   //check the user is quthorised or not
-  if (user !== authorised_user) {
+  console.log(user.toString() !== authorised_user.toString());
+  if (user.toString() !== authorised_user.toString()) {
     return next(new ApiError('You Cannot perform that action', 401));
   }
-  //if authorised then perform action
-  else next();
 };
 export const forgotpassword = asynchandler((req, res, next) => {});
 export const resetpassword = asynchandler(async (req, res, next) => {});
