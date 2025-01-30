@@ -8,17 +8,23 @@ function Header() {
   const navigate= useNavigate();
   const {user,status}=useSelector((state)=>state.user);
   // console.log(user,status);
+  const scroll = (label) => {
+    const Element = document.querySelector(label);
+    if (Element) {
+      Element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+  };
   
 
   return (
     <header className="sticky top-0 z-50 bg-gray-900 text-white">
       <div className="container mx-auto flex justify-between items-center p-5">
         <h1 className="text-2xl font-bold">CampusTrack</h1>
-        {location.pathname==='/' && <nav className='hidden sm:block'>
+        {!status && location.pathname==='/' && <nav className='hidden sm:block'>
           <ul className="flex space-x-6">
-            <li><a href="#home" className="hover:text-indigo-500">Home</a></li>
-            <li><a href="#features" className="hover:text-indigo-500">Features</a></li>
-            <li><a href="#roles" className="hover:text-indigo-500">Roles</a></li>
+            <li onClick={()=>scroll('#home')} className="hover:text-indigo-500 cursor-pointer">Home</li>
+            <li onClick={()=>scroll('#features')}  className="hover:text-indigo-500 cursor-pointer">Features</li>
+            <li onClick={()=>scroll('#roles')}  className="hover:text-indigo-500 cursor-pointer">Roles</li>
           </ul>
         </nav>}
         {status? 
