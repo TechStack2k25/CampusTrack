@@ -98,7 +98,7 @@ export const login = asynchandler(async (req, res, next) => {
 
   //compare the  pasword to authenticate the user
   if (!(await requser.comparedbpassword(password))) {
-    return next(new ApiError('Password is incorrect', 400));
+    return next(new ApiError('Password is incorrect', 405));
   }
 
   const [acesstoken, refreshtoken] = createacessandrefreshtoken(requser._id);

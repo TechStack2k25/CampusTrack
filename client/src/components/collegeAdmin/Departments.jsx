@@ -52,7 +52,7 @@ const Departments = () => {
 
       {/* Modal for Adding Department */}
       {isModalOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
+        <div className="fixed z-30 inset-0 bg-black bg-opacity-50 flex justify-center items-center">
           <div className="bg-white w-96 p-6 rounded shadow-lg relative">
             <button
               onClick={() => setIsModalOpen(false)}

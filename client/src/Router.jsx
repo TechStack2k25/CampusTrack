@@ -16,7 +16,7 @@ const Routers = () => {
   
     return (
       <Routes>
-        {role === 'faculty' && (
+        {['faculty','hod'].includes(role) && (
           <>
           <Route  element={<DashboardFaculty/>}>
             <Route path="dashboard" element={<DashboardFacultyContent />} />
@@ -45,7 +45,7 @@ const Routers = () => {
             </Route>
           </>
         )}
-        {role !== 'faculty' && role !== 'admin' && (
+        {['user','student'].includes(role) && (
           <>
           <Route  element={<Dashboard/>}>
             <Route path="dashboard" element={<DashboardContent />} />
