@@ -174,7 +174,6 @@ export const restrict_to = (role) =>
   asynchandler(async (req, res, next) => {
     //get the role of the user
     const user_role = req.user.role;
-    console.log(user_role);
     //check the user is quthorised to perform action
     if (role !== user_role) {
       return next(new ApiError('You Cannot perform that action', 401));
@@ -185,7 +184,6 @@ export const restrict_to = (role) =>
   });
 export const isvaliduser = (user, authorised_user, next) => {
   //check the user is quthorised or not
-  console.log(user.toString() !== authorised_user.toString());
   if (user.toString() !== authorised_user.toString()) {
     return next(new ApiError('You Cannot perform that action', 401));
   }

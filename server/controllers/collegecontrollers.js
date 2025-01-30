@@ -46,7 +46,6 @@ export const delcollege = asynchandler(async (req, res, next) => {
   //get the info of the college
   const college_id = req.params.id;
 
-  console.log(college_id);
   //check the college is find to delete
   const reqcollege = await College.findById(college_id);
 

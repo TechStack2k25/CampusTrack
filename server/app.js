@@ -22,12 +22,12 @@ app.use('/api/auth', authroutes);
 app.use(protect);
 //all user routes
 app.use('/api/user', userroutes);
+//to accept and get all request
+app.use('/api/request', requestroutes);
 //all task routes and only facility can make change in task
 app.use('/api/task', restrict_to('facility'), taskroutes);
 //all course routes and only hod can make change in courses
 app.use('/api/course', restrict_to('HOD'), courseroutes);
-//to accept and get all request
-app.use('/api/request', requestroutes);
 //restrict college and department routes to admin
 app.use(restrict_to('Admin'));
 //all departmentroute

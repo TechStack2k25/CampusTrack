@@ -29,6 +29,9 @@ const requestSchema = mongoose.Schema({
     type: mongoose.Types.ObjectId,
     ref: 'User',
   },
+  request_role: {
+    type: String,
+  },
   status: {
     type: String,
     enum: ['pending', 'approved', 'rejected'],

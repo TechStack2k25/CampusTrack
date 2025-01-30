@@ -5,7 +5,7 @@ import {
 } from '../controllers/requestcontrollers.js';
 
 const router = express.Router();
-router.post('/getall', getall_request);
-router.patch('/update', updaterequest);
+router.get('/getall', getall_request);
+router.patch('/update/:id', updaterequest);
 
 export default router;

@@ -9,22 +9,21 @@ export const addcourse = asynchandler(async (req, res, next) => {
   const department_id = req.params.id;
 
   //find the department
-  const reqdepartment = await Department.findById(id);
+  const reqdepartment = await Department.findById(department_id);
 
   //get the id of user
   const user_id = req.user._id;
-
-  //check user is authorised or not
-  isvaliduser(reqdepartment.hod, user_id);
 
   //check the department exist or not
   if (!reqdepartment) {
     //give the error if department not found
     return next(new ApiError('Department not found ', 422));
   }
+  //check user is authorised or not
+  isvaliduser(reqdepartment.hod, user_id);
 
   //take the info of course from request.body
-  const { name, coursecode, credit, teacher } = req.body();
+  const { name, coursecode, credit, teacher } = req.body;
 
   //create the course
   const exist_course = await Course.findOne({ name, coursecode });
@@ -35,16 +34,14 @@ export const addcourse = asynchandler(async (req, res, next) => {
   }
 
   //check we get the user id for course teacher
-  if (!teacher) {
-    return next(new ApiError('Insufficient Information', 422));
-  }
+  if (teacher) {
+    //check the user exist or not
+    const requser = await User.findById(teacher);
 
-  //check the user exist or not
-  const requser = await User.findById(teacher);
-
-  //if not exist give error
-  if (!requser) {
-    return next(new ApiError('error to add course', 422));
+    //if not exist give error
+    if (!requser) {
+      return next(new ApiError('error to add course', 422));
+    }
   }
 
   //if not exist createthe course
@@ -59,6 +56,8 @@ export const addcourse = asynchandler(async (req, res, next) => {
     return next(new ApiError('Failed to create the course', 422));
   }
 
+  reqdepartment.courses.push(newcourse._id);
+  reqdepartment.save();
   res.status(201).json({
     messsage: 'course added succesfully',
     data: {
@@ -89,12 +88,13 @@ export const updatecourse = asynchandler(async (req, res, next) => {
   if (!reqdepartment) {
     return next(new ApiError('Department does not found', 404));
   }
-
+  const user_id = req.user._id;
   //check user is authorised or not
   isvaliduser(reqdepartment.hod, user_id);
 
   //take the info from request
-  const { name, coursecode, credit, teacher } = req.body();
+  const { name, coursecode, credit, teacher } = req.body;
+
   //if exist update the course
   const updatedcourse = await Course.findByIdAndUpdate(
     course_id,
@@ -104,7 +104,7 @@ export const updatecourse = asynchandler(async (req, res, next) => {
       credit,
       teacher,
     },
-    { new: true }
+    { new: true, runValidators: true }
   );
 
   //return sucess response if updated succes fully
@@ -127,12 +127,11 @@ export const getall = asynchandler(async (req, res, next) => {
     const reqdepartment = await Department.findById(department_id).populate(
       'courses'
     );
-
+    isvaliduser(req.user._id, reqdepartment.hod, next);
     //if not exist give error
     if (!reqdepartment) {
       return next(new ApiError('Unable to fetch the department retry it', 422));
     }
-
     //asign value of course to it
     allcourses = reqdepartment.courses;
   }

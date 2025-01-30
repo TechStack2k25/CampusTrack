@@ -1,20 +1,31 @@
 import College from '../models/collegemodel.js';
 import Course from '../models/coursemodel.js';
+import Department from '../models/departmentmodel.js';
 import Request from '../models/requestmodel.js';
 import Task from '../models/taskmodel.js';
+import User from '../models/usermodel.js';
 import ApiError from '../utils/apierror.js';
 import asynchandler from '../utils/asynchandler.js';
 import { isvaliduser } from './authcontrollers.js';
 
 export const create_request = asynchandler(async (req, res, next) => {
   // extract data from req.body
-  const { requestType, course, college, task, file } = req.body();
+  const {
+    requestType,
+    course,
+    college,
+    department,
+    dep_name,
+    task,
+    file,
+    role,
+  } = req.body;
 
   //get the data of user from req.user
   const requser = req.user;
 
   //check the request is type of add student and add course
-  if (!course && !college) {
+  if (!course && !college && !department) {
     return next(new ApiError('Error in generated request.Try again', 404));
   }
 
@@ -33,7 +44,6 @@ export const create_request = asynchandler(async (req, res, next) => {
       requestType,
       request_course: course,
       request_by: requser,
-      request_dep: requser.department,
     });
 
     //check request is created sucessfully or not
@@ -43,26 +53,67 @@ export const create_request = asynchandler(async (req, res, next) => {
   }
 
   //check the we get college or not
-  else if (requestType === 'Add User') {
-    //check the college exist or not
-    const reqcollege = await College.findById(college);
+  else if (requestType === 'Add user') {
+    if (role === 'Student') {
+      //check the college exist or not
+      const reqcollege = await College.findOne({ id: college });
 
-    //if not exist return error
-    if (!reqcollege) {
-      return next(new ApiError('Error in generated request.Try again', 404));
-    }
+      if (!reqcollege || !dep_name) {
+        return next(new ApiError("Can't find the college ", 404));
+      }
 
-    //create the request
-    const newrequest = await Request.create({
-      requestType,
-      request_college: college,
-      request_by: requser,
-      request_role: req.body.role,
-    });
+      //get the department in which he want to add
+      const reqdepartment = await Department.findOne({
+        college: reqcollege._id,
+        name: dep_name,
+      });
 
-    ///check the request is created or not
-    if (!newrequest) {
-      return next(new ApiError('Error in generated request.Try again', 404));
+      //if not exist return error
+      if (!reqcollege) {
+        return next(new ApiError('Error in generated request.Try again', 404));
+      }
+
+      //create the request
+      const newrequest = await Request.create({
+        requestType,
+        request_college: reqcollege._id,
+        request_by: requser,
+        request_role: role,
+        request_dep: reqdepartment._id,
+      });
+
+      ///check the request is created or not
+      if (!newrequest) {
+        return next(new ApiError('Error in generated request.Try again', 404));
+      }
+    } else if (role === 'HOD') {
+      //check the department is exist or not
+      const reqdepartment = await Department.findById(department);
+
+      //give error if department noy found
+      if (!reqdepartment) {
+        return next(new ApiError('Department Not found', 404));
+      }
+      const newrequest = await Request.create({
+        requestType,
+        request_dep: department,
+        request_by: requser,
+        request_role: role,
+      });
+    } else if (role === 'facilty') {
+      //get the course to assign it
+      const reqcourse = await Course.findById(course);
+
+      //if not get give error
+      if (!reqcourse) {
+        return next(new ApiError('Course not found ', 404));
+      }
+      const newrequest = await Request.create({
+        requestType,
+        request_course: course,
+        request_by: requser,
+        request_role: role,
+      });
     }
   }
 
@@ -93,25 +144,56 @@ export const getall_request = asynchandler(async (req, res, next) => {
   const user_id = req.user._id;
 
   //declare the variable for request
-  let allrequest;
+  let allrequest = {};
 
   //check the useris admin or not
   const reqcollege = await College.findOne({ admin: user_id });
 
   //check the user is admin of any college
-  if (reqcollege && req.user.role === 'admin') {
-    allrequest = Request.find({ request_college: reqcollege._id });
+  if (reqcollege && req.user.role === 'Admin') {
+    const user_request = await Request.find({
+      request_college: reqcollege._id,
+    });
+
+    const hod_request = await Request.find({
+      request_role: 'HOD',
+      request_dep: { $in: reqcollege.department },
+    });
+
+    allrequest.user = user_request; // Assign user requests
+    allrequest.hod = hod_request;
   }
 
-  //check the user is hod of any department
-  const reqdep = await Department.findOne({ hod: user_id });
-
-  if (reqdep && req.user.role === 'HOD') {
-    allrequest = Request.find({ request_dep: reqdep._id });
+  //check the user is hod or not
+  const reqdepartment = await Department.findOne({ hod: req.user._id });
+  if (reqdepartment) {
+    //find all facilty request
+    console.log(reqdepartment);
+    const facilty_request = await Request.findOne({
+      request_role: 'facilty',
+      request_course: { $in: reqdepartment.courses },
+    });
+    allrequest.facilty = facilty_request;
   }
 
-  //check the error in get request or not
-  if (!allrequest) {
+  //check the user is teacher of any course
+  if (req.user.role === 'facilty') {
+    const reqcourse = await Course.find({ teacher: req.user._id });
+    const courseIds = reqcourse.map((course) => course._id);
+    const student_request = await Request.find({
+      requestType: 'Add Course',
+      request_course: { $in: courseIds },
+    });
+
+    //to get all submit request
+    const submit_request = await Request.find({
+      requestType: 'Sunmit Task',
+      request_course: { $in: courseIds },
+    });
+    allrequest.student = student_request;
+    allrequest.submit = submit_request;
+  }
+  if (req.user.role === 'User' || req.user.role === 'Student') {
     return next(
       new ApiError('You are unauthorised to aprove or decline request', 401)
     );
@@ -126,14 +208,18 @@ export const getall_request = asynchandler(async (req, res, next) => {
 
 export const updaterequest = asynchandler(async (req, res, next) => {
   //get the updated status from body
-  const { new_status } = req.body();
-
+  const { new_status } = req.body;
+  console.log(new_status);
   //get theid from params
   const request_id = req.params.id;
 
   //get the request to check it existor not
   const require_request = await Request.findById(request_id);
 
+  // get the user to make change in him
+  const requser = await User.findById(require_request.request_by);
+
+  console.log(require_request);
   //if not exist give error
   if (!require_request) {
     return next(new ApiError('Request is not found to update', 404));
@@ -177,29 +263,81 @@ export const updaterequest = asynchandler(async (req, res, next) => {
   }
 
   //check the request is for change role
-  else if (require_request.requestType === 'Add User') {
-    //find the college for which change the role
-    const reqcollege = College.findById(require_request.request_college);
+  else if (
+    require_request.requestType === 'Add user' &&
+    new_status === 'approved'
+  ) {
+    if (require_request.request_role === 'Student') {
+      //find the college for which change the role
+      const reqcollege = await College.findById(
+        require_request.request_college
+      );
 
-    //if college not exist give error
-    if (!reqcollege) {
-      return next('No college found', 404);
+      //if college not exist give error
+      if (!reqcollege) {
+        return next('No college found', 404);
+      }
+      //check the  user is exist or not
+      const requser = await User.findById(require_request.request_by);
+      if (!requser) {
+        return next(new ApiError('not found the requested User', 404));
+      }
+      //add the user in the college and save
+      reqcollege.users.push(require_request.request_by);
+      requser.department = require_request.request_dep;
+      requser.role = 'Student';
+      requser.save();
+      reqcollege.save();
+    } else if (
+      require_request.request_dep &&
+      require_request.request_role === 'HOD'
+    ) {
+      //find the department for which want to be hod
+      const reqdepartment = await Department.findById(
+        require_request.request_dep
+      );
+      //if department not found give error
+      if (!reqdepartment) {
+        return next(new ApiError('Deoartment not found', 404));
+      }
+
+      //make the hod of it
+      reqdepartment.hod = require_request.request_by;
+      reqdepartment.save();
+      //change the role of user
+      requser.role = require_request.request_role;
+      requser.department = require_request.request_dep;
+      requser.save();
+    } else if (require_request.request_role === 'facilty') {
+      //find the course to be teacher of it
+      const reqcourse = await Course.findById(require_request.request_course);
+
+      //check the course is exist or not
+      if (!reqcourse) {
+        return next(new ApiError('COurse not found', 404));
+      }
+      const requser = await User.findById(require_request.request_by);
+      if (!requser) {
+        return next(new ApiError('Error in updated Request', 404));
+      }
+      //make the role of  facilty
+      requser.role = 'facilty';
+      requser.save();
+      //add teacher in course
+      reqcourse.teacher = require_request.request_by;
+      reqcourse.save();
     }
 
-    //add the user in the college and save
-    reqcollege.users.push(require_request.request_by);
-    reqcollege.save();
-
-    //if update request then delete it
-    const deleted_request = Request.findByIdAndDelete(request_id);
+    // if update request then delete it
+    const deleted_request = await Request.findByIdAndDelete(request_id);
 
     //check the request is deleted or not
-    if (deleted_request.deletedCount === 0) {
-      //if not delete update the change
-      reqcollege.users.pop();
-      reqcollege.save();
-      return next(new ApiError('Error in updating request', 422));
-    }
+    // if (deleted_request.deletedCount === 0) {
+    //   //if not delete update the change
+    //   reqcollege.users.pop();
+    //   reqcollege.save();
+    //   return next(new ApiError('Error in updating request', 422));
+    // }
   }
 
   //update the request of submit assignment

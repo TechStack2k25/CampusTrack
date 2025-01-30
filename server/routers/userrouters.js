@@ -9,6 +9,6 @@ router.get('/all', getall);
 //delete
 router.delete('/del', deluser);
 //update
-router.patch('/update/:id', updateuser);
+router.patch('/update', updateuser);
 
 export default router;
