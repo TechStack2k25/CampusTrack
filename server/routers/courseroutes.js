@@ -18,6 +18,6 @@ router.delete('/del/:id', delcourse);
 //update
 router.patch('/update/:id', updatecourse);
 //student request to add course
-router.post('/add_course', add_course_by_student);
+router.post('/add_course/:id', add_course_by_student);
 
 export default router;

@@ -19,9 +19,7 @@ export const addtask = asynchandler(async (req, res, next) => {
     return next(new ApiError('Course not found', 404));
   }
   //check authorised or not
-  if (req.user._id !== reqcourse.teacher) {
-    return next(new ApiError('You are unauthorised to add task', 401));
-  }
+  isvaliduser(req.user._id, reqcourse.teacher);
 
   //create task and add to course
   //get the data from the request
@@ -68,7 +66,7 @@ export const getall = asynchandler(async (req, res, next) => {
     }
 
     //get all courses
-    alltasks = reqcourse.populate('tasks');
+    alltasks = await reqcourse.populate('task');
   }
 
   const courseIds = req.user.course;

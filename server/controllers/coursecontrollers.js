@@ -3,7 +3,7 @@ import Department from '../models/departmentmodel.js';
 import ApiError from '../utils/apierror.js';
 import asynchandler from '../utils/asynchandler.js';
 import { isvaliduser } from './authcontrollers.js';
-
+import { create_request } from './requestcontrollers.js';
 export const addcourse = asynchandler(async (req, res, next) => {
   //take the id of the department
   const department_id = req.params.id;
