@@ -322,7 +322,7 @@ export const updaterequest = asynchandler(async (req, res, next) => {
         return next(new ApiError('Error in updated Request', 404));
       }
       //make the role of  facilty
-      requser.course = requser.course.push(reqcourse);
+      requser.course = requser.course.push(reqcourse._id);
       requser.role = 'facilty';
       requser.save();
       //add teacher in course

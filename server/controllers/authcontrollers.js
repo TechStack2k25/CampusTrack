@@ -202,4 +202,15 @@ export const isvaliduser = (user, authorised_user, next) => {
 export const forgotpassword = asynchandler((req, res, next) => {});
 export const resetpassword = asynchandler(async (req, res, next) => {});
 export const updatepassword = asynchandler(async (req, res, next) => {});
-export const logout = asynchandler(async (req, res, next) => {});
+export const logout = asynchandler(async (req, res, next) => {
+  const options = {
+    httpOnly: true,
+    secure: false,
+    sameSite: 'Lax',
+  };
+
+  res
+    .cookie('acesstoken', 'acesstoken', options)
+    .cookie('refreshtoken', 'refreshtoken', options);
+  res.status(200).json({ status: 'success' });
+});
