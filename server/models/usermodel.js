@@ -16,15 +16,14 @@ const userSchema = new mongoose.Schema({
     select: false,
     minlength: 8,
   },
-  confirm_password: {
+  confirmpassword: {
     type: String,
-    require: [true, 'PLease enter the confirm password'],
-    //validate the password and confirm password is same or not
+    required: [true, 'Please confirm your password'],
     validate: {
-      validator: function (p) {
-        return p == this.password;
+      validator: function (value) {
+        return value === this.password;
       },
-      message: 'Password and confirm password is not same',
+      message: 'Passwords do not match!',
     },
   },
   name: {
@@ -74,7 +73,7 @@ userSchema.pre('save', async function (next) {
   //check password is changed or not if changed then hash otherwise skip
   if (!this.isModified('password')) return next();
   this.password = await bcrypt.hash(this.password, 12);
-  this.confirm_password = undefined;
+  this.confirmpassword = undefined;
   this.passwordchangedat = Date.now();
   next();
 });

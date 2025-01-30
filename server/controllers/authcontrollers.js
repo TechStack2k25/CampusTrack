@@ -61,13 +61,14 @@ export const signup = asynchandler(async (req, res, next) => {
   res
     .cookie('acesstoken', acesstoken, options)
     .cookie('refreshtoken', refreshtoken, options);
-  //return sucess mesage
+  //return success message
   res.status(201).json({
     message: 'User Account created Succesfully',
     data: {
       acesstoken,
       refreshtoken,
       email,
+      user:newuser,
     },
   });
 });
@@ -107,6 +108,17 @@ export const login = asynchandler(async (req, res, next) => {
   if (!refreshtoken || !acesstoken) {
     return next(new ApiError('token cannot generated', 400));
   }
+
+  //send the cookie
+  const options = {
+    httpOnly: true,
+    secure: false,
+    sameSite: 'Lax',
+  };
+
+  res
+    .cookie('acesstoken', acesstoken, options)
+    .cookie('refreshtoken', refreshtoken, options);
 
   res.status(201).json({
     message: 'User login succesfully',

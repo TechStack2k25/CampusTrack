@@ -2,6 +2,8 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { useForm } from "react-hook-form";
 import { useDispatch, useSelector } from "react-redux";
+import { authService } from '../api/authService';
+import { loginStart, loginSuccess, loginFailure } from "../store/slices/userSlice";
 
 const Login = () => {
   const {
@@ -13,10 +15,22 @@ const Login = () => {
   const dispatch = useDispatch();
   const { loading, error } = useSelector((state) => state.user);
 
-  const handleSubmission=(data)=>{
-    console.log(data);
-    //after login API
-    // dispatch changes to store
+  const handleSubmission=async (data)=>{
+    console.log("User Data:", data);
+        dispatch(loginStart());
+        try {
+          //Normal signup data
+          const user=await authService.userLogin(data);
+          if(user){
+            console.log(user);
+            dispatch(loginSuccess(user));
+          }
+          else{
+            dispatch(loginFailure('Try again later..'));
+          }
+        } catch (error) {
+          dispatch(loginFailure(error?.response?.data?.message));
+        }
   }
   
   return (

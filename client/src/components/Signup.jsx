@@ -1,19 +1,38 @@
-import React from "react";
+import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { FcGoogle } from "react-icons/fc";
-import {  Link } from 'react-router-dom'
+import {  Link } from 'react-router-dom';
+import { authService } from "../api/authService";
+import { useDispatch } from 'react-redux';
+import { loginStart, loginSuccess, loginFailure } from "../store/slices/userSlice";
 
 const Signup = () => {
   const {
     register,
     handleSubmit,
+    watch,
     formState: { errors },
   } = useForm();
+  const password = watch("password");
+  const dispatch=useDispatch();
 
  
-  const onSubmit = (data) => {
+  const onSubmit =async (data) => {
     console.log("User Data:", data);
-    //Normal signup data
+    dispatch(loginStart());
+    try {
+      //Normal signup data
+      const user=await authService.userSignUp(data);
+      if(user){
+        console.log(user);
+        dispatch(loginSuccess(user));
+      }
+      else{
+        dispatch(loginFailure('Try again later..'));
+      }
+    } catch (error) {
+      dispatch(loginFailure(error?.response?.data?.message));
+    }
   };
 
   // Google Auth handler
@@ -61,8 +80,8 @@ const Signup = () => {
               {...register("password", {
                 required: "Password is required",
                 minLength: {
-                  value: 6,
-                  message: "Password must be at least 6 characters",
+                  value: 8,
+                  message: "Password must be at least 8 characters",
                 },
               })}
               className={`w-full px-4 py-2 mt-1 border ${
@@ -74,6 +93,31 @@ const Signup = () => {
             )}
           </div>
 
+          <div>
+            <label htmlFor="confirmpassword" className="block text-sm font-medium text-gray-600">
+              Confirm password
+            </label>
+            <input
+              type="password"
+              id="confirmpassword"
+              {...register("confirmpassword", {
+                required: "Confirm your Password!!",
+                minLength: {
+                  value: 6,
+                  message: "Password must be at least 6 characters",
+                },
+                validate: (value) =>
+                  value === password || "Passwords do not match!",
+              })}
+              className={`w-full px-4 py-2 mt-1 border ${
+                errors.confirmpassword ? "border-red-500" : "border-gray-300"
+              } rounded-md focus:outline-none focus:ring focus:ring-blue-200`}
+            />
+            {errors && errors?.confirmpassword && (
+              <p className="text-sm text-red-500 mt-1">{errors.confirmpassword.message}</p>
+            )}
+          </div>
+
             {/* User data submit */}
           <button
             type="submit"
@@ -81,7 +125,6 @@ const Signup = () => {
           >
             Sign Up
           </button>
-
         </form>
 
         {/* Google Auth Button */}

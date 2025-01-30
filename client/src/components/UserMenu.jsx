@@ -1,13 +1,15 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-// import { useSelector, dispatch } from 'react-redux'
+import { useSelector, useDispatch } from 'react-redux'
 
 
 const UserMenu = () => {
   const [isOpen, setIsOpen] = useState(false);
   const menuRef = useRef();
   const navigate=useNavigate();
-//   const {user}=useSelector((state)=>state.user);
+  const {user}=useSelector((state)=>state.user);
+
+
 
   const toggleMenu = () => {
     setIsOpen(!isOpen);
@@ -40,7 +42,7 @@ const UserMenu = () => {
         className="flex items-center rounded-full"
       >
         <div className="cursor-pointer h-10 aspect-square bg-blue-500 rounded-full flex items-center justify-center text-white font-bold">
-          U
+          {user?.email.toUpperCase()[0]}
         </div>
       </button>
 
@@ -51,9 +53,9 @@ const UserMenu = () => {
             <li>
               <div className='flex px-2 py-2 space-x-2 items-center'>
                 <div className="h-8 aspect-square bg-blue-500 rounded-full flex items-center justify-center text-white font-bold">
-                    U
+                  {user?.email.toUpperCase()[0]}
                  </div>
-                 <span className="text-black font-semibold">Username</span>
+                 <span className="text-black font-semibold">{user?.email.split('@')[0]}</span>
               </div>
             </li>
             <li>

@@ -19,7 +19,7 @@ class AuthService {
 
       console.log(response);
       //may use response.status to verify success 201
-      return response.data?.data;
+      return response.data?.data?.user;
       //getting tokens with userEmail
 
     } catch (error) {
