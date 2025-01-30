@@ -13,7 +13,7 @@ export const addcollege = asynchandler(async (req, res, next) => {
   }
 
   //check that the college is already exist or not
-  const existed_college = await College.findOne({ name, id });
+  const existed_college = await College.findOne({ id });
 
   //if exist give error message
   if (existed_college) {

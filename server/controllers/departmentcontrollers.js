@@ -96,7 +96,7 @@ export const getall = asynchandler(async (req, res, next) => {
   //if exist return all department
   const all_department = await Department.find({
     college: reqcollege._id,
-  }).populate('college');
+  });
 
   //check department fetch successfull or not
   if (!all_department) {
@@ -123,8 +123,6 @@ export const deldepartment = asynchandler(async (req, res, next) => {
   if (!dep_id) {
     return next(new ApiError('Department not found to delete', 404));
   }
-  //store the no. of courses of that department
-  const num_course = find_dep.courses?.length;
 
   //delete the department
   const dele_or_not = await Department.findByIdAndDelete(dep_id);

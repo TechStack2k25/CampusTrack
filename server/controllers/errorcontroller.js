@@ -1,4 +1,4 @@
-//used to response to development error
+//used to response to development error for development used another method
 const senddeverror = (error, req, res) => {
   return res.status(error.statuscode).json({
     status: error.status,

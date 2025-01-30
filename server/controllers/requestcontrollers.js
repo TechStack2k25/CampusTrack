@@ -249,7 +249,8 @@ export const updaterequest = asynchandler(async (req, res, next) => {
     //add the user in course and save it
     requser.course.push(require_request.request_by);
     requser.save();
-
+    reqcourse.users.push(require_request.request_by);
+    reqcourse.save();
     //get the request to deleted
     const deleted_request = Request.findByIdAndDelete(request_id);
 
@@ -321,6 +322,7 @@ export const updaterequest = asynchandler(async (req, res, next) => {
         return next(new ApiError('Error in updated Request', 404));
       }
       //make the role of  facilty
+      requser.course = requser.course.push(reqcourse);
       requser.role = 'facilty';
       requser.save();
       //add teacher in course

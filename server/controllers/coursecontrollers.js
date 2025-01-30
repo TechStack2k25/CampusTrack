@@ -133,17 +133,16 @@ export const getall = asynchandler(async (req, res, next) => {
       return next(new ApiError('Unable to fetch the department retry it', 422));
     }
     //asign value of course to it
-    allcourses = reqdepartment.courses;
+    allcourses = await reqdepartment.courses.populate('courses');
   }
 
-  //if the user is facilty
-  else if (req.user.role === 'facilty') {
+  //if user is facilty
+  else if (req.user.role == 'facility') {
     allcourses = await Course.find({ teacher: req.user._id });
   }
-
   //if the user is student
   else if (req.user.role === 'Student') {
-    allcourses = req.user.populate('course');
+    allcourses = await req.user.populate('course');
   }
 
   //check the course is exist or not
