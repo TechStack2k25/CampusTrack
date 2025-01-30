@@ -42,8 +42,24 @@ class AuthService {
       throw error;
     }
   }
+
   // forgot password call
   // async userForgotPassword() {}
+
+  //Logout the user
+  async userLogout(){
+    try {
+      const response = await this.api.get('/logout');
+
+      console.log(response);
+      //may use response.status to verify success 201
+      return response.status===200;
+      //getting tokens with user in response.data.data
+    } catch (error) {
+      console.error('Error authService: userLogin: ', error);
+      throw error;
+    }
+  }
   
 }
 

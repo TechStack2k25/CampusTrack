@@ -18,7 +18,7 @@ class UserService {
   // async deleteUser() {}
 
   async updateUser(data) {
-    //required data: _id,name,surname,sem,year,currentdegree,degree,qualifaication,role,email,
+    //required data: _id,name,surname,sem,year,currentdegree,degree,qualification,role,email,
     try {
       const response = await this.api.patch('/update',data);
 

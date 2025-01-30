@@ -1,23 +1,24 @@
 export const scholarMenu = [
-    { name: 'Dashboard', link: '/dashboard' },
-    { name: 'Courses', link: '/courses' },
-    { name: 'Assignments', link: '/assignments' },
-    { name: 'Events', link: '/events' },
-    { name: 'Schedule', link: '/schedule' },
-    { name: 'Lectures', link: '/lectures' },
-    { name: 'Leaderboard', link: '/leaderboard' },
+    { name: 'Dashboard', link: '/dashboard',roles:["User","Student"] },
+    { name: 'Courses', link: '/courses',roles:["Student"]  },
+    { name: 'Assignments', link: '/assignments',roles:["Student"]  },
+    { name: 'Events', link: '/events',roles:["User","Student"]  },
+    { name: 'Schedule', link: '/schedule',roles:["User","Student"]  },
+    { name: 'Lectures', link: '/lectures',roles:["Student"]  },
+    { name: 'Leaderboard', link: '/leaderboard',roles:["Student"]  },
     // { name: 'Challenges', link: '/challenges' },
   ];
 
 export const facultyMenu = [
-  { name: 'Dashboard', link: '/dashboard' },
-  { name: 'Courses', link: '/courses' },
-  { name: 'Assignments', link: '/assignments' },
-  { name: 'Events', link: '/events' },
-  { name: 'Schedule', link: '/schedule' },
-  { name: 'Attendance', link: '/attendance' },
-  { name: 'Submissions', link: '/submissions' },
-  { name: 'Notifications', link: '/notifications' },
+  { name: 'Dashboard', link: '/dashboard',roles:["faculty","HOD"]  },
+  { name: 'Courses', link: '/courses',roles:["faculty","HOD"]  },
+  { name: 'Assignments', link: '/assignments',roles:["faculty"]  },
+  { name: 'Events', link: '/events',roles:["faculty","HOD"]  },
+  { name: 'Schedule', link: '/schedule',roles:["faculty","HOD"]  },
+  { name: 'Attendance', link: '/attendance',roles:["faculty","HOD"]  },
+  { name: 'Submissions', link: '/submissions',roles:["faculty"]  },
+  { name: 'Requests', link: '/requests',roles:["HOD"]  },
+  { name: 'Notifications', link: '/notifications',roles:["faculty","HOD"]  },
 ];
 
 
@@ -29,6 +30,6 @@ export const adminMenu = [
   { name: 'Scholars', link: '/scholars' },
   { name: 'Events', link: '/events' },
   { name: 'Schedule', link: '/schedule' },
-  { name: 'Approvals', link: '/approvals' },
+  { name: 'Approvals', link: '/requests' },
   { name: 'Notifications', link: '/notifications' },
 ];

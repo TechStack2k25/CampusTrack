@@ -168,9 +168,9 @@ export const protect = asynchandler(async (req, res, next) => {
     );
   }
 
-  //if refresh token is invalid return the error message unautheticated
+  //if refresh token is invalid return the error message unauthenticated
   if (!decodedtoken) {
-    return next(new ApiError('You are unautheticated', 400));
+    return next(new ApiError('You are unautheticated', 403));
   }
 
   //how send new acesstoken when it expire and refresh token is valid
@@ -180,7 +180,7 @@ export const protect = asynchandler(async (req, res, next) => {
 
   //if user not found return error
   if (!requser) {
-    return next(new ApiError('USer Not found', 404));
+    return next(new ApiError('USer Not found', 403));
   }
 
   //check the user change the passwordor not
@@ -215,14 +215,14 @@ export const forgotpassword = asynchandler((req, res, next) => {});
 export const resetpassword = asynchandler(async (req, res, next) => {});
 export const updatepassword = asynchandler(async (req, res, next) => {});
 export const logout = asynchandler(async (req, res, next) => {
-  const options = {
-    httpOnly: true,
-    secure: false,
-    sameSite: 'Lax',
-  };
+  // const options = {
+  //   httpOnly: true,
+  //   secure: false,
+  //   sameSite: 'Lax',
+  // };
 
   res
-    .cookie('acesstoken', 'acesstoken', options)
-    .cookie('refreshtoken', 'refreshtoken', options);
+    .clearCookie('acesstoken')
+    .clearCookie('refreshtoken');
   res.status(200).json({ status: 'success' });
 });

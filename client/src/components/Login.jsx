@@ -105,7 +105,7 @@ const Login = () => {
               Login
             </button>
             {/* conditional loading and google Oauth */}
-            {error.length>0 && (
+            {error?.length>0 && (
                 <p className="mt-1 text-sm text-red-500">
                   {error}
                 </p>

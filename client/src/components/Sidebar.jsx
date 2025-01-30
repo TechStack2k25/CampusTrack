@@ -32,9 +32,9 @@ const Sidebar = ({menuItems}) => {
             <div ref={ref} className='bg-gray-800  sm:w-56 mx-1 sm:pl-4 px-2 sm:py-4 py-1 sm:my-1 rounded-md'>
                 <div className='flex my-2 px-2 space-x-4 items-center'>
                             <div onClick={()=>navigate('/dashboard')} className="cursor-pointer h-8 sm:h-12 text-xl aspect-square bg-blue-500 rounded-full flex items-center justify-center text-white font-bold">
-                                {user?.email.toUpperCase()[0]}
+                                {user?.name?.toUpperCase()[0] || user?.email.toUpperCase()[0]}
                             </div>
-                            <span className="text-white text-xl font-semibold">{user?.email.split('@')[0]}</span>
+                            <span className="text-white text-xl font-semibold truncate">{user?.name || user?.email.split('@')[0]}</span>
                     </div>
                 <ul>
                     {menuItems.map((item) => (
