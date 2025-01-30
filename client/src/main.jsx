@@ -1,24 +1,33 @@
-import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import './index.css';
-import{ Route,RouterProvider, createBrowserRouter, createRoutesFromElements} from 'react-router-dom'
+import{ RouterProvider, createBrowserRouter} from 'react-router-dom'
 import App from './App.jsx'
-import Home from './components/Home.jsx';
-import Signup from './components/Signup.jsx';
-import Login from './components/Login.jsx';
+import { Home, Login, Signup, ForgotPassword, Loading, Notfound} from './components/index.js';
+import { Provider } from 'react-redux';
+import { PersistGate } from 'redux-persist/integration/react';
+import store, { persistor } from './store/store.js';
+import Routers from './Router.jsx';
+import Authenticate from './utils/Authenticate.jsx';
 
-const router = createBrowserRouter(
-  createRoutesFromElements(
-    <Route path='/' element={<App/>}>
-       <Route path='' element={<Home />}/>
-       <Route path='login' element={<Login />}/>
-       <Route path='signup' element={<Signup />}/>
-    </Route>
-  )
-)
+const router = createBrowserRouter([
+  {
+    path: '/',
+    element: <App />,
+    children: [
+      { path: '', element: <Authenticate><Home /> </Authenticate>},
+      { path: 'login', element: <Authenticate><Login /> </Authenticate> },
+      { path: 'signup', element: <Authenticate><Signup /> </Authenticate> },
+      { path: 'forgot-password', element: <Authenticate><ForgotPassword /> </Authenticate> },
+      { path: '/*', element: <Authenticate auth={true}><Routers /> </Authenticate>},
+      { path: '*', element: <Notfound /> },
+    ],
+  },
+]);
 
 createRoot(document.getElementById('root')).render(
-  <StrictMode>
-  <RouterProvider router={router}/>
-  </StrictMode>,
+  <Provider store={store}>
+    <PersistGate loading={<Loading/>} persistor={persistor}>
+      <RouterProvider router={router}/>
+    </PersistGate>
+  </Provider>
 )

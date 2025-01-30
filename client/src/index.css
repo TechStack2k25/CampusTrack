@@ -1,3 +1,59 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* calendar */
+.fc .fc-toolbar-title {
+    font-size: 1.5rem;
+    line-height: 2rem;
+    font-weight: bold;
+    color: #1d4ed8;
+    text-align: center;
+  }
+  
+  .fc .fc-button {
+    background-color: #3b82f6;
+    color: white;
+    border: none;
+    border-radius: 0.375rem;
+  }
+  
+  .fc .fc-button:hover {
+    background-color: #2563eb;
+  }
+  
+  .fc .fc-daygrid-event {
+    background-color: #4ade80;
+    color: white;
+    font-size: 0.875rem;
+    border-radius: 0.375rem;
+  }
+  
+  .fc .fc-daygrid-day:hover {
+    background-color: #f3f4f6;
+  }
+
+  .fc .fc-toolbar-chunk{
+    display: flex;
+  }
+
+  @media (max-width: 640px) {
+    .fc .fc-toolbar-chunk{
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+    }
+    .fc .fc-button-group{
+        display: flex;
+        flex-direction: column;
+    }
+
+    .fc button.fc-button-primary,
+    .fc button.fc-button,
+    .fc button.fc-today-button {
+    border-radius: 10px !important;
+    padding: 4px 2px;
+    margin: 1px;
+    }
+  }
