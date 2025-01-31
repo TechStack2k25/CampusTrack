@@ -13,11 +13,11 @@ class UserService {
   }
   
   // get all user
-  // async getUsers() {}
+  // getUsers=async ()=> {}
 
-  // async deleteUser() {}
+  // deleteUser=async ()=> {}
 
-  async updateUser(data) {
+  updateUser=async (data)=> {
     //required data: _id,name,surname,sem,year,currentdegree,degree,qualification,role,email,
     try {
       const response = await this.api.patch('/update',data);

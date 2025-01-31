@@ -67,7 +67,7 @@ const UserMenu = () => {
                 <Link to="/dashboard">
                     <div className='flex px-2 py-2 space-x-2 items-center'>
                       <div className="h-8 aspect-square bg-blue-500 rounded-full flex items-center justify-center text-white font-bold">
-                        {user?.email.toUpperCase()[0]}
+                        {user?.name[0] || user?.email.toUpperCase()[0]}
                       </div>
                       <span className="text-black font-semibold truncate">{user?.name || user?.email.split('@')[0]}</span>
                     </div>
@@ -85,6 +85,18 @@ const UserMenu = () => {
                 Profile
               </NavLink>
             </li>
+            {!["Student","Admin","HOD"].includes(user?.role) && <li>
+            <NavLink 
+                to="/request" 
+                  className={({ isActive }) => 
+                    isActive
+                      ? 'bg-blue-400 text-white  rounded hover:bg-white hover:text-blue-500 block w-full text-left px-4 py-2 text-bold'
+                      : 'block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100'
+                  }
+                >
+                Request
+              </NavLink>
+            </li>}
             <li>
               <button
                 onClick={() => logoutUser()}

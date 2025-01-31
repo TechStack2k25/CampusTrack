@@ -5,6 +5,7 @@ import Leaderboard from './Leaderboard'
 import Lectures from './Lectures'
 import Events from './Events'
 import Calendar from './Calender'
+import Request from './Request'
 
 export {
     DashboardContent,
@@ -14,5 +15,6 @@ export {
     Lectures,
     Events,
     Calendar,
+    Request,
     
 }

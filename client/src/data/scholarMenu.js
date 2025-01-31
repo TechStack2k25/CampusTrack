@@ -17,7 +17,7 @@ export const facultyMenu = [
   { name: 'Schedule', link: '/schedule',roles:["faculty","HOD"]  },
   { name: 'Attendance', link: '/attendance',roles:["faculty","HOD"]  },
   { name: 'Submissions', link: '/submissions',roles:["faculty"]  },
-  { name: 'Requests', link: '/requests',roles:["HOD"]  },
+  { name: 'Approvals', link: '/approvals',roles:["HOD"]  },
   { name: 'Notifications', link: '/notifications',roles:["faculty","HOD"]  },
 ];
 
@@ -30,6 +30,6 @@ export const adminMenu = [
   { name: 'Scholars', link: '/scholars' },
   { name: 'Events', link: '/events' },
   { name: 'Schedule', link: '/schedule' },
-  { name: 'Approvals', link: '/requests' },
+  { name: 'Approvals', link: '/approvals' },
   { name: 'Notifications', link: '/notifications' },
 ];

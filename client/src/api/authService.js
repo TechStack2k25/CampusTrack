@@ -13,7 +13,7 @@ class AuthService {
     });
   }
   // Sign up the user
-  async userSignUp(data) {//data required: email, password, confirmpassword
+  userSignUp=async (data)=> {//data required: email, password, confirmpassword
     try {
       const response = await this.api.post('/signup',data);
 
@@ -29,7 +29,7 @@ class AuthService {
   }
 
   // Login the user
-  async userLogin(data) {//data required: email, password
+  userLogin=async (data)=> {//data required: email, password
     try {
       const response = await this.api.post('/login',data);
 
@@ -44,10 +44,10 @@ class AuthService {
   }
 
   // forgot password call
-  // async userForgotPassword() {}
+  //userForgotPassword= async () =>{}
 
   //Logout the user
-  async userLogout(){
+  userLogout=async ()=>{
     try {
       const response = await this.api.get('/logout');
 

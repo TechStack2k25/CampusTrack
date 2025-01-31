@@ -12,7 +12,7 @@ class CollegeService {
     });
   }
   // creating college
-  async createCollege(data) {//data required: name, id(college), degree
+  createCollege=async (data)=> {//data required: name, id(college), degree
     try {
       const response = await this.api.post('/create',data);
 
@@ -27,7 +27,7 @@ class CollegeService {
   }
 
   // deleting a college
-  async deleteCollege(data) {//data required: _id,
+  deleteCollege=async (data)=> {//data required: _id,
     try {
       const response = await this.api.delete(`/del/${data?._id}`,data);
 
@@ -41,7 +41,7 @@ class CollegeService {
   }
 
   // updating college
-  async updateCollege(data) {//data required: _id, id, name, degree
+  updateCollege=async (data)=> {//data required: _id, id, name, degree
     try {
       const response = await this.api.patch(`/update/${data?._id}`,data);
 

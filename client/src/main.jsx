@@ -8,6 +8,9 @@ import { PersistGate } from 'redux-persist/integration/react';
 import store, { persistor } from './store/store.js';
 import Routers from './Router.jsx';
 import Authenticate from './utils/Authenticate.jsx';
+import { QueryClientProvider } from "@tanstack/react-query";
+import queryClient from './api/queryClient.js';
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 
 const router = createBrowserRouter([
   {
@@ -27,7 +30,10 @@ const router = createBrowserRouter([
 createRoot(document.getElementById('root')).render(
   <Provider store={store}>
     <PersistGate loading={<Loading/>} persistor={persistor}>
+      <QueryClientProvider client={queryClient}>
       <RouterProvider router={router}/>
+      <ReactQueryDevtools initialIsOpen={false} position="bottom-right" />
+      </QueryClientProvider>
     </PersistGate>
   </Provider>
 )

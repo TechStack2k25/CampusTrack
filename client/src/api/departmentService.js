@@ -13,7 +13,7 @@ class DepartmentService {
   }
 
   // Creating department
-  async createDepartment(data) {//data required: id, name, code, hod
+  createDepartment=async (data)=> {//data required: id, name, code, hod
     try {
       const response = await this.api.post(`/create/${data?.id}`,data);
 
@@ -28,7 +28,7 @@ class DepartmentService {
   }
 
   // getting all department
-  async getAllDepartments() {
+  getAllDepartments=async ()=> {
     try {
       const response = await this.api.get('/all');
 
@@ -43,7 +43,7 @@ class DepartmentService {
   }
 
   // deleting department
-  async deleteDepartment(data) {//data required: _id
+  deleteDepartment=async (data)=> {//data required: _id
     try {
       const response = await this.api.delete(`/del/${data?._id}`);
 
@@ -58,7 +58,7 @@ class DepartmentService {
   }
 
   // updating Department
-  async updateDepartment(data) {//data required: _id
+  updateDepartment=async (data)=> {//data required: _id
     try {
       const response = await this.api.patch(`/update/${data?._id}`,data);
 
