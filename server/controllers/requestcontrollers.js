@@ -302,7 +302,8 @@ export const updaterequest = asynchandler(async (req, res, next) => {
       requser.role = require_request.request_role;
       requser.department = require_request.request_dep;
       requser.save();
-    // } else if (require_request.request_role === 'facilty') {
+    }
+    //  else if (require_request.request_role === 'facilty') {
     //   //find the course to be teacher of it
     //   const reqcourse = await Course.findById(require_request.request_course);
 
@@ -326,13 +327,13 @@ export const updaterequest = asynchandler(async (req, res, next) => {
     // if update request then delete it
     const deleted_request = await Request.findByIdAndDelete(request_id);
 
-  //  // check the request is deleted or not
-  //   if (deleted_request.deletedCount === 0) {
-  //     //if not delete update the change
-  //     reqcollege.users.pop();
-  //     reqcollege.save();
-  //     return next(new ApiError('Error in updating request', 422));
-  //   }
+    //  // check the request is deleted or not
+    //   if (deleted_request.deletedCount === 0) {
+    //     //if not delete update the change
+    //     reqcollege.users.pop();
+    //     reqcollege.save();
+    //     return next(new ApiError('Error in updating request', 422));
+    //   }
   }
 
   //update the request of submit assignment
