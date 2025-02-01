@@ -234,7 +234,10 @@ export const updaterequest = asynchandler(async (req, res, next) => {
     if (!requser) {
       return next(new ApiError('User not found', 404));
     }
-
+    //if the user is teacher then make it
+    if (require_request.request_role === 'faculty') {
+      reqcourse.teacher = require_request.request_by;
+    }
     //add the user in course and save it
     requser.course.push(require_request.request_by);
     requser.save({ validateBeforeSave: false });

@@ -118,10 +118,11 @@ export const updatecourse = asynchandler(async (req, res, next) => {
 
 export const getall = asynchandler(async (req, res, next) => {
   //check it is hod or not
+
   let allcourses;
-  if (req.user.role == 'HOD') {
-    //get the id of department for which get course or from the user
-    const department_id = req.params.id || req.user.department;
+  let department_id = req.params.id;
+  if (req.user.role == 'HOD' || department_id) {
+    if (!department_id) department_id = req.user.department;
     console.log(department_id);
     //check the department exist or not
     const reqdepartment = await Department.findById(department_id).populate(
@@ -189,7 +190,7 @@ export const delcourse = asynchandler(async (req, res, next) => {
 });
 
 export const add_course_by_student = asynchandler(async (req, res, next) => {
-  const course_id = req.params.id;
+  const { course_id } = req.body;
   const reqcourse = await Course.findById(course_id);
   if (!reqcourse) {
     return next(new ApiError('Error in found the course', 404));
