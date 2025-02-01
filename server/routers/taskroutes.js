@@ -11,8 +11,8 @@ import {
 const router = express.Router();
 //submit the assignment
 router.post('/submit/:id', submittask);
-//allow facilty to change in task
-router.use(restrict_to('facilty'));
+//allow faculty to change in task
+router.use(restrict_to('faculty'));
 //create
 router.post('/create/:id', addtask);
 //get all task

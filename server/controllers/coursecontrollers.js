@@ -122,7 +122,7 @@ export const getall = asynchandler(async (req, res, next) => {
   if (req.user.role == 'HOD') {
     //get the id of department for which get course or from the user
     const department_id = req.params.id || req.user.department;
-    console.log(department_id)
+    console.log(department_id);
     //check the department exist or not
     const reqdepartment = await Department.findById(department_id).populate(
       'courses'
@@ -133,16 +133,14 @@ export const getall = asynchandler(async (req, res, next) => {
       return next(new ApiError('Unable to fetch the department retry it', 422));
     }
     //asign value of course to it
-   allcourses = await Department.findById(department_id)
-    .populate({
+    allcourses = await Department.findById(department_id).populate({
       path: 'courses',
-      populate: { path: 'teacher' } // Nested population
+      populate: { path: 'teacher' }, // Nested population
     });
-  
   }
 
-  //if user is facilty
-  else if (req.user.role == 'facility') {
+  //if user is faculty
+  else if (req.user.role == 'faculty') {
     allcourses = await Course.find({ teacher: req.user._id });
   }
   //if the user is student

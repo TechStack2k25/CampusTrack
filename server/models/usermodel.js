@@ -62,7 +62,7 @@ const userSchema = new mongoose.Schema({
   pastcourse: [{ type: mongoose.Schema.ObjectId, ref: 'Course' }],
   role: {
     type: String,
-    enum: ['User', 'Student', 'facilty', 'HOD', 'Admin'],
+    enum: ['User', 'Student', 'faculty', 'HOD', 'Admin'],
     default: 'User',
   },
 

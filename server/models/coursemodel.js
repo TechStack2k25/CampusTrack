@@ -39,7 +39,7 @@ const Course = mongoose.model('Course', courseSchema);
 courseSchema.pre(
   'remove',
   asynchandler(async function (next) {
-    //remove the user from facility
+    //remove the user from faculty
     const userId = this.teacher;
 
     //now change the role of it
