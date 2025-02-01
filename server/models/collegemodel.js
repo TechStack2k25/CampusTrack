@@ -5,11 +5,11 @@ import Department from './departmentmodel.js';
 const collegeSchema = mongoose.Schema({
   name: {
     type: String,
-    require: true,
+    required: true,
   },
   id: {
     type: String,
-    require: true,
+    required: true,
     unique: true,
   },
   degree: [String],

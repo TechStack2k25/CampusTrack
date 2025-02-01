@@ -38,6 +38,9 @@ const requestSchema = mongoose.Schema({
     default: 'pending',
   },
   request_file: {},
+  request_year: {
+    type: Number,
+  },
 });
 
 const Request = mongoose.model('Request', requestSchema);

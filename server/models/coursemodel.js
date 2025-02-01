@@ -4,15 +4,15 @@ import asynchandler from '../utils/asynchandler.js';
 const courseSchema = new mongoose.Schema({
   name: {
     type: String,
-    require: [true, 'Please enter the subject name'],
+    required: [true, 'Please enter the subject name'],
   },
   coursecode: {
     type: String,
-    require: [true, 'Please enter the subject code'],
+    required: [true, 'Please enter the subject code'],
   },
   credit: {
     type: Number,
-    require: [true, 'Please Enter the credit'],
+    required: [true, 'Please Enter the credit'],
     min: 2,
     max: 5,
   },

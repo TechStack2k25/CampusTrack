@@ -6,11 +6,11 @@ import User from './usermodel.js';
 const deparmentSchema = mongoose.Schema({
   name: {
     type: String,
-    require: true,
+    required: true,
   },
   code: {
     type: String,
-    require: true,
+    required: true,
   },
   courses: [
     {

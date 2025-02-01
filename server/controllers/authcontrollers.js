@@ -3,6 +3,7 @@ import User from '../models/usermodel.js';
 import ApiError from '../utils/apierror.js';
 import { promisify } from 'util';
 import jwt from 'jsonwebtoken';
+import Email from '../utils/emailhandler.js';
 
 //to create acess and refreshtoken
 const createacessandrefreshtoken = (id) => {
@@ -199,7 +200,39 @@ export const isvaliduser = (user, authorised_user, next) => {
     return next(new ApiError('You Cannot perform that action', 401));
   }
 };
-export const forgotpassword = asynchandler((req, res, next) => {});
+export const forgotpassword = asynchandler(async (req, res, next) => {
+  //get the email to forgot password
+  const { email } = req.body;
+  //check the user is exist or not
+  const requser = await User.findOne({ email });
+  //if not exist give error
+  if (!requser) {
+    return next(new ApiError('User not found', 404));
+  }
+
+  const resetToken = requser.createResettoken();
+  await requser.save({ validateBeforeSave: false });
+  try {
+    const resetURL = `${req.protocol}://${req.get(
+      'host'
+    )}/api/auth/resetPassword/${resetToken}`;
+    await new Email(requser, resetURL).sendPasswordReset();
+
+    res.status(200).json({
+      status: 'success',
+      message: 'Token sent to email!',
+    });
+  } catch (err) {
+    requser.passwordResetToken = undefined;
+    requser.passwordResetExpires = undefined;
+    await requser.save({ validateBeforeSave: false });
+    console.log(err);
+    return next(
+      new ApiError('There was an error sending the email. Try again later!'),
+      500
+    );
+  }
+});
 export const resetpassword = asynchandler(async (req, res, next) => {});
 export const updatepassword = asynchandler(async (req, res, next) => {});
 export const logout = asynchandler(async (req, res, next) => {

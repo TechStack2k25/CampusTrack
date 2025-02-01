@@ -19,6 +19,7 @@ export const create_request = asynchandler(async (req, res, next) => {
     task,
     file,
     role,
+    year,
   } = req.body;
 
   //get the data of user from req.user
@@ -80,6 +81,7 @@ export const create_request = asynchandler(async (req, res, next) => {
         request_by: requser,
         request_role: role,
         request_dep: reqdepartment._id,
+        request_year: year,
       });
 
       ///check the request is created or not
@@ -287,6 +289,7 @@ export const updaterequest = asynchandler(async (req, res, next) => {
       reqcollege.users.push(require_request.request_by);
       requser.department = require_request.request_dep;
       requser.role = 'Student';
+      requser.year = require_request.request_year;
       requser.save();
       reqcollege.save();
     } else if (

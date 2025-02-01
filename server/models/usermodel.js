@@ -1,24 +1,26 @@
 import mongoose from 'mongoose';
 import validator from 'validator';
 import bcrypt from 'bcryptjs';
+import * as crypto from 'crypto';
+
 const userSchema = new mongoose.Schema({
   // is used to create the account for each user it must be unique
   email: {
     type: String,
     unique: [true, 'Email already exist'],
-    require: [true, 'Please enter your email'],
+    required: [true, 'Please enter your email'],
     lowercase: true,
     validate: [validator.isEmail, 'Please provide valid email addrress'],
   },
   password: {
     type: String,
-    require: [true, 'Please enter the password'],
+    required: [true, 'Please enter the password'],
     select: false,
     minlength: 8,
   },
-  confirm_password: {
+  confirmpassword: {
     type: String,
-    require: [true, 'PLease enter the confirm password'],
+    required: [true, 'PLease enter the confirm password'],
     //validate the password and confirm password is same or not
     validate: {
       validator: function (p) {
@@ -29,7 +31,6 @@ const userSchema = new mongoose.Schema({
   },
   name: {
     type: String,
-    require: [true, 'Please enter your name'],
   },
   surname: {
     type: String,
@@ -67,6 +68,8 @@ const userSchema = new mongoose.Schema({
 
   reward: [{ type: mongoose.Schema.ObjectId, ref: 'Reward' }],
   passwordchangedat: Date,
+  passwordResetToken: String,
+  passwordResetExpires: Date,
 });
 
 //bcrypt hash the password not encrypt
@@ -92,6 +95,17 @@ userSchema.methods.ispasswordChanged = async function (requested_time) {
     this.passwordchangedat.getTime() / 1000
   );
   return password_change_time > requested_time;
+};
+
+userSchema.methods.createResettoken = function () {
+  const resetToken = crypto.randomBytes(32).toString('hex');
+  this.passwordResetToken = crypto
+    .createHash('sha256')
+    .update(resetToken)
+    .digest('hex');
+  this.passwordResetExpires = Date.now() + 10 * 60 * 1000;
+
+  return resetToken;
 };
 
 const User = mongoose.model('User', userSchema);
