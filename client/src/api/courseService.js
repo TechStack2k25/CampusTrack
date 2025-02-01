@@ -32,6 +32,8 @@ class CourseService {
   // all department courses
   getCourses=async (data)=> {//data required: department_id(db)
     try {
+      console.log(data);
+      
       const response = await this.api.get(`/all/${data?._id}`);
 
       console.log(response);

@@ -34,11 +34,6 @@ export const updateuser = asynchandler(async (req, res, next) => {
   if (role && requser.role != role) {
     temp = 0;
     req.body.requestType = 'Add user';
-    const { college, department, course } = req.body;
-
-    if (!college && !dep_name) {
-      return next(new ApiError('Insufficient Info', 404));
-    }
     temp = create_request(req, res, next);
   }
   //update the user by id

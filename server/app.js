@@ -27,7 +27,7 @@ app.use(protect);
 app.use('/api/user', userroutes);
 //to accept and get all request
 app.use('/api/request', requestroutes);
-//all task routes and only facility can make change in task
+//all task routes and only faculty can make change in task
 app.use('/api/task', taskroutes);
 //all course routes and only hod can make change in courses
 app.use('/api/course', courseroutes);

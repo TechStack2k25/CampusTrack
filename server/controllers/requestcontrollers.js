@@ -47,7 +47,7 @@ export const create_request = asynchandler(async (req, res, next) => {
 
   //check the we get college or not
   else if (requestType === 'Add user') {
-    if (role === 'Student' || role === 'facilty') {
+    if (role === 'Student' || role === 'faculty') {
       //check the college exist or not
       const reqcollege = await College.findOne({ id: college });
 
@@ -83,7 +83,7 @@ export const create_request = asynchandler(async (req, res, next) => {
       const department = req.user.department;
       //check the department is exist or not
 
-      if (req.user.role !== 'facilty') {
+      if (req.user.role !== 'faculty') {
         return next(new ApiError('You Cannot Request to be HOD', 401));
       }
 
@@ -156,17 +156,17 @@ export const getall_request = asynchandler(async (req, res, next) => {
   //check the user is hod or not
   const reqdepartment = await Department.findOne({ hod: req.user._id });
   if (reqdepartment) {
-    //find all facilty request
+    //find all faculty request
     console.log(reqdepartment);
-    const facilty_request = await Request.findOne({
+    const faculty_request = await Request.findOne({
       request_course: { $in: reqdepartment.courses },
-      request_role: 'facilty',
+      request_role: 'faculty',
     });
-    allrequest.facilty = facilty_request;
+    allrequest.faculty = faculty_request;
   }
 
   //check the user is teacher of any course
-  if (req.user.role === 'facilty') {
+  if (req.user.role === 'faculty') {
     const reqcourse = await Course.find({ teacher: req.user._id });
     const courseIds = reqcourse.map((course) => course._id);
     const student_request = await Request.find({
@@ -237,7 +237,7 @@ export const updaterequest = asynchandler(async (req, res, next) => {
 
     //add the user in course and save it
     requser.course.push(require_request.request_by);
-    requser.save();
+    requser.save({ validateBeforeSave: false });
     reqcourse.users.push(require_request.request_by);
     reqcourse.save();
     //get the request to deleted
@@ -247,7 +247,7 @@ export const updaterequest = asynchandler(async (req, res, next) => {
     if (deleted_request.deletedCount === 0) {
       //if not deleted change the update and give error
       requser.course.pop();
-      requser.save();
+      requser.save({ validateBeforeSave: false });
       return next(new ApiError('Error in updating request', 422));
     }
   }
@@ -259,7 +259,7 @@ export const updaterequest = asynchandler(async (req, res, next) => {
   ) {
     if (
       require_request.request_role === 'Student' ||
-      require_request.request_role === 'facilty'
+      require_request.request_role === 'faculty'
     ) {
       //find the college for which change the role
       const reqcollege = await College.findById(
@@ -301,28 +301,8 @@ export const updaterequest = asynchandler(async (req, res, next) => {
       //change the role of user
       requser.role = require_request.request_role;
       requser.department = require_request.request_dep;
-      requser.save();
+      requser.save({ validateBeforeSave: false });
     }
-    //  else if (require_request.request_role === 'facilty') {
-    //   //find the course to be teacher of it
-    //   const reqcourse = await Course.findById(require_request.request_course);
-
-    //   //check the course is exist or not
-    //   if (!reqcourse) {
-    //     return next(new ApiError('COurse not found', 404));
-    //   }
-    //   const requser = await User.findById(require_request.request_by);
-    //   if (!requser) {
-    //     return next(new ApiError('Error in updated Request', 404));
-    //   }
-    //   //make the role of  facilty
-    //   requser.course = requser.course.push(reqcourse._id);
-    //   requser.role = 'facilty';
-    //   requser.save();
-    //   //add teacher in course
-    //   reqcourse.teacher = require_request.request_by;
-    //   reqcourse.save();
-    // }
 
     // if update request then delete it
     const deleted_request = await Request.findByIdAndDelete(request_id);
@@ -379,6 +359,14 @@ export const updaterequest = asynchandler(async (req, res, next) => {
       reqtask.save();
       return next(new ApiError('Error in updating request', 422));
     }
+  }
+
+  if(new_status==='rejected'){
+    const deleted_request = await Request.findByIdAndDelete(request_id);
+
+  if(!deleted_request){
+    return next(new ApiError('Try again later!', 422));
+  }
   }
   //return sucess message
   res.status(201).json({
