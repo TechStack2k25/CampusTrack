@@ -81,16 +81,6 @@ const Profile = () => {
                 />
             </div>}
 
-            {user?.role && !["User","Admin"].includes(user.role) && user?.department && <div>
-                <label className="block text-sm font-medium text-gray-600">Department:</label>
-                <input
-                type="text"
-                value={user?.department}
-                disabled={true}
-                className="w-full p-2 border border-gray-300 rounded mt-1"
-                />
-            </div>}
-
             {user?.role!=="User" && user?.college && <div>
                 <label className="block text-sm font-medium text-gray-600">College:</label>
                 <input

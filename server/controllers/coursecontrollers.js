@@ -1,3 +1,4 @@
+import mongoose from 'mongoose';
 import Course from '../models/coursemodel.js';
 import Department from '../models/departmentmodel.js';
 import ApiError from '../utils/apierror.js';
@@ -120,15 +121,17 @@ export const getall = asynchandler(async (req, res, next) => {
   //check it is hod or not
 
   let allcourses;
-  let department_id = req.params.id;
-  if (req.user.role == 'HOD' || department_id) {
-    if (!department_id) department_id = req.user.department;
+  let department_id = req.params?.id;
+  if (req.user.role == 'HOD' || mongoose.Types.ObjectId.isValid(department_id)) {
+    if (!mongoose.Types.ObjectId.isValid(department_id)) department_id = req.user.department;
     console.log(department_id);
     //check the department exist or not
     const reqdepartment = await Department.findById(department_id).populate(
       'courses'
     );
-    isvaliduser(req.user._id, reqdepartment.hod, next);
+   if(!department_id){
+      isvaliduser(req.user._id, reqdepartment.hod, next);
+   }
     //if not exist give error
     if (!reqdepartment) {
       return next(new ApiError('Unable to fetch the department retry it', 422));
@@ -138,15 +141,26 @@ export const getall = asynchandler(async (req, res, next) => {
       path: 'courses',
       populate: { path: 'teacher' }, // Nested population
     });
+    res.status(201).json({
+      message: 'courses fetch sucessfully',
+      data: {
+        data: allcourses.courses,
+      },
+    });
   }
 
   //if user is faculty
   else if (req.user.role == 'faculty') {
-    allcourses = await Course.find({ teacher: req.user._id });
+    allcourses = await Course.find({ teacher: req.user._id }).populate('teacher');
+    console.log(allcourses);
+    
   }
   //if the user is student
   else if (req.user.role === 'Student') {
-    allcourses = await req.user.populate('course');
+    allcourses = await req.user.populate({
+      path: 'course',
+      populate: { path: 'teacher' }, // Nested population
+    });
   }
 
   //check the course is exist or not
@@ -158,7 +172,7 @@ export const getall = asynchandler(async (req, res, next) => {
   res.status(201).json({
     message: 'courses fetch sucessfully',
     data: {
-      data: allcourses.courses,
+      data: allcourses,
     },
   });
 });

@@ -9,7 +9,7 @@ const CourseCard = ({ course ,deletefn ,updatefn }) => {
       <strong  className="text-gray-600">{course?.coursecode?.toUpperCase()}</strong>
       </div>
       <div>
-        <p className="text-gray-600"><strong>Instructor:</strong> {course?.teacher?.name || course?.teacher?.email.split('@')[0]}</p>
+        <p className="text-gray-600"><strong>Instructor:</strong> {course?.teacher?.name || course?.teacher?.email?.split('@')[0]}</p>
         <p className="text-gray-600"><strong>Credits:</strong> {course.credit}</p>
       </div>
         <div className="flex justify-end space-x-4">

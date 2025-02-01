@@ -37,6 +37,7 @@ export const create_request = asynchandler(async (req, res, next) => {
       request_course: course,
       request_by: requser,
       request_role: req.user.role,
+      request_dep: req.user.department,
     });
 
     //check request is created sucessfully or not
@@ -158,10 +159,10 @@ export const getall_request = asynchandler(async (req, res, next) => {
   if (reqdepartment) {
     //find all faculty request
     console.log(reqdepartment);
-    const faculty_request = await Request.findOne({
-      request_course: { $in: reqdepartment.courses },
+    const faculty_request = await Request.find({
+      request_dep: reqdepartment._id,
       request_role: 'faculty',
-    });
+    }).populate('request_course').populate('request_by');
     allrequest.faculty = faculty_request;
   }
 
@@ -208,7 +209,7 @@ export const updaterequest = asynchandler(async (req, res, next) => {
   // get the user to make change in him
   const requser = await User.findById(require_request.request_by);
 
-  console.log(require_request);
+ 
   //if not exist give error
   if (!require_request) {
     return next(new ApiError('Request is not found to update', 404));
@@ -226,6 +227,7 @@ export const updaterequest = asynchandler(async (req, res, next) => {
     if (!reqcourse) {
       return next(new ApiError('error in updated request', 422));
     }
+    console.log(require_request.requestType);
 
     //get the user for which we update
     const requser = await User.findById(require_request.request_by);
@@ -244,7 +246,7 @@ export const updaterequest = asynchandler(async (req, res, next) => {
     reqcourse.users.push(require_request.request_by);
     reqcourse.save();
     //get the request to deleted
-    const deleted_request = Request.findByIdAndDelete(request_id);
+    const deleted_request = await Request.findByIdAndDelete(request_id);
 
     //check the request is deleted or not
     if (deleted_request.deletedCount === 0) {

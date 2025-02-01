@@ -85,7 +85,7 @@ const UserMenu = () => {
                 Profile
               </NavLink>
             </li>
-            {!["Student","Admin","HOD"].includes(user?.role) && <li>
+            {!["Admin","HOD"].includes(user?.role) && <li>
             <NavLink 
                 to="/request" 
                   className={({ isActive }) => 

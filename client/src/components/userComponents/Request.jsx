@@ -7,6 +7,7 @@ import { userService } from "../../api/userService";
 import { collegeService } from "../../api/collegeService";
 import { useDepartments } from "../../data/departments";
 import { useAllCourses } from "../../data/allcourses";
+import { courseService } from "../../api/courseService";
 
 const Request = () => {
   // Using react-hook-form
@@ -30,7 +31,7 @@ const Request = () => {
   }, [watchCollege]);
 
   const mutationTocreateRequest = useMutation({
-    mutationFn: userService.updateUser,
+    mutationFn: ["Student","faculty"].includes(user?.role)? courseService.requestCourse : userService.updateUser,
     onSuccess: (data) => {
       console.log('Request created successfully:', data);
       dispatch(setSuccess('Sent Request!'));
@@ -42,11 +43,8 @@ const Request = () => {
     }
   });
 
-  const { data: departments } = useDepartments(debouncedCollege)
-  const { data: allCourses } = useAllCourses({_id:user?.department})
-  console.log("Departments:",departments);
-  console.log("Courses:",allCourses);
-  console.log(user);
+  const { data: departments } = useDepartments(debouncedCollege);
+  const { data: allCourses } = useAllCourses({_id:user?.department});
 
 
 
@@ -160,7 +158,7 @@ const Request = () => {
                 className={`cursor-pointer mt-2 p-3 border rounded-lg focus:outline-none focus:ring-2 ${errors.course_id ? "border-red-500" : "border-gray-300"} focus:ring-blue-500`}
               >
                 <option value="">Select a Course...</option>
-                {allCourses && allCourses?.map((course)=><option value={course?._id}>{`${course?.name} (${course?.coursecode?.toUpperCase()})`}</option>)}
+                {allCourses && allCourses?.map((course)=><option key={course?._id} value={course?._id}>{`${course?.name} (${course?.coursecode?.toUpperCase()})`}</option>)}
                 
               </select>
               {errors.course_id && (

@@ -3,6 +3,8 @@ import { NavLink, useNavigate } from 'react-router-dom'
 import { MdOutlineMenu } from "react-icons/md";
 import { IoCloseSharp } from "react-icons/io5";
 import { useSelector } from 'react-redux'
+import { userService } from '../api/userService';
+import { useMutation } from '@tanstack/react-query';
 
 const Sidebar = ({menuItems}) => {
     const [open,setOpen]=useState(false);
@@ -24,6 +26,22 @@ const Sidebar = ({menuItems}) => {
     
         return () => window.removeEventListener('mousedown', hideMenu); // Cleanup
     }, []);
+
+    const mutationToHODRequest = useMutation({
+        mutationFn: userService.updateUser,
+        onSuccess: (data) => {
+          console.log('Request created successfully:', data);
+          dispatch(setSuccess('Sent Request!'));
+          reset(); // Reset the form after submission
+        },
+        onError: (error) => {
+          dispatch(setError(error?.response?.data?.message))
+          console.error('Error creating course:', error);
+        }
+      });
+
+    const makeHOD=()=>mutationToHODRequest.mutate({...user,role:"HOD"});
+    
 
     
   return (
@@ -50,6 +68,11 @@ const Sidebar = ({menuItems}) => {
                             </li>
                         </NavLink>
                     ))}
+                    {user?.role==="faculty" && <li onClick={makeHOD} className="cursor-pointer py-2 px-4 rounded-full hover:bg-gray-700">
+                                    <span>
+                                        <span>Request for HOD</span>
+                                    </span>
+                            </li>}
                 </ul>
         </div>
         </aside>
