@@ -30,7 +30,7 @@ export const addcourse = asynchandler(async (req, res, next) => {
 
   //if exist give error
   if (exist_course) {
-    return next(new ApiError('Course are already exist', 401));
+    return next(new ApiError('Course already exists!', 401));
   }
 
   //check we get the user id for course teacher
@@ -122,7 +122,7 @@ export const getall = asynchandler(async (req, res, next) => {
   if (req.user.role == 'HOD') {
     //get the id of department for which get course or from the user
     const department_id = req.params.id || req.user.department;
-
+    console.log(department_id)
     //check the department exist or not
     const reqdepartment = await Department.findById(department_id).populate(
       'courses'
@@ -133,7 +133,12 @@ export const getall = asynchandler(async (req, res, next) => {
       return next(new ApiError('Unable to fetch the department retry it', 422));
     }
     //asign value of course to it
-    allcourses = await reqdepartment.courses.populate('courses');
+   allcourses = await Department.findById(department_id)
+    .populate({
+      path: 'courses',
+      populate: { path: 'teacher' } // Nested population
+    });
+  
   }
 
   //if user is facilty
@@ -154,7 +159,7 @@ export const getall = asynchandler(async (req, res, next) => {
   res.status(201).json({
     message: 'courses fetch sucessfully',
     data: {
-      data: allcourses,
+      data: allcourses.courses,
     },
   });
 });
@@ -164,19 +169,19 @@ export const delcourse = asynchandler(async (req, res, next) => {
   const course_id = req.params.id;
 
   //find the course to deleted
-  const reqcourse = await Course.findById(id);
+  const reqcourse = await Course.findById(course_id);
 
   //if course not found give error
   if (!reqcourse) {
-    return next(new ApiError('Error in deleted Course', 404));
+    return next(new ApiError('Error in deleting Course', 404));
   }
 
   //delete the course
   const deleted_course = await Course.findByIdAndDelete(course_id);
 
   //check the course is deleted or not
-  if (deleted_course.deletedCount !== 1) {
-    return next(new ApiError('Error in Deleted the course', 422));
+  if (!deleted_course) {
+    return next(new ApiError('Error in Deleting the course', 422));
   }
 
   //return the success mesage

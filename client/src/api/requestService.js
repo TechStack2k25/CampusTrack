@@ -13,7 +13,7 @@ class RequestService {
   }
 
   // get all requests for a user
-  async getAll() {//data required: tokens alongwith
+  getAll=async ()=> {//data required: tokens alongwith
     try {
       const response = await this.api.get('/getall');
 
@@ -28,9 +28,9 @@ class RequestService {
   }
    
   // updating request
-  async updateRequest(data) {//data required: _id, new_status
+  updateRequest=async (data)=> {//data required: _id, new_status
     try {
-      const response = await this.api.patch(`/update/${data?._id}`,data);
+      const response = await this.api.patch(`/update/${data?.id}`,data);
 
       console.log(response);
       //may use response.status to verify success 201

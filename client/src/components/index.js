@@ -6,6 +6,7 @@ import Loading from './Loading.jsx';
 import Sidebar from './Sidebar.jsx';
 import Notfound from './Notfound.jsx';
 import { DashboardContent } from './userComponents/index.js';
+import Profile from './Profile.jsx';
 
 
 export {
@@ -17,6 +18,6 @@ export {
     Notfound,
     Sidebar,
     DashboardContent,
-    
+    Profile,
 
 }

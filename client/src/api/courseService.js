@@ -11,6 +11,101 @@ class CourseService {
       },
     });
   }
+
+  
+  // requesting to admit in a courses
+  requestCourse= async (data)=> {//data required: course_id(db)
+    try {
+      const response = await this.api.post(`/add_course/${data?._id}`,data);
+
+      console.log(response);
+      
+      return response.status==201;
+      //getting status with message
+    } catch (error) {
+      console.error('Error courseService: requestCourse: ', error);
+      throw error;
+    }
+  }
+
+  
+  // all department courses
+  getCourses=async (data)=> {//data required: department_id(db)
+    try {
+      const response = await this.api.get(`/all/${data?._id}`);
+
+      console.log(response);
+      
+      return response.data?.data?.data;
+      //getting all department courses
+    } catch (error) {
+      console.error('Error courseService: getCourses: ', error);
+      throw error;
+    }
+  }
+
+  // all user courses
+  getUserCourses= async ()=> {
+    try {
+      const response = await this.api.get(`/all`);
+
+      console.log(response);
+      
+      return response.data?.data?.data;
+      //getting all user Courses
+    } catch (error) {
+      console.error('Error courseService: getUserCourses: ', error);
+      throw error;
+    }
+  }
+
+  
+  // create a course by-HOD
+  createCourse=async (data)=> {//data required: department-id
+    try {
+      const response = await this.api.post(`/create/${data?.id}`,data);
+
+      console.log(response);
+      
+      return response.data?.data?.data;
+      //getting newcourse
+    } catch (error) {
+      console.error('Error courseService: createCourse: ', error);
+      throw error;
+    }
+  }
+
+  
+  // deleting course
+  deleteCourse=async (data)=> {//data required: course_id
+    try {
+      const response = await this.api.delete(`/del/${data?.id}`);
+
+      console.log(response);
+      
+      return response.status===201;
+      //getting 201 with message
+    } catch (error) {
+      console.error('Error courseService: deleteCourse: ', error);
+      throw error;
+    }
+  }
+
+  
+  // updating Course
+  updateCourse=async (data)=> {//data required: course_id
+    try {
+      const response = await this.api.patch(`/update/${data?._id}`,data);
+
+      console.log(response);
+      
+      return response.data?.data?.data;
+      //getting updatedcourse
+    } catch (error) {
+      console.error('Error courseService: updateCourse: ', error);
+      throw error;
+    }
+  }
   
 }
 

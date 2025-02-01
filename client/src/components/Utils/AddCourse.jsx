@@ -1,0 +1,92 @@
+import React, { useEffect } from "react";
+import { useForm } from "react-hook-form";
+
+const AddCourse = ({ addCourse, openForm, setOpenForm, data, setData }) => {
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    reset,
+  } = useForm();
+
+  const onSubmit = (data) => {
+    // Add the new event 
+    addCourse(data);
+    reset();
+  };
+
+  useEffect(()=>{
+    if(data){
+      reset(data);
+      setData(null);
+    }
+  },[reset, setOpenForm, data]);
+
+  return (
+    <div className="relative mb-8 max-w-md mx-auto bg-white p-6 rounded-md shadow-md ">
+      <h2 className="text-2xl font-bold text-center text-gray-800 mb-4">
+        New Course
+      </h2>
+      {openForm && <div onClick={()=>setOpenForm(false)} className="absolute cursor-pointer top-6 right-8 hover:text-gray-900 text-white bg-blue-500 font-medium text-2xl hover:bg-gray-100 h-8 text-center aspect-square rounded-lg">
+        X
+      </div>}
+
+      {/* Form */}
+      <form onSubmit={handleSubmit(onSubmit)}>
+        <div className="mb-4">
+          <label className="block text-gray-700">Name:</label>
+          <input
+            type="text"
+            className="w-full mt-1 p-2 border rounded-md"
+            placeholder="Enter course name"
+            {...register("name", { required: "Course Name is required" })}
+          />
+          {errors?.name && (
+            <p className="text-red-500 text-sm">{errors.name.message}</p>
+          )}
+        </div>
+
+        <div className="mb-4">
+          <label className="block text-gray-700">Code:</label>
+          <input
+            type="text"
+            placeholder="Enter course code"
+            className="w-full mt-1 p-2 border rounded-md"
+            {...register("coursecode", { required: "Course code is required" })}
+          />
+          {errors?.coursecode && (
+            <p className="text-red-500 text-sm">{errors.coursecode.message}</p>
+          )}
+        </div>
+
+        <div className="mb-4">
+          <label className="block text-gray-700">Credit: </label>
+          <input
+            type="number"
+            className="w-full mt-1 p-2 border rounded-md"
+            placeholder="Enter event location"
+            {...register("credit",{
+                required: "credit is required!",
+                min: { value: 2, message: "Minimum 2 credit allowed!" },
+                max: { value: 5, message: "Maximum credit 5 allowed!" }
+            })}
+          />
+          {errors.credit && (
+            <p className="text-red-500 text-sm">{errors.credit.message}</p>
+          )}
+        </div>
+        {/* may take a teacher/faculty username */}
+
+
+        <button
+          type="submit"
+          className="w-full bg-blue-500 text-white py-2 rounded-md hover:bg-blue-600"
+        >
+          Add Course
+        </button>
+      </form>
+    </div>
+  );
+};
+
+export default AddCourse;

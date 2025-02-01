@@ -13,13 +13,13 @@ class AuthService {
     });
   }
   // Sign up the user
-  async userSignUp(data) {//data required: email, password, confirmpassword
+  userSignUp=async (data)=> {//data required: email, password, confirmpassword
     try {
       const response = await this.api.post('/signup',data);
 
       console.log(response);
       //may use response.status to verify success 201
-      return response.data?.data;
+      return response.data?.data?.user;
       //getting tokens with userEmail
 
     } catch (error) {
@@ -29,7 +29,7 @@ class AuthService {
   }
 
   // Login the user
-  async userLogin(data) {//data required: email, password
+  userLogin=async (data)=> {//data required: email, password
     try {
       const response = await this.api.post('/login',data);
 
@@ -42,8 +42,24 @@ class AuthService {
       throw error;
     }
   }
+
   // forgot password call
-  // async userForgotPassword() {}
+  //userForgotPassword= async () =>{}
+
+  //Logout the user
+  userLogout=async ()=>{
+    try {
+      const response = await this.api.get('/logout');
+
+      console.log(response);
+      //may use response.status to verify success 201
+      return response.status===200;
+      //getting tokens with user in response.data.data
+    } catch (error) {
+      console.error('Error authService: userLogin: ', error);
+      throw error;
+    }
+  }
   
 }
 

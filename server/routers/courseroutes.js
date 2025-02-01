@@ -13,7 +13,7 @@ const router = express.Router();
 //student request to add course
 router.post('/add_course/:id', add_course_by_student);
 //get all course
-router.get('/all/:id', getall);
+router.get('/all', getall);
 router.use(restrict_to('HOD'));
 //create
 router.post('/create/:id', addcourse);
