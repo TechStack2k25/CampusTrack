@@ -8,7 +8,7 @@ export const adddepartment = asynchandler(async (req, res, next) => {
   const college_id = req.params.id;
 
   //check the college is exist or not
-  const reqcollege = await College.findById(college_id);
+  const reqcollege = await College.find({ id: college_id });
 
   //if not exist give error
   if (!reqcollege) {

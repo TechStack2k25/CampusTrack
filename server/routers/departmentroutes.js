@@ -6,12 +6,15 @@ import {
   deldepartment,
   updatedepartment,
 } from '../controllers/departmentcontrollers.js';
+import { restrict_to } from '../controllers/authcontrollers.js';
 
 const router = express.Router();
+//get all department
+router.get('/all/:id', getall);
+router.use(restrict_to('Admin'));
 //create
 router.post('/create/:id', adddepartment);
-//get all department
-router.get('/all', getall);
+
 //delete
 router.delete('/del/:id', deldepartment);
 //update

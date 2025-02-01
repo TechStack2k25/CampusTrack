@@ -31,10 +31,10 @@ app.use('/api/request', requestroutes);
 app.use('/api/task', taskroutes);
 //all course routes and only hod can make change in courses
 app.use('/api/course', courseroutes);
-//restrict college and department routes to admin
-app.use(restrict_to('Admin'));
 //all departmentroute
 app.use('/api/department', departmentroutes);
+//restrict college and department routes to admin
+app.use(restrict_to('Admin'));
 //all college routes
 app.use('/api/college', collegeroutes);
 // to handle the error

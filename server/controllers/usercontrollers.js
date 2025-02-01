@@ -29,16 +29,17 @@ export const updateuser = asynchandler(async (req, res, next) => {
   if (!requser) {
     return next(new ApiError('NO user found ! ,Sign up', 404));
   }
-
+  let temp = 1;
   //if role is present then create a request
   if (role && requser.role != role) {
+    temp = 0;
     req.body.requestType = 'Add user';
     const { college, department, course } = req.body;
 
-    if (!college && !department && !course) {
+    if (!college && !dep_name) {
       return next(new ApiError('Insufficient Info', 404));
     }
-    create_request(req, res, next);
+    temp = create_request(req, res, next);
   }
   //update the user by id
   const updateduser = await User.findByIdAndUpdate(
@@ -55,6 +56,14 @@ export const updateuser = asynchandler(async (req, res, next) => {
     { new: true, runValidators: true }
   );
 
+  if (temp === 0) {
+    res.status(201).json({
+      message: 'Error in generated request and user updated sucessfully',
+      data: {
+        user: updateduser,
+      },
+    });
+  }
   //user updated give the new data of user
   res.status(201).json({
     message: 'user updated suceesfully',

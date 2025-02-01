@@ -10,23 +10,14 @@ import { isvaliduser } from './authcontrollers.js';
 
 export const create_request = asynchandler(async (req, res, next) => {
   // extract data from req.body
-  const {
-    requestType,
-    course,
-    college,
-    department,
-    dep_name,
-    task,
-    file,
-    role,
-    year,
-  } = req.body;
+  const { requestType, course, college, dep_id, task, file, role, year } =
+    req.body;
 
   //get the data of user from req.user
   const requser = req.user;
 
   //check the request is type of add student and add course
-  if (!course && !college && !department) {
+  if (!requestType) {
     return next(new ApiError('Error in generated request.Try again', 404));
   }
 
@@ -45,6 +36,7 @@ export const create_request = asynchandler(async (req, res, next) => {
       requestType,
       request_course: course,
       request_by: requser,
+      request_role: req.user.role,
     });
 
     //check request is created sucessfully or not
@@ -55,7 +47,7 @@ export const create_request = asynchandler(async (req, res, next) => {
 
   //check the we get college or not
   else if (requestType === 'Add user') {
-    if (role === 'Student') {
+    if (role === 'Student' || role === 'facilty') {
       //check the college exist or not
       const reqcollege = await College.findOne({ id: college });
 
@@ -64,10 +56,7 @@ export const create_request = asynchandler(async (req, res, next) => {
       }
 
       //get the department in which he want to add
-      const reqdepartment = await Department.findOne({
-        college: reqcollege._id,
-        name: dep_name,
-      });
+      const reqdepartment = await Department.findById(dep_id);
 
       //if not exist return error
       if (!reqcollege) {
@@ -78,7 +67,7 @@ export const create_request = asynchandler(async (req, res, next) => {
       const newrequest = await Request.create({
         requestType,
         request_college: reqcollege._id,
-        request_by: requser,
+        request_by: requser._id,
         request_role: role,
         request_dep: reqdepartment._id,
         request_year: year,
@@ -88,8 +77,17 @@ export const create_request = asynchandler(async (req, res, next) => {
       if (!newrequest) {
         return next(new ApiError('Error in generated request.Try again', 404));
       }
-    } else if (role === 'HOD') {
+    }
+
+    //if the user want to be hod
+    else if (role === 'HOD') {
+      const department = req.user.department;
       //check the department is exist or not
+
+      if (req.user.role !== 'facilty') {
+        return next(new ApiError('You Cannot Request to be HOD', 401));
+      }
+
       const reqdepartment = await Department.findById(department);
 
       //give error if department noy found
@@ -98,46 +96,32 @@ export const create_request = asynchandler(async (req, res, next) => {
       }
       const newrequest = await Request.create({
         requestType,
-        request_dep: department,
-        request_by: requser,
-        request_role: role,
-      });
-    } else if (role === 'facilty') {
-      //get the course to assign it
-      const reqcourse = await Course.findById(course);
-
-      //if not get give error
-      if (!reqcourse) {
-        return next(new ApiError('Course not found ', 404));
-      }
-      const newrequest = await Request.create({
-        requestType,
-        request_course: course,
-        request_by: requser,
+        request_dep: reqdepartment._id,
+        request_by: requser._id,
         request_role: role,
       });
     }
   }
 
   //create request for submissin of task
-  else if (requestType === 'Submit Task') {
-    if (!task) {
-      return next(new ApiError('To submit task it not found', 404));
-    }
-    const newrequest = await Request.create({
-      requestType,
-      request_course: course,
-      request_task: task,
-      request_by: req.user._id,
-      request_file: file,
-    });
+  // else if (requestType === 'Submit Task') {
+  //   if (!task) {
+  //     return next(new ApiError('To submit task it not found', 404));
+  //   }
+  //   const newrequest = await Request.create({
+  //     requestType,
+  //     request_course: course,
+  //     request_task: task,
+  //     request_by: req.user._id,
+  //     request_file: file,
+  //   });
 
-    if (!newrequest) {
-      return next(
-        new ApiError('Error in create request for submit assignment', 422)
-      );
-    }
-  }
+  //   if (!newrequest) {
+  //     return next(
+  //       new ApiError('Error in create request for submit assignment', 422)
+  //     );
+  //   }
+  // }
   return 1;
 });
 
@@ -155,12 +139,16 @@ export const getall_request = asynchandler(async (req, res, next) => {
   if (reqcollege && req.user.role === 'Admin') {
     const user_request = await Request.find({
       request_college: reqcollege._id,
-    });
+    })
+      .populate('request_by')
+      .populate('request_dep');
 
     const hod_request = await Request.find({
       request_role: 'HOD',
       request_dep: { $in: reqcollege.department },
-    });
+    })
+      .populate('request_by')
+      .populate('request_dep');
 
     allrequest.user = user_request; // Assign user requests
     allrequest.hod = hod_request;
@@ -172,8 +160,7 @@ export const getall_request = asynchandler(async (req, res, next) => {
     //find all facilty request
     console.log(reqdepartment);
     const facilty_request = await Request.findOne({
-      request_role: 'facilty',
-      request_course: { $in: reqdepartment.courses },
+      request_course: { role: 'facilty', $in: reqdepartment.courses },
     });
     allrequest.facilty = facilty_request;
   }
@@ -270,7 +257,10 @@ export const updaterequest = asynchandler(async (req, res, next) => {
     require_request.requestType === 'Add user' &&
     new_status === 'approved'
   ) {
-    if (require_request.request_role === 'Student') {
+    if (
+      require_request.request_role === 'Student' ||
+      require_request.request_role === 'facilty'
+    ) {
       //find the college for which change the role
       const reqcollege = await College.findById(
         require_request.request_college
@@ -288,7 +278,7 @@ export const updaterequest = asynchandler(async (req, res, next) => {
       //add the user in the college and save
       reqcollege.users.push(require_request.request_by);
       requser.department = require_request.request_dep;
-      requser.role = 'Student';
+      requser.role = require_request.request_role;
       requser.year = require_request.request_year;
       requser.save();
       reqcollege.save();
@@ -312,37 +302,37 @@ export const updaterequest = asynchandler(async (req, res, next) => {
       requser.role = require_request.request_role;
       requser.department = require_request.request_dep;
       requser.save();
-    } else if (require_request.request_role === 'facilty') {
-      //find the course to be teacher of it
-      const reqcourse = await Course.findById(require_request.request_course);
+    // } else if (require_request.request_role === 'facilty') {
+    //   //find the course to be teacher of it
+    //   const reqcourse = await Course.findById(require_request.request_course);
 
-      //check the course is exist or not
-      if (!reqcourse) {
-        return next(new ApiError('COurse not found', 404));
-      }
-      const requser = await User.findById(require_request.request_by);
-      if (!requser) {
-        return next(new ApiError('Error in updated Request', 404));
-      }
-      //make the role of  facilty
-      requser.course = requser.course.push(reqcourse._id);
-      requser.role = 'facilty';
-      requser.save();
-      //add teacher in course
-      reqcourse.teacher = require_request.request_by;
-      reqcourse.save();
-    }
+    //   //check the course is exist or not
+    //   if (!reqcourse) {
+    //     return next(new ApiError('COurse not found', 404));
+    //   }
+    //   const requser = await User.findById(require_request.request_by);
+    //   if (!requser) {
+    //     return next(new ApiError('Error in updated Request', 404));
+    //   }
+    //   //make the role of  facilty
+    //   requser.course = requser.course.push(reqcourse._id);
+    //   requser.role = 'facilty';
+    //   requser.save();
+    //   //add teacher in course
+    //   reqcourse.teacher = require_request.request_by;
+    //   reqcourse.save();
+    // }
 
     // if update request then delete it
     const deleted_request = await Request.findByIdAndDelete(request_id);
 
-    //check the request is deleted or not
-    // if (deleted_request.deletedCount === 0) {
-    //   //if not delete update the change
-    //   reqcollege.users.pop();
-    //   reqcollege.save();
-    //   return next(new ApiError('Error in updating request', 422));
-    // }
+  //  // check the request is deleted or not
+  //   if (deleted_request.deletedCount === 0) {
+  //     //if not delete update the change
+  //     reqcollege.users.pop();
+  //     reqcollege.save();
+  //     return next(new ApiError('Error in updating request', 422));
+  //   }
   }
 
   //update the request of submit assignment
