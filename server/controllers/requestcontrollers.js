@@ -51,10 +51,9 @@ export const create_request = asynchandler(async (req, res, next) => {
       //check the college exist or not
       const reqcollege = await College.findOne({ id: college });
 
-      if (!reqcollege || !dep_name) {
+      if (!reqcollege || !dep_id) {
         return next(new ApiError("Can't find the college ", 404));
       }
-
       //get the department in which he want to add
       const reqdepartment = await Department.findById(dep_id);
 
@@ -160,7 +159,8 @@ export const getall_request = asynchandler(async (req, res, next) => {
     //find all facilty request
     console.log(reqdepartment);
     const facilty_request = await Request.findOne({
-      request_course: { role: 'facilty', $in: reqdepartment.courses },
+      request_course: { $in: reqdepartment.courses },
+      request_role: 'facilty',
     });
     allrequest.facilty = facilty_request;
   }
@@ -280,7 +280,7 @@ export const updaterequest = asynchandler(async (req, res, next) => {
       requser.department = require_request.request_dep;
       requser.role = require_request.request_role;
       requser.year = require_request.request_year;
-      requser.save();
+      requser.save({ validateBeforeSave: false });
       reqcollege.save();
     } else if (
       require_request.request_dep &&

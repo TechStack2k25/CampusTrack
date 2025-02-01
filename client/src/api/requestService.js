@@ -16,10 +16,20 @@ class RequestService {
   getAll=async ()=> {//data required: tokens alongwith
     try {
       const response = await this.api.get('/getall');
-
       console.log(response);
       //may use response.status to verify success 201
-      return response.data?.data?.data;
+      const obj=response.data?.data?.data;
+      let res=[];
+      if(obj?.faculty){
+        res=res.concat(obj.faculty);
+      }
+      if(obj?.hod){
+        res=res.concat(obj.hod);
+      }
+      if(obj?.user){
+        res=res.concat(obj.user);
+      }
+      return res;
       //getting all requests made 
     } catch (error) {
       console.error('Error requestService: getAll: ', error);

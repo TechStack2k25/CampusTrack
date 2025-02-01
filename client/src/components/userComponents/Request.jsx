@@ -1,9 +1,11 @@
 import { useMutation } from "@tanstack/react-query";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useSelector, useDispatch } from "react-redux";
 import { setSuccess, setError } from "../../store/slices/userSlice"
 import { userService } from "../../api/userService";
+import { collegeService } from "../../api/collegeService";
+import { useDepartments } from "../../data/departments";
 
 const Request = () => {
   // Using react-hook-form
@@ -14,7 +16,17 @@ const Request = () => {
   });
   const user=useSelector((state)=>state.user.user);
   const watchRole=watch("role");
+  const watchCollege=watch("college");
+  const [debouncedCollege, setDebouncedCollege] = useState(watchCollege);
   const dispatch=useDispatch();
+
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedCollege(watchCollege);
+    }, 500); // Adjust debounce delay (e.g., 500ms)
+
+    return () => clearTimeout(handler); // Cleanup function
+  }, [watchCollege]); 
 
   const mutationTocreateRequest = useMutation({
     mutationFn: userService.updateUser,
@@ -29,6 +41,10 @@ const Request = () => {
     }
   });
 
+  const { data: departments } =useDepartments(debouncedCollege)
+  console.log((departments));
+  
+
 
   // Submit handler
   const onSubmit = (newData) => {
@@ -42,6 +58,7 @@ const Request = () => {
         college: newData?.college || user?.college,
         department: newData?.department || user?.department,
         requestType: newData?.requestType,
+        dep_id:newData?.dep_id,
     });
   };
 
@@ -68,6 +85,30 @@ const Request = () => {
               <p className="text-xs text-red-500 mt-1">{errors.college.message}</p>
             )}
           </div>
+
+            
+          {user && user?.role==="User" && <div className="flex flex-col">
+            <label htmlFor="department" className="text-sm font-medium text-gray-600">
+              Department:
+            </label>
+            <select
+              id="dep_id"
+              {...register("dep_id", { required: {
+                value: watchRole==="User",
+                message:"Department selection is required!"
+              } })}
+              className={`cursor-pointer mt-2 p-3 border rounded-lg focus:outline-none focus:ring-2 ${errors.dep_id ? "border-red-500" : "border-gray-300"} focus:ring-blue-500`}
+            >
+              <option value="">Select a department...</option>
+              {
+                departments?.length>0 && departments.map((item)=><option className="cursor-pointer" key={item?._id} value={item?._id}>{item?.name}</option>)
+              }
+            </select>
+            {errors.role && (
+              <p className="text-xs text-red-500 mt-1">{errors.role.message}</p>
+            )}
+          </div>}
+
             {/* role */}
           <div className="flex flex-col">
             <label htmlFor="role" className="text-sm font-medium text-gray-600">
@@ -80,34 +121,15 @@ const Request = () => {
             >
               <option value={user?.role}>Select a role...</option>
               {user && user?.role==="User" && <>
-              <option value="Student">Student</option>
-              <option value="faculty">Faculty</option>
+              <option value="Student" className="cursor-pointer" >Student</option>
+              <option value="faculty" className="cursor-pointer" >Faculty</option>
               </>}
-              {user && user?.role==="faculty" &&<option value="HOD">HOD</option>}
+              {user && user?.role==="faculty" &&<option value="HOD" className="cursor-pointer" >HOD</option>}
             </select>
             {errors.role && (
               <p className="text-xs text-red-500 mt-1">{errors.role.message}</p>
             )}
           </div>
-
-          {/* for HOD  */}
-          {user && user?.role==="faculty" && <div className="flex flex-col">
-            <label htmlFor="DepartmentId" className="text-sm font-medium text-gray-600">
-              Department Id:
-            </label>
-            <input
-              id="department"
-              {...register("department", { required:{ 
-                value: watchRole==="HOD",
-                message:"Department Id is required"
-            } })}
-              type="text"
-              className={`mt-2 p-3 border rounded-lg focus:outline-none focus:ring-2 ${errors.designation ? "border-red-500" : "border-gray-300"} focus:ring-blue-500`}
-            />
-            {errors.department && (
-              <p className="text-xs text-red-500 mt-1">{errors.department.message}</p>
-            )}
-          </div>}
 
           {/* Submit Button */}
           <button

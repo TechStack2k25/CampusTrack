@@ -67,7 +67,7 @@ const UserMenu = () => {
                 <Link to="/dashboard">
                     <div className='flex px-2 py-2 space-x-2 items-center'>
                       <div className="h-8 aspect-square bg-blue-500 rounded-full flex items-center justify-center text-white font-bold">
-                        {user?.name[0] || user?.email.toUpperCase()[0]}
+                      {user?.name?.toUpperCase()[0] || user?.email.toUpperCase()[0]}
                       </div>
                       <span className="text-black font-semibold truncate">{user?.name || user?.email.split('@')[0]}</span>
                     </div>

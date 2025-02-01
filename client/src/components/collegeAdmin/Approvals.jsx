@@ -5,27 +5,28 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { requestService } from "../../api/requestService.js";
 import { useDispatch } from "react-redux";
 import { setError, setSuccess } from "../../store/slices/userSlice.js";
+import Loading from "../Loading.jsx"
 
 function Approvals() {
-  const [requests, setRequests] = useState([
-    {
-      id: 1,
-      name: "John Doe",
-      role: "Student",
-      department: "Computer Science",
-      email: "john.doe@example.com",
-    },
-    {
-      id: 2,
-      name: "Jane Smith",
-      role: "Faculty",
-      department: "Mathematics",
-      email: "jane.smith@example.com",
-    },
-  ]);
-  const { data: approvals ,isLoading } = useApprovals();//may use isLoading and other error status
+  // const [requests, setRequests] = useState([
+  //   {
+  //     id: 1,
+  //     name: "John Doe",
+  //     role: "Student",
+  //     department: "Computer Science",
+  //     email: "john.doe@example.com",
+  //   },
+  //   {
+  //     id: 2,
+  //     name: "Jane Smith",
+  //     role: "Faculty",
+  //     department: "Mathematics",
+  //     email: "jane.smith@example.com",
+  //   },
+  // ]);
+  const { data: requests ,isLoading } = useApprovals();//may use isLoading and other error status
   const dispatch=useDispatch();
-
+  console.log(requests)
   const queryClient = useQueryClient();
 
   const mutationToUpdateApproval = useMutation({
@@ -38,30 +39,36 @@ function Approvals() {
     },
     onError: (error) => {
       dispatch(setError(error?.response?.data?.message))
-      console.error('Error creating course:', error);
+      console.error('Error in approval process:', error);
     }
   });
 
   const handleApprovalUpdate = (data) => {
-    console.log(data);
     mutationToUpdateApproval.mutate(data);
   };
 
 
   return (
-    <div className="flex-1 p-6 bg-gray-100 min-h-screen">
+      <>
+      {isLoading ?
+      <div className="flex-1 bg-gray-100 min-h-screen">
+          <Loading />
+        </div>
+      :
+      <div className="flex-1 p-6 bg-gray-100 min-h-screen">
       <h1 className="text-3xl font-bold text-gray-800 mb-8 text-center">Approval Requests</h1>
-      {requests.length === 0 ? (
+      {requests && requests?.length === 0 ? (
         <p className="text-center text-gray-600 mt-12 text-lg">
           No pending requests.
         </p>
       )
       :
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-      {requests?.map((request) => <ApprovalCard request={request} updatefn={handleApprovalUpdate}/>)}
+      {requests && requests?.length>0 && requests?.map((request) => <ApprovalCard key={request?._id} request={request} updatefn={handleApprovalUpdate}/>)}
     </div>}
-
     </div>
+  }
+  </>
   );
 };
 

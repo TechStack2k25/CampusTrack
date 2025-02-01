@@ -28,11 +28,11 @@ class DepartmentService {
   }
 
   // getting all department
-  getAllDepartments=async ()=> {
+  getAllDepartments=async (data)=> {//college id
     try {
-      const response = await this.api.get('/all');
+      const response = await this.api.get(`/all/${data?.id}`);
 
-      console.log(response);
+      // console.log(response);
       //may use response.status to verify success 201
       return response.data?.data?.data;
       //getting all departments

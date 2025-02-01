@@ -10,14 +10,16 @@ const requestSchema = mongoose.Schema({
     enum: ['User', 'Student', 'faculty', 'HOD', 'Admin'],
   },
   request_college: {
-    type: String,
+    type: mongoose.Types.ObjectId,
+    ref: 'College',
   },
   request_course: {
     type: mongoose.Types.ObjectId,
     ref: 'Course',
   },
   request_dep: {
-    type: String
+    type: mongoose.Types.ObjectId,
+    ref: 'Department',
   },
   request_task: {
     type: mongoose.Types.ObjectId,
