@@ -83,10 +83,10 @@ export const updatedepartment = asynchandler(async (req, res, next) => {
 
 export const getall = asynchandler(async (req, res, next) => {
   //to get the id of college
-  const user_id = req.user._id;
+  const id = req.params.id;
 
   //check the college exist or not
-  const reqcollege = await College.findOne({ admin: user_id });
+  const reqcollege = await College.findOne({ id });
 
   //if not exist return error
   if (!reqcollege) {
