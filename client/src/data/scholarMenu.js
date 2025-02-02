@@ -15,7 +15,7 @@ export const facultyMenu = [
   { name: 'Assignments', link: '/assignments',roles:["faculty"]  },
   { name: 'Events', link: '/events',roles:["faculty","HOD"]  },
   { name: 'Schedule', link: '/schedule',roles:["faculty","HOD"]  },
-  { name: 'Attendance', link: '/attendance',roles:["faculty","HOD"]  },
+  { name: 'Attendance', link: '/attendance',roles:["faculty"]  },
   { name: 'Submissions', link: '/submissions',roles:["faculty"]  },
   { name: 'Approvals', link: '/approvals',roles:["HOD"]  },
   { name: 'Notifications', link: '/notifications',roles:["faculty","HOD"]  },

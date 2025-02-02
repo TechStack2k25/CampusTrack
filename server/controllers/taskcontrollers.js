@@ -26,7 +26,7 @@ export const addtask = asynchandler(async (req, res, next) => {
   const { title, description, tasktype, reward_point, deadline } = req.body;
 
   //check all required field get or not
-  if (!title || !tasktype || !deadline || !reward_point) {
+  if (!title || !deadline || !reward_point) {
     return next(new ApiError('Enter the required field', 422));
   }
 

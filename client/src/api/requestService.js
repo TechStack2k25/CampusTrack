@@ -29,10 +29,26 @@ class RequestService {
       if(obj?.user){
         res=res.concat(obj.user);
       }
+      if(obj?.student){
+        res=res.concat(obj.student);
+      }
       return res;
       //getting all requests made 
     } catch (error) {
       console.error('Error requestService: getAll: ', error);
+      throw error;
+    }
+  }
+
+  // get all submissions
+  getAllSubmissions=async ()=> {//data required: tokens alongwith
+    try {
+      const response = await this.api.get('/getall');
+      console.log(response);
+      //may use response.status to verify success 201
+      return response.data?.data?.data?.submit;
+    } catch (error) {
+      console.error('Error requestService: getAllSubmissions: ', error);
       throw error;
     }
   }

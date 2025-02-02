@@ -13,7 +13,7 @@ const router = express.Router();
 router.get('/all/:id', getall);
 router.use(restrict_to('Admin'));
 //create
-router.post('/create/:id', adddepartment);
+router.post('/create', adddepartment);
 
 //delete
 router.delete('/del/:id', deldepartment);

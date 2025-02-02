@@ -1,15 +1,17 @@
 import React from "react";
 import { FaEdit, FaTrashAlt } from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
 
 const CourseCard = ({ course ,deletefn ,updatefn }) => {
+  const navigate=useNavigate();
   return (
     <div className="bg-white shadow-md rounded-lg p-6 mb-4">
-      <div className="flex justify-between px-1">
+      <div className="flex justify-between px-1 cursor-pointer" onClick={()=>navigate(course?._id)}>
       <h2 className="text-xl font-bold text-gray-800">{course.name}</h2>
       <strong  className="text-gray-600">{course?.coursecode?.toUpperCase()}</strong>
       </div>
       <div>
-        <p className="text-gray-600"><strong>Instructor:</strong> {course?.teacher?.name || course?.teacher?.email?.split('@')[0]}</p>
+        <p className="text-gray-600"><strong>Instructor:</strong> {course?.teacher?.name || course?.teacher?.email?.split('@')[0] || "Not assigned!"}</p>
         <p className="text-gray-600"><strong>Credits:</strong> {course.credit}</p>
       </div>
         <div className="flex justify-end space-x-4">
