@@ -6,6 +6,7 @@ import ApiError from '../utils/apierror.js';
 import Reward from '../models/rewardmodel.js';
 import { create_request } from './requestcontrollers.js';
 import { isvaliduser } from './authcontrollers.js';
+import mongoose from 'mongoose';
 
 export const addtask = asynchandler(async (req, res, next) => {
   //get the course id
@@ -55,35 +56,31 @@ export const addtask = asynchandler(async (req, res, next) => {
 
 export const getall = asynchandler(async (req, res, next) => {
   const course_id = req.params.id;
-  let alltasks = [];
+  let reqcourses = [];
   //check we want all task or task of specific course
   if (mongoose.Types.ObjectId.isValid(course_id)) {
-    const reqcourse = await Course.findById(course_id);
+    const reqcourses = await Course.findById(course_id);
 
     //check course exist or not
-    if (!reqcourse) {
+    if (!reqcourses) {
       return next(new ApiError('Course not found', 404));
     }
 
     //get all courses
-    alltasks = await reqcourse.populate('task');
+    reqcourses = await reqcourses.populate('task');
   }
 
   const courseIds = req.user.course;
   //  get all the course of all ids
-  const reqcourses = await Course.find({ _id: { $in: courseIds } }).populate(
-    'tasks'
-  );
+  reqcourses = await Course.find({ _id: { $in: courseIds } }).populate('task');
 
-  //get all the tasks
-  reqcourses.forEach((course) => {
-    alltasks.push(...course.task);
-  });
+  if (req.user.role === 'faculty')
+    reqcourses = await Course.find({ teacher: req.user._id }).populate('task');
 
   res.status(201).json({
     message: 'tasks fetch suceesfully',
     data: {
-      data: alltasks,
+      data: reqcourses,
     },
   });
 });
@@ -185,7 +182,7 @@ export const submittask = asynchandler(async (req, res, next) => {
   req.body.task = task_id;
 
   //create request for submit task
-  create_request(req, res, next);
+  await create_request(req, res, next);
 
   //on sucessfull return sucesss message
   res.status(201).json({

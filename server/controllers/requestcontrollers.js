@@ -18,7 +18,7 @@ export const create_request = asynchandler(async (req, res, next) => {
 
   //check the request is type of add student and add course
   if (!requestType) {
-    return next(new ApiError('Error in generated request.Try again', 404));
+    return next(new ApiError('Error in generating request.Try again', 404));
   }
 
   //if course is exist
@@ -28,13 +28,13 @@ export const create_request = asynchandler(async (req, res, next) => {
 
     //if course is not found give error
     if (!reqcourse) {
-      return next(new ApiError('Error in generated request.Try again', 404));
+      return next(new ApiError('Error in generating request.Try again', 404));
     }
-    //check the qlready requested or not
-    const existed_request = await Request.find({
+    // check the qlready requested or not
+    const existed_request = await Request.findOne({
       requestType,
       request_course: course,
-      request_by: requser,
+      request_by: requser._id,
       request_role: req.user.role,
       request_dep: req.user.department,
     });
@@ -54,7 +54,7 @@ export const create_request = asynchandler(async (req, res, next) => {
 
     //check request is created sucessfully or not
     if (!newrequest) {
-      return next(new ApiError('Error in generated request.Try again', 404));
+      return next(new ApiError('Error in generating request.Try again', 404));
     }
   }
 
@@ -72,7 +72,7 @@ export const create_request = asynchandler(async (req, res, next) => {
 
       //if not exist return error
       if (!reqcollege) {
-        return next(new ApiError('Error in generated request.Try again', 404));
+        return next(new ApiError('Error in generating request.Try again', 404));
       }
 
       //check the request is already exist
@@ -86,7 +86,7 @@ export const create_request = asynchandler(async (req, res, next) => {
       });
 
       if (existed_request) {
-        return next(new ApiError('You are already requets for it', 411));
+        return next(new ApiError('You have already request for it', 411));
       }
 
       //create the request
@@ -101,7 +101,7 @@ export const create_request = asynchandler(async (req, res, next) => {
 
       ///check the request is created or not
       if (!newrequest) {
-        return next(new ApiError('Error in generated request.Try again', 404));
+        return next(new ApiError('Error in generating request.Try again', 404));
       }
     }
 
@@ -221,7 +221,7 @@ export const getall_request = asynchandler(async (req, res, next) => {
 
     //to get all submit request
     const submit_request = await Request.find({
-      requestType: 'Sunmit Task',
+      requestType: 'Submit Task',
       request_course: { $in: courseIds },
     });
     allrequest.student = student_request;

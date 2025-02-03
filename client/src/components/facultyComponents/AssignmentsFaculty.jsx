@@ -5,14 +5,17 @@ import { setError, setSuccess } from "../../store/slices/userSlice";
 import { useDispatch } from "react-redux";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useCourses } from "../../data/courses.js";
+import { useAssignments } from "../../data/assignments.js";
+import AssignmentCard from "../Utils/AssignmentCard.jsx";
 
 const AssignmentsFaculty = () => {
   const dispatch=useDispatch();
   const { register, handleSubmit, reset, formState:{ errors } } = useForm();
   const queryClient= useQueryClient();
-  const [assignments, setAssignments] = useState([]);
   
     const { data: allCourses } = useCourses();
+
+    const { data: coursesHavingAssignments } = useAssignments();
 
   // Defined mutation using useMutation hook
   const mutationTocreateAssignment = useMutation({
@@ -35,10 +38,6 @@ const AssignmentsFaculty = () => {
     reset(); // Reset the form fields
   };
 
-  // Function to remove an assignment
-  const removeAssignment = (id) => {
-    setAssignments(assignments.filter((assignment) => assignment.id !== id));
-  };
 
   return (
     <div className="flex-1 p-6 bg-gray-100 min-h-screen">
@@ -130,24 +129,25 @@ const AssignmentsFaculty = () => {
       </form>
 
       {/* Assignment List */}
-      <div>
-        {assignments && assignments?.length>0 && assignments.map((assignment) => (
-          <div
-            key={assignment.id}
-            className="bg-white p-4 shadow rounded mb-2 flex justify-between items-center"
-          >
-            <p>
-              <strong>{assignment.title}</strong> - Due by {assignment.deadline} 
-              <br />
-              <span className="text-sm">Course: {assignment.course}, Semester: {assignment.semester}</span>
-            </p>
-            <button
-              onClick={() => removeAssignment(assignment.id)}
-              className="bg-red-500 text-white px-4 py-2 rounded"
-            >
-              Remove
-            </button>
-          </div>
+      <div className="grid gap-2 grid-cols-2">
+        {coursesHavingAssignments && coursesHavingAssignments?.length>0 && coursesHavingAssignments.map((course) => (
+          // <div
+          //   key={assignment._id}
+          //   className="bg-white p-4 shadow rounded mb-2 flex justify-between items-center"
+          // >
+          //   <p>
+          //     <strong>{assignment.title}</strong> - Due by {assignment.deadline} 
+          //     <br />
+          //     <span className="text-sm">Course: {assignment.course}, Semester: {assignment.semester}</span>
+          //   </p>
+          //   <button
+          //     onClick={() => removeAssignment(assignment._id)}
+          //     className="bg-red-500 text-white px-4 py-2 rounded"
+          //   >
+          //     Remove
+          //   </button>
+          // </div>
+          course && course?.task &&  course?.task?.map((assignment)=><AssignmentCard key={assignment._id} assignment={{...assignment,coursename:course?.name}}/>)
         ))}
       </div>
     </div>

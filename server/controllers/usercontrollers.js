@@ -24,18 +24,16 @@ export const updateuser = asynchandler(async (req, res, next) => {
 
   const semail = email.trim().toLowerCase();
   //check the user exist or not
-  const requser = await User.findOne({ semail });
+  const requser = await User.findOne({ email:semail });
 
   //if not exit then returmn mesaage of sign up
   if (!requser) {
     return next(new ApiError('NO user found ! ,Sign up', 404));
   }
-  let temp = 1;
   //if role is present then create a request
   if (role && requser.role != role) {
-    temp = 0;
     req.body.requestType = 'Add user';
-    temp = create_request(req, res, next);
+    await create_request(req, res, next);
   }
   //update the user by id
   const updateduser = await User.findByIdAndUpdate(
@@ -52,14 +50,6 @@ export const updateuser = asynchandler(async (req, res, next) => {
     { new: true, runValidators: true }
   );
 
-  if (temp === 0) {
-    res.status(201).json({
-      message: 'Error in generated request and user updated sucessfully',
-      data: {
-        user: updateduser,
-      },
-    });
-  }
   //user updated give the new data of user
   res.status(201).json({
     message: 'user updated suceesfully',

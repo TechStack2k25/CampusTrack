@@ -17,14 +17,13 @@ export const facultyMenu = [
   { name: 'Schedule', link: '/schedule',roles:["faculty","HOD"]  },
   { name: 'Attendance', link: '/attendance',roles:["faculty"]  },
   { name: 'Submissions', link: '/submissions',roles:["faculty"]  },
-  { name: 'Approvals', link: '/approvals',roles:["HOD"]  },
+  { name: 'Approvals', link: '/approvals',roles:["HOD","faculty"]  },
   { name: 'Notifications', link: '/notifications',roles:["faculty","HOD"]  },
 ];
 
 
 export const adminMenu = [
   { name: 'Dashboard', link: '/dashboard' },
-  { name: 'Courses', link: '/courses' },
   { name: 'Departments', link: '/Departments' },
   { name: 'Faculty', link: '/faculty' },
   { name: 'Scholars', link: '/scholars' },
