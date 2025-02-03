@@ -24,10 +24,11 @@ export const addcourse = asynchandler(async (req, res, next) => {
   isvaliduser(reqdepartment.hod, user_id);
 
   //take the info of course from request.body
-  const { name, coursecode, credit, teacher } = req.body;
+  let { name, coursecode, credit, teacher } = req.body;
 
+  coursecode = coursecode.trim().toLowerCase();
   //create the course
-  const exist_course = await Course.findOne({ name, coursecode });
+  const exist_course = await Course.findOne({ coursecode });
 
   //if exist give error
   if (exist_course) {
@@ -122,16 +123,20 @@ export const getall = asynchandler(async (req, res, next) => {
 
   let allcourses;
   let department_id = req.params?.id;
-  if (req.user.role == 'HOD' || mongoose.Types.ObjectId.isValid(department_id)) {
-    if (!mongoose.Types.ObjectId.isValid(department_id)) department_id = req.user.department;
+  if (
+    req.user.role == 'HOD' ||
+    mongoose.Types.ObjectId.isValid(department_id)
+  ) {
+    if (!mongoose.Types.ObjectId.isValid(department_id))
+      department_id = req.user.department;
     // console.log(department_id);
     //check the department exist or not
     const reqdepartment = await Department.findById(department_id).populate(
       'courses'
     );
-   if(!department_id){
+    if (!department_id) {
       isvaliduser(req.user._id, reqdepartment.hod, next);
-   }
+    }
     //if not exist give error
     if (!reqdepartment) {
       return next(new ApiError('Unable to fetch the department retry it', 422));
@@ -141,14 +146,15 @@ export const getall = asynchandler(async (req, res, next) => {
       path: 'courses',
       populate: { path: 'teacher' }, // Nested population
     });
-    allcourses=allcourses.courses;
+    allcourses = allcourses.courses;
   }
 
   //if user is faculty
   else if (req.user.role == 'faculty') {
-    allcourses = await Course.find({ teacher: req.user._id }).populate('teacher');
+    allcourses = await Course.find({ teacher: req.user._id }).populate(
+      'teacher'
+    );
     // console.log(allcourses);
-    
   }
   //if the user is student
   else if (req.user.role === 'Student') {
@@ -156,7 +162,7 @@ export const getall = asynchandler(async (req, res, next) => {
       path: 'course',
       populate: { path: 'teacher' }, // Nested population
     });
-    allcourses=allcourses.course;
+    allcourses = allcourses.course;
   }
 
   //check the course is exist or not

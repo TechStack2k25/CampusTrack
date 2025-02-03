@@ -22,8 +22,10 @@ const createacessandrefreshtoken = (id) => {
 //add username for signup later
 export const signup = asynchandler(async (req, res, next) => {
   //take the value from request
-  const { email, password, confirmpassword } = req.body;
-
+  let { email, password, confirmpassword } = req.body;
+  email = email.trim().toLowerCase();
+  password = password.trim();
+  confirmpassword = confirmpassword.trim();
   //check email password and confiem password are not missing
   if (!email || !password || !confirmpassword) {
     return next(new ApiError('All field are required', 400));
@@ -69,14 +71,16 @@ export const signup = asynchandler(async (req, res, next) => {
       acesstoken,
       refreshtoken,
       email,
-      user:newuser,
+      user: newuser,
     },
   });
 });
 
 export const login = asynchandler(async (req, res, next) => {
-  const { email, password } = req.body;
+  let { email, password } = req.body;
 
+  email = email.trim().toLowerCase();
+  password = password.trim();
   //check email password and confiem password are not missing
   if (!email || !password) {
     return next(new ApiError('All field are required', 400));
@@ -214,7 +218,8 @@ export const isvaliduser = (user, authorised_user, next) => {
 };
 export const forgotpassword = asynchandler(async (req, res, next) => {
   //get the email to forgot password
-  const { email } = req.body;
+  let { email } = req.body;
+  email = email.trim().toLowerCase();
   //check the user is exist or not
   const requser = await User.findOne({ email });
   //if not exist give error
@@ -254,8 +259,6 @@ export const logout = asynchandler(async (req, res, next) => {
   //   sameSite: 'Lax',
   // };
 
-  res
-    .clearCookie('acesstoken')
-    .clearCookie('refreshtoken');
+  res.clearCookie('acesstoken').clearCookie('refreshtoken');
   res.status(200).json({ status: 'success' });
 });

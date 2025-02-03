@@ -22,8 +22,9 @@ export const updateuser = asynchandler(async (req, res, next) => {
     email,
   } = req.body;
 
+  const semail = email.trim().toLowerCase();
   //check the user exist or not
-  const requser = await User.findOne({ email });
+  const requser = await User.findOne({ semail });
 
   //if not exit then returmn mesaage of sign up
   if (!requser) {

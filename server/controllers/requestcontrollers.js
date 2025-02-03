@@ -212,11 +212,13 @@ export const getall_request = asynchandler(async (req, res, next) => {
   if (req.user.role === 'faculty') {
     const reqcourse = await Course.find({ teacher: req.user._id });
     const courseIds = reqcourse.map((course) => course._id);
-    console.log(courseIds)
+    console.log(courseIds);
     const student_request = await Request.find({
       requestType: 'Add Course',
       request_course: { $in: courseIds },
-    }).populate('request_by').populate('request_course');
+    })
+      .populate('request_by')
+      .populate('request_course');
 
     //to get all submit request
     const submit_request = await Request.find({
@@ -342,7 +344,14 @@ export const updaterequest = asynchandler(async (req, res, next) => {
         return next(new ApiError('Deoartment not found', 404));
       }
 
+      //before make hod remove subject from it
+      const newcourse = await Course.updateMany(
+        { teacher: require_request.request_by },
+        { teacher: null },
+        { runValidators: true }
+      );
       //make the hod of it
+      requser.course = [];
       reqdepartment.hod = require_request.request_by;
       reqdepartment.save();
       //change the role of user

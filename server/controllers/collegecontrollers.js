@@ -5,8 +5,8 @@ import asynchandler from '../utils/asynchandler.js';
 import { isvaliduser } from './authcontrollers.js';
 export const addcollege = asynchandler(async (req, res, next) => {
   //get the data from req to create new entity
-  const { name, id, degree } = req.body;
-
+  let { name, id, degree } = req.body;
+  id = id.trim().toLowerCase();
   //check get all the field
   if (!name || !id) {
     return next(new ApiError('Please enter all the field', 400));
