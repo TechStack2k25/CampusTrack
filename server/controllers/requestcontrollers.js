@@ -31,6 +31,19 @@ export const create_request = asynchandler(async (req, res, next) => {
       return next(new ApiError('Error in generated request.Try again', 404));
     }
 
+    //check the qlready requested or not
+    const existed_request = await Request.find({
+      requestType,
+      request_course: course,
+      request_by: requser,
+      request_role: req.user.role,
+      request_dep: req.user.department,
+    });
+
+    if (existed_request) {
+      return next(new ApiError('You are already request for it', 411));
+    }
+
     //create the request
     const newrequest = await Request.create({
       requestType,
@@ -61,6 +74,20 @@ export const create_request = asynchandler(async (req, res, next) => {
       //if not exist return error
       if (!reqcollege) {
         return next(new ApiError('Error in generated request.Try again', 404));
+      }
+
+      //check the request is already exist
+      const existed_request = await Request.find({
+        requestType,
+        request_college: reqcollege._id,
+        request_by: requser._id,
+        request_role: role,
+        request_dep: reqdepartment._id,
+        request_year: year,
+      });
+
+      if (existed_request) {
+        return next(new ApiError('You are already requets for it', 411));
       }
 
       //create the request
@@ -94,6 +121,19 @@ export const create_request = asynchandler(async (req, res, next) => {
       if (!reqdepartment) {
         return next(new ApiError('Department Not found', 404));
       }
+
+      //check the request is existed or not
+      const existed_request = await Request.find({
+        requestType,
+        request_dep: reqdepartment._id,
+        request_by: requser._id,
+        request_role: role,
+      });
+
+      if (existed_request) {
+        return next(new ApiError('You are Already request for it', 411));
+      }
+
       const newrequest = await Request.create({
         requestType,
         request_dep: reqdepartment._id,
@@ -162,7 +202,9 @@ export const getall_request = asynchandler(async (req, res, next) => {
     const faculty_request = await Request.find({
       request_dep: reqdepartment._id,
       request_role: 'faculty',
-    }).populate('request_course').populate('request_by');
+    })
+      .populate('request_course')
+      .populate('request_by');
     allrequest.faculty = faculty_request;
   }
 
@@ -209,7 +251,6 @@ export const updaterequest = asynchandler(async (req, res, next) => {
   // get the user to make change in him
   const requser = await User.findById(require_request.request_by);
 
- 
   //if not exist give error
   if (!require_request) {
     return next(new ApiError('Request is not found to update', 404));
@@ -366,12 +407,12 @@ export const updaterequest = asynchandler(async (req, res, next) => {
     }
   }
 
-  if(new_status==='rejected'){
+  if (new_status === 'rejected') {
     const deleted_request = await Request.findByIdAndDelete(request_id);
 
-  if(!deleted_request){
-    return next(new ApiError('Try again later!', 422));
-  }
+    if (!deleted_request) {
+      return next(new ApiError('Try again later!', 422));
+    }
   }
   //return sucess message
   res.status(201).json({
