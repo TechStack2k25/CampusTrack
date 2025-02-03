@@ -5,10 +5,10 @@ import asynchandler from '../utils/asynchandler.js';
 
 export const adddepartment = asynchandler(async (req, res, next) => {
   //get thed id of college
-  const college_id = req.params.id;
+  const user_id=req.user._id;
 
   //check the college is exist or not
-  const reqcollege = await College.find({ id: college_id });
+  const reqcollege = await College.findOne({ admin: user_id});
 
   //if not exist give error
   if (!reqcollege) {
@@ -23,7 +23,7 @@ export const adddepartment = asynchandler(async (req, res, next) => {
   }
 
   //check the department is exist or not
-  const existed_department = await Department.findOne({ name, code });
+  const existed_department = await Department.findOne({ college:reqcollege._id, code });
 
   //if exist return the error message
   if (existed_department) {
@@ -36,7 +36,6 @@ export const adddepartment = asynchandler(async (req, res, next) => {
     hod,
     college: reqcollege._id,
   });
-
   //add the department in college
   reqcollege.department.push(newdepartment._id);
   reqcollege.save();
@@ -86,7 +85,7 @@ export const getall = asynchandler(async (req, res, next) => {
   const id = req.params.id;
 
   //check the college exist or not
-  const reqcollege = await College.findOne({ id });
+  const reqcollege = await College.findOne({ id }) ||await College.findOne({admin:req.user._id});
 
   //if not exist return error
   if (!reqcollege) {

@@ -1,12 +1,16 @@
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
+import { setError, setSuccess } from "../../store/slices/userSlice";
+import { departmentService } from "../../api/departmentService";
+import { useDepartments } from "../../data/departments.js";
+import { useDispatch } from "react-redux";
 
 const Departments = () => {
-  const [departments, setDepartments] = useState([
-    { id: 1, name: "Computer Science", description: "CS Department" },
-    { id: 2, name: "Electrical Engineering", description: "EE Department" },
-    { id: 3, name: "Mechanical Engineering", description: "ME Department" },
-  ]);
+  const { data:departments }=useDepartments("all");
+  console.log(departments)
+  const dispatch=useDispatch();
+  const queryClient=useQueryClient();
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const {
@@ -16,9 +20,23 @@ const Departments = () => {
     formState: { errors },
   } = useForm();
 
-  const addDepartment = (data) => {
-    console.log(data);
-    //adding or saving data
+  // Defined mutation using useMutation hook
+  const mutationTocreateDepartment = useMutation({
+    mutationFn: departmentService.createDepartment,
+    onSuccess: (data) => {
+      console.log('department created successfully:', data);
+      dispatch(setSuccess('Department created successfully!'));
+      //invalidate alldepartment queries to refetch data
+      queryClient.invalidateQueries(['alldepartments']); 
+    },
+    onError: (error) => {
+      dispatch(setError(error?.response?.data?.message))
+      console.error('Error creating department', error);
+    }
+  });
+
+  const addDepartment =async(newdepartment) => {
+    mutationTocreateDepartment.mutate(newdepartment);
     reset(); // Reset form fields
     setIsModalOpen(false); // Close modal
   };
@@ -29,26 +47,33 @@ const Departments = () => {
         <h1 className="text-2xl font-bold text-gray-700">Departments</h1>
         <button
           onClick={() => setIsModalOpen(true)}
-          className="bg-blue-600 text-white px-3 py-1 rounded shadow hover:bg-blue-700 font-black text-xl"
+          className="transition duration-300 transform text-blue-600 px-3 py-1 rounded shadow-md hover:bg-blue-700 hover:text-white font-black text-xl hover:rounded-full"
         >
           + 
         </button>
       </div>
 
       {/* Departments List */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {departments.map((dept) => (
+        {departments && departments?.length>0 ? 
+         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {departments?.map((dept) => 
           <div
-            key={dept.id}
-            className="bg-white p-4 rounded shadow hover:shadow-lg transition"
-          >
-            <h2 className="text-lg font-semibold text-gray-700">
-              {dept.name}
-            </h2>
-            <p className="text-sm text-gray-500">{dept.description}</p>
-          </div>
-        ))}
-      </div>
+          key={dept._id}
+          className="bg-gradient-to-br from-blue-50 to-white p-6 rounded-2xl shadow-md hover:shadow-xl transition duration-300 transform hover:-translate-y-1 border border-gray-200"
+        >
+          <h2 className="text-xl font-bold text-blue-600">{dept.name}</h2>
+          <p className="text-sm font-bold text-gray-600 mt-1 bg-gray-100 px-2 py-1 rounded-md inline-block">
+            {dept?.code}
+          </p>
+        </div>
+        )}
+         </div>
+          :
+          
+            <p className="text-center text-gray-600 mt-12 text-lg">
+              No Departments to show.
+            </p>
+        }
 
       {/* Modal for Adding Department */}
       {isModalOpen && (
@@ -85,29 +110,24 @@ const Departments = () => {
                 )}
               </div>
 
-              {/* Department Description */}
+              {/* Department Code */}
               <div className="mb-4">
                 <label
-                  htmlFor="description"
+                  htmlFor="code"
                   className="block text-sm font-medium text-gray-600"
                 >
-                  Description
+                  Department Code
                 </label>
-                <textarea
-                  id="description"
-                  {...register("description", {
-                    required: "Description is required",
-                  })}
+                <input
+                  type="text"
+                  id="departmentcode"
+                  {...register("code", { required: "Code is required!" })}
                   className={`w-full px-4 py-2 border rounded ${
-                    errors.description
-                      ? "border-red-500"
-                      : "border-gray-300"
+                    errors.code ? "border-red-500" : "border-gray-300"
                   }`}
-                ></textarea>
-                {errors.description && (
-                  <p className="text-sm text-red-500">
-                    {errors.description.message}
-                  </p>
+                />
+                {errors.code && (
+                  <p className="text-sm text-red-500">{errors.code.message}</p>
                 )}
               </div>
 

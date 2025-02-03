@@ -124,7 +124,7 @@ export const getall = asynchandler(async (req, res, next) => {
   let department_id = req.params?.id;
   if (req.user.role == 'HOD' || mongoose.Types.ObjectId.isValid(department_id)) {
     if (!mongoose.Types.ObjectId.isValid(department_id)) department_id = req.user.department;
-    console.log(department_id);
+    // console.log(department_id);
     //check the department exist or not
     const reqdepartment = await Department.findById(department_id).populate(
       'courses'
@@ -141,18 +141,13 @@ export const getall = asynchandler(async (req, res, next) => {
       path: 'courses',
       populate: { path: 'teacher' }, // Nested population
     });
-    res.status(201).json({
-      message: 'courses fetch sucessfully',
-      data: {
-        data: allcourses.courses,
-      },
-    });
+    allcourses=allcourses.courses;
   }
 
   //if user is faculty
   else if (req.user.role == 'faculty') {
     allcourses = await Course.find({ teacher: req.user._id }).populate('teacher');
-    console.log(allcourses);
+    // console.log(allcourses);
     
   }
   //if the user is student
@@ -161,6 +156,7 @@ export const getall = asynchandler(async (req, res, next) => {
       path: 'course',
       populate: { path: 'teacher' }, // Nested population
     });
+    allcourses=allcourses.course;
   }
 
   //check the course is exist or not

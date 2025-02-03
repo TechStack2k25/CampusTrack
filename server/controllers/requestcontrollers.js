@@ -198,7 +198,7 @@ export const getall_request = asynchandler(async (req, res, next) => {
   const reqdepartment = await Department.findOne({ hod: req.user._id });
   if (reqdepartment) {
     //find all faculty request
-    console.log(reqdepartment);
+    // console.log(reqdepartment);
     const faculty_request = await Request.find({
       request_dep: reqdepartment._id,
       request_role: 'faculty',
@@ -212,10 +212,11 @@ export const getall_request = asynchandler(async (req, res, next) => {
   if (req.user.role === 'faculty') {
     const reqcourse = await Course.find({ teacher: req.user._id });
     const courseIds = reqcourse.map((course) => course._id);
+    console.log(courseIds)
     const student_request = await Request.find({
       requestType: 'Add Course',
       request_course: { $in: courseIds },
-    });
+    }).populate('request_by').populate('request_course');
 
     //to get all submit request
     const submit_request = await Request.find({

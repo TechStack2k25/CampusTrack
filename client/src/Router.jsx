@@ -22,6 +22,7 @@ const Routers = () => {
             <Route path="dashboard" element={<DashboardFacultyContent />} />
             <Route path="profile" element={<Profile />} />
             <Route path="courses" element={<Courses />} />
+            <Route path="courses/:courseId" element={<Assignments />} />
             <Route path="assignments" element={<AssignmentsFaculty />} />
             <Route path="events" element={<Events />} />
             <Route path="schedule" element={<Schedule />} />
@@ -83,6 +84,7 @@ const Routers = () => {
             <Route path="dashboard" element={<DashboardContent />} />
             <Route path="profile" element={<Profile />} />
             <Route path="courses" element={<Courses />} />
+            <Route path="courses/:courseId" element={<Assignments />} />
             <Route path="assignments" element={<Assignments />} />
             <Route path="events" element={<Events />} />
             <Route path="schedule" element={<Schedule />} />

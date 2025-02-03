@@ -5,9 +5,13 @@ import { IoCloseSharp } from "react-icons/io5";
 import { useSelector } from 'react-redux'
 import { userService } from '../api/userService';
 import { useMutation } from '@tanstack/react-query';
+import { setError, setSuccess } from '../store/slices/userSlice';
+import { useDispatch } from 'react-redux';
 
 const Sidebar = ({menuItems}) => {
     const [open,setOpen]=useState(false);
+
+    const dispatch=useDispatch();
 
     const {user}=useSelector((state)=>state.user);
 

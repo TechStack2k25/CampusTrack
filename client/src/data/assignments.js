@@ -1,24 +1,12 @@
-export const assignments = [
-    {
-      id: 1,
-      title: "Business Economics Project",
-      subject: "Economics",
-      dueDate: "2025-01-15",
-      status: "Pending",
-    },
-    {
-      id: 2,
-      title: "Data Structures Assignment",
-      subject: "Computer Science",
-      dueDate: "2025-01-12",
-      status: "Completed",
-    },
-    {
-      id: 3,
-      title: "Operating Systems Quiz",
-      subject: "Operating Systems",
-      dueDate: "2025-01-18",
-      status: "In Progress",
-    },
-];
-  
+import { useQuery } from "@tanstack/react-query";
+import { taskService } from "../api/taskService";
+
+export const useAssignments = (id) => {
+  return useQuery({
+    queryKey: ["allassignments",id], 
+    queryFn: ()=>taskService.getAll({id}),
+    staleTime: 60000, // Keep data fresh for 60 sec
+    cacheTime: 300000, // Cache for 5 mins
+    refetchOnWindowFocus: false, // Prevent auto refetching on tab switch
+  });
+};

@@ -13,9 +13,9 @@ class DepartmentService {
   }
 
   // Creating department
-  createDepartment=async (data)=> {//data required: id, name, code, hod
+  createDepartment=async (data)=> {//data required: name, code, hod
     try {
-      const response = await this.api.post(`/create/${data?.id}`,data);
+      const response = await this.api.post(`/create`,data);
 
       console.log(response);
       //may use response.status to verify success 201

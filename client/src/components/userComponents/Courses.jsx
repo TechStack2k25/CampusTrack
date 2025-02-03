@@ -72,12 +72,16 @@ function Courses() {
     <div className="container mx-auto px-4 py-6">
       {user && user?.role==='HOD' && openForm && <AddCourse addCourse={addCourse} data={dataToUpdate} setData={setDataToUpdate} openForm={openForm} setOpenForm={setOpenForm} />}
       <h1 className="text-2xl font-bold text-center text-gray-800 ">Courses</h1>
-      <div className='sm:grid sm:grid-cols-2 gap-2'>
+      {courses && courses?.length>0 ? <div className='sm:grid sm:grid-cols-2 gap-2'>
         {courses && courses?.map((course) => (
           <CourseCard key={course._id} course={course} updatefn={updateData} deletefn={deleteCourse} />
         ))}
-      </div>
-      {user && user?.role==='HOD' && !openForm && <div onClick={()=>setOpenForm(true)} className="cursor-pointer fixed bottom-8 right-8 text-white  font-bold text-4xl bg-blue-500 hover:bg-blue-700 h-12 text-center aspect-square rounded-xl">
+      </div>:(
+        <p className="text-center text-gray-600 mt-12 text-lg">
+          No Courses to show.
+        </p>
+      )}
+      {user && user?.role==='HOD' && !openForm && <div onClick={()=>setOpenForm(true)} className="animate-bounce cursor-pointer fixed bottom-8 right-8 text-white  font-bold text-4xl bg-blue-500 hover:bg-blue-700 h-12 text-center aspect-square rounded-xl">
         +
     </div>}
     </div>

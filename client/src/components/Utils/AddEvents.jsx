@@ -50,19 +50,6 @@ const AddEvent = ({ addEvent, openForm, setOpenForm }) => {
         </div>
 
         <div className="mb-4">
-          <label className="block text-gray-700">Event Location</label>
-          <input
-            type="text"
-            className="w-full mt-1 p-2 border rounded-md"
-            placeholder="Enter event location"
-            {...register("location", { required: "Event location is required" })}
-          />
-          {errors.location && (
-            <p className="text-red-500 text-sm">{errors.location.message}</p>
-          )}
-        </div>
-
-        <div className="mb-4">
           <label className="block text-gray-700">Event Description</label>
           <textarea
             className="w-full mt-1 p-2 border rounded-md"
