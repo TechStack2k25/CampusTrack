@@ -30,7 +30,6 @@ export const create_request = asynchandler(async (req, res, next) => {
     if (!reqcourse) {
       return next(new ApiError('Error in generated request.Try again', 404));
     }
-
     //check the qlready requested or not
     const existed_request = await Request.find({
       requestType,
