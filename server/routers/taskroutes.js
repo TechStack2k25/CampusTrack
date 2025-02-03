@@ -11,12 +11,12 @@ import {
 const router = express.Router();
 //submit the assignment
 router.post('/submit/:id', submittask);
+//get all task
+router.get('/all/:id', getall);
 //allow faculty to change in task
 router.use(restrict_to('faculty'));
 //create
 router.post('/create/:id', addtask);
-//get all task
-router.get('/all/:id', getall);
 //delete
 router.delete('/del/:id', deltask);
 //update

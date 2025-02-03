@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { taskService } from "../api/taskService";
 
-export const useAssignments = (id) => {
+export const useAssignments = (id="all") => {
   return useQuery({
     queryKey: ["allassignments",id], 
     queryFn: ()=>taskService.getAll({id}),

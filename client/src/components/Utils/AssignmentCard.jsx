@@ -7,6 +7,8 @@ const AssignmentCard = ({ assignment }) => {
     "In Progress": "bg-yellow-100 text-yellow-700",
   };
 
+  //update and delete functionality to add
+
   const date=new Date(assignment?.deadline);
   const isPastDeadline = assignment?.deadline && date < new Date();
 

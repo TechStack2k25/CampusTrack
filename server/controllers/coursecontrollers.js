@@ -213,7 +213,7 @@ export const add_course_by_student = asynchandler(async (req, res, next) => {
   }
   req.body.requestType = 'Add Course';
   req.body.course = course_id;
-  create_request(req, res, next);
+  await create_request(req, res, next);
 
   res.status(201).json({
     message: 'request generated succesfully',
