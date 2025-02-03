@@ -57,7 +57,7 @@ export const getall = asynchandler(async (req, res, next) => {
   const course_id = req.params.id;
   let alltasks = [];
   //check we want all task or task of specific course
-  if (course_id) {
+  if (mongoose.Types.ObjectId.isValid(course_id)) {
     const reqcourse = await Course.findById(course_id);
 
     //check course exist or not
