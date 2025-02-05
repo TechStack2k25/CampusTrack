@@ -162,7 +162,10 @@ export const create_request = asynchandler(async (req, res, next) => {
   //     );
   //   }
   // }
-  return { message: 'sucess' };
+  // return { message: 'success' };
+  return res.status(201).json({
+      message: 'Request generated successfully',
+    }); 
 });
 
 export const getall_request = asynchandler(async (req, res, next) => {

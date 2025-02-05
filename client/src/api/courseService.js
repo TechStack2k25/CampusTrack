@@ -20,7 +20,7 @@ class CourseService {
       if (error.response && error.response.status === 401) {
         console.warn('Unauthorized! Logging out user...');
         store.dispatch(logout()); // Dispatch logout action
-        localStorage.removeItem('persist:CTroot');
+        localStorage.removeItem('persist:CTroot');//optional
       }
       return Promise.reject(error); // Reject error for further handling
     }

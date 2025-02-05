@@ -8,6 +8,9 @@ const AssignmentCard = ({ assignment }) => {
   };
 
   //update and delete functionality to add
+  console.log(assignment)
+  console.log("hello");
+  
 
   const date=new Date(assignment?.deadline);
   const isPastDeadline = assignment?.deadline && date < new Date();

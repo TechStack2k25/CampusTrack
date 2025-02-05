@@ -81,7 +81,7 @@ const Profile = () => {
                 />
             </div>}
 
-            {user?.role!=="User" && user?.college && <div>
+            {/* {user?.role!=="User" && user?.college && <div>
                 <label className="block text-sm font-medium text-gray-600">College:</label>
                 <input
                 type="text"
@@ -89,7 +89,7 @@ const Profile = () => {
                 disabled={true}
                 className="w-full p-2 border border-gray-300 rounded mt-1"
                 />
-            </div>}
+            </div>} */}
 
             {user?.year && <div>
                 <label className="block text-sm font-medium text-gray-600">Batch:</label>

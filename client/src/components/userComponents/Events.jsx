@@ -3,11 +3,14 @@ import { EventCard, AddEvents } from "../Utils/index.js";
 import { useEvents } from "../../data/events.js";
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { eventService } from "../../api/eventService.js";
+import { setSuccess } from "../../store/slices/userSlice.js";
+import { useDispatch } from "react-redux";
 
 const Events = () => {
   const [filter, setFilter] = useState("upcoming");
   const [openForm,setOpenForm]=useState(false);
   const queryClient = useQueryClient();
+  const dispatch=useDispatch();
 
   const currentDate = new Date();
 

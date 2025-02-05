@@ -54,9 +54,9 @@ export const updateuser = asynchandler(async (req, res, next) => {
   //if role is present then create a request
   if (role && requser.role != role) {
     req.body.requestType = 'Add user';
-    const result = await create_request(req, res, next); // This will call next(error) if an error occurs
+    return await create_request(req, res, next); // This will call next(error) if an error occurs
 
-    if (!result) return;
+    // if (!result) return;
   }
   //update the user by id
   const updateduser = await User.findByIdAndUpdate(

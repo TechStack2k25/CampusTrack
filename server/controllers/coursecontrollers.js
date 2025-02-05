@@ -217,11 +217,15 @@ export const add_course_by_student = asynchandler(async (req, res, next) => {
   req.body.requestType = 'Add Course';
   req.body.course = course_id;
   // Call create_request and let it handle any errors
-  const result = await create_request(req, res, next); // This will call next(error) if an error occurs
+  // const result = 
+  return await create_request(req, res, next); // This will call next(error) if an error occurs
 
-  if (!result) return;
+  // console.log(result);
+  // if (result?.message!=='success') return;
+  // console.log(result);
+
   // If create_request is successful, send the success response
-  return res.status(201).json({
-    message: 'Request generated successfully',
-  }); // This ensures error is passed to error handling middleware
+  // return res.status(201).json({
+  //   message: 'Request generated successfully',
+  // }); // This ensures error is passed to error handling middleware
 });

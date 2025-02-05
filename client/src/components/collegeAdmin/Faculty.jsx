@@ -19,6 +19,7 @@ const Faculty = () => {
     },
   ];
 
+
   return (
     <DataList
       title="Faculty Members"

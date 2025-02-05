@@ -20,7 +20,7 @@ class UserService {
         if (error.response && error.response.status === 401) {
           console.warn('Unauthorized! Logging out user...');
           store.dispatch(logout()); // Dispatch logout action
-          localStorage.removeItem('persist:CTroot');
+          localStorage.removeItem('persist:CTroot');//optional
         }
         return Promise.reject(error); // Reject error for further handling
       }
@@ -28,7 +28,18 @@ class UserService {
   }
   
   // get all user
-  // getUsers=async ()=> {}
+  getUsers= async (data)=> {// Ids of course, department, college
+      try {
+        const response = await this.api.get('/all',data);
+
+        console.log(response);
+
+        return response;
+      } catch (error) {
+        console.error('Error userService: getUsers: ', error);
+        throw error;
+      }
+  }
 
   // deleteUser=async ()=> {}
 

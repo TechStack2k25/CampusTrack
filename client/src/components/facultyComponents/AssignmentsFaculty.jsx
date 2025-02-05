@@ -129,6 +129,8 @@ const AssignmentsFaculty = () => {
       </form>
 
       {/* Assignment List */}
+        {coursesHavingAssignments && coursesHavingAssignments?.length>0 && coursesHavingAssignments[0]?.task.length>0 && 
+      <h1 className="text-2xl font-bold text-center mb-6">All Assignments</h1>}
       <div className="grid gap-2 grid-cols-2">
         {coursesHavingAssignments && coursesHavingAssignments?.length>0 && coursesHavingAssignments.map((course) => (
           // <div

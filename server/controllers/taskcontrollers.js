@@ -59,7 +59,7 @@ export const getall = asynchandler(async (req, res, next) => {
   let reqcourses = [];
   //check we want all task or task of specific course
   if (mongoose.Types.ObjectId.isValid(course_id)) {
-    const reqcourses = await Course.findById(course_id);
+    reqcourses = await Course.findById(course_id);
 
     //check course exist or not
     if (!reqcourses) {
@@ -182,13 +182,13 @@ export const submittask = asynchandler(async (req, res, next) => {
   req.body.task = task_id;
 
   //create request for submit task
-  const result = await create_request(req, res, next); // This will call next(error) if an error occurs
+  return await create_request(req, res, next); // This will call next(error) if an error occurs
 
-  if (!result) return;
-  //on sucessfull return sucesss message
-  res.status(201).json({
-    message: 'request for submit assignment created sucessfully',
-  });
+  // if (!result) return;
+  // //on sucessfull return sucesss message
+  // res.status(201).json({
+  //   message: 'request for submit assignment created sucessfully',
+  // });
 });
 
 // //check the previous status task is alredy submit or submit now
