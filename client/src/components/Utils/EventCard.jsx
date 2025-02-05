@@ -7,14 +7,11 @@ const EventCard = ({ event, isUpcoming }) => {
         isUpcoming ? "bg-green-50 border-green-300" : "bg-gray-100 border-gray-300"
       }`}
     >
-      <h2 className="text-xl font-bold text-gray-800">{event.title}</h2>
+      <h2 className="text-xl font-bold text-gray-800">{event?.title}</h2>
       <p className="text-gray-600">
-        <strong>Date:</strong> {event.date}
+        <strong>Date:</strong> {new Date(event.deadline).toLocaleDateString()}
       </p>
-      <p className="text-gray-600">
-        <strong>Location:</strong> {event.location}
-      </p>
-      <p className="text-gray-600">{event.description}</p>
+      <p className="text-gray-600">{event?.description}</p>
     </div>
   );
 };

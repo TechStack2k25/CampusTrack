@@ -33,7 +33,7 @@ export const addcourse = asynchandler(async (req, res, next) => {
 
   //if exist give error
   if (exist_course) {
-    return next(new ApiError('Course already exists!', 401));
+    return next(new ApiError('Course already exists!', 400));
   }
 
   //check we get the user id for course teacher

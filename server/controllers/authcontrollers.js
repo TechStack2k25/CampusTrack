@@ -91,7 +91,7 @@ export const login = asynchandler(async (req, res, next) => {
 
   //if user is not exist
   if (!existeduser) {
-    return next(new ApiError('Please Sign up account does not exist'), 401);
+    return next(new ApiError('Please Sign up account does not exist'), 404);
   }
 
   //find the user who are requested
@@ -155,7 +155,7 @@ export const protect = asynchandler(async (req, res, next) => {
   }
 
   //if we does not get either the acess or refresh token
-  if (!acesstoken || !refreshtoken) {
+  if (!refreshtoken) {
     return next(new ApiError('Unauthorised user', 401));
   }
 
@@ -204,7 +204,7 @@ export const restrict_to = (role) =>
     const user_role = req.user.role;
     //check the user is quthorised to perform action
     if (role !== user_role) {
-      return next(new ApiError('You Cannot perform that action', 401));
+      return next(new ApiError('You Cannot perform that action', 403));
     }
 
     //if authorised give permission
@@ -213,7 +213,7 @@ export const restrict_to = (role) =>
 export const isvaliduser = (user, authorised_user, next) => {
   //check the user is quthorised or not
   if (user.toString() !== authorised_user.toString()) {
-    return next(new ApiError('You Cannot perform that action', 401));
+    return next(new ApiError('You Cannot perform that action', 403));
   }
 };
 export const forgotpassword = asynchandler(async (req, res, next) => {

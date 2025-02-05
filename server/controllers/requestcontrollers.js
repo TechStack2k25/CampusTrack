@@ -112,7 +112,7 @@ export const create_request = asynchandler(async (req, res, next) => {
       //check the department is exist or not
 
       if (req.user.role !== 'faculty') {
-        return next(new ApiError('You Cannot Request to be HOD', 401));
+        return next(new ApiError('You Cannot Request to be HOD', 403));
       }
 
       const reqdepartment = await Department.findById(department);
@@ -231,7 +231,7 @@ export const getall_request = asynchandler(async (req, res, next) => {
   }
   if (req.user.role === 'User' || req.user.role === 'Student') {
     return next(
-      new ApiError('You are unauthorised to aprove or decline request', 401)
+      new ApiError('You are unauthorised to aprove or decline request', 403)
     );
   }
   res.status(201).json({

@@ -1,4 +1,6 @@
 import axios from 'axios';
+import store from '../store/store.js';
+import { logout } from '../store/slices/userSlice.js';
 
 class CourseService {
   constructor() {
@@ -10,7 +12,20 @@ class CourseService {
         'Content-Type': 'application/json',
       },
     });
-  }
+
+    // Add Response Interceptor
+  this.api.interceptors.response.use(
+    (response) => response, // Pass successful responses
+    (error) => {
+      if (error.response && error.response.status === 401) {
+        console.warn('Unauthorized! Logging out user...');
+        store.dispatch(logout()); // Dispatch logout action
+        localStorage.removeItem('persist:CTroot');
+      }
+      return Promise.reject(error); // Reject error for further handling
+    }
+  );
+}
 
   
   // requesting to admit in a courses

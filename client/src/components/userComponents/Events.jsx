@@ -1,21 +1,46 @@
 import React, { useState } from "react";
 import { EventCard, AddEvents } from "../Utils/index.js";
-import { events } from "../../data/events.js";
+import { useEvents } from "../../data/events.js";
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { eventService } from "../../api/eventService.js";
 
 const Events = () => {
   const [filter, setFilter] = useState("upcoming");
   const [openForm,setOpenForm]=useState(false);
+  const queryClient = useQueryClient();
 
   const currentDate = new Date();
 
-  const filteredEvents = events.filter((event) =>
-    filter === "upcoming"
-      ? new Date(event.date) >= currentDate
-      : new Date(event.date) < currentDate
-  );
+  const { data:events } =useEvents();
+  
+
+  // Ensure events array exists before filtering
+  const filteredEvents = events
+  ? events.filter((event) => {
+      const eventDate = new Date(event?.deadline);
+      return filter === "upcoming"
+        ? eventDate >= currentDate
+        : eventDate < currentDate;
+    })
+  : [];
+
+  const mutationTocreateEvent = useMutation({
+      mutationFn: eventService.createEvent,
+      onSuccess: (data) => {
+        console.log('event created successfully:', data);
+        dispatch(setSuccess('Event added successfully!'));
+        //invalidate allevents queries to refetch data
+        queryClient.invalidateQueries(['allevents']); 
+      },
+      onError: (error) => {
+        dispatch(setError(error?.response?.data?.message))
+        console.error('Error adding event:', error);
+      }
+    });
 
   const addEvent = (newEvent) => {
     console.log(newEvent);
+    mutationTocreateEvent.mutate(newEvent);
   };
 
   return (
@@ -49,9 +74,9 @@ const Events = () => {
 
       {filteredEvents.length > 0 ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredEvents.map((event) => (
+          {filteredEvents?.map((event) => (
             <EventCard
-              key={event.id}
+              key={event._id}
               event={event}
               isUpcoming={filter === "upcoming"}
             />
@@ -61,7 +86,7 @@ const Events = () => {
         <p className="text-gray-600 text-center">No events to display.</p>
       )}
     </div>
-    {!openForm && <div onClick={()=>setOpenForm(true)} className="cursor-pointer fixed bottom-8 right-8 text-white  font-bold text-4xl bg-blue-500 hover:bg-blue-700 h-12 text-center aspect-square rounded-xl">
+    {!openForm && <div onClick={()=>setOpenForm(true)} className="animate-bounce cursor-pointer fixed bottom-8 right-8 text-white  font-bold text-4xl bg-blue-500 hover:bg-blue-700 h-12 text-center aspect-square rounded-xl">
         +
     </div>}
     </div>

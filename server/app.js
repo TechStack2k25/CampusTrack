@@ -6,6 +6,7 @@ import collegeroutes from './routers/collegeroutes.js';
 import departmentroutes from './routers/departmentroutes.js';
 import courseroutes from './routers/courseroutes.js';
 import taskroutes from './routers/taskroutes.js';
+import eventroutes from './routers/eventrouter.js';
 import userroutes from './routers/userrouters.js';
 import requestroutes from './routers/requestroutes.js';
 import { restrict_to, protect } from './controllers/authcontrollers.js';
@@ -28,6 +29,8 @@ app.use(protect);
 app.use('/api/user', userroutes);
 //to accept and get all request
 app.use('/api/request', requestroutes);
+//all event routes 
+app.use('/api/event', eventroutes);
 //all task routes and only faculty can make change in task
 app.use('/api/task', taskroutes);
 //mark attendace of student
