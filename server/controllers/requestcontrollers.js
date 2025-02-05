@@ -34,15 +34,16 @@ export const create_request = asynchandler(async (req, res, next) => {
     const existed_request = await Request.findOne({
       requestType,
       request_course: course,
-      request_by: requser._id,
+      request_by: req.user._id,
       request_role: req.user.role,
       request_dep: req.user.department,
     });
-
+    console.log(existed_request);
     if (existed_request) {
       return next(new ApiError('You are already request for it', 411));
     }
 
+    console.log(existed_request);
     //create the request
     const newrequest = await Request.create({
       requestType,
@@ -76,7 +77,7 @@ export const create_request = asynchandler(async (req, res, next) => {
       }
 
       //check the request is already exist
-      const existed_request = await Request.find({
+      const existed_request = await Request.findOne({
         requestType,
         request_college: reqcollege._id,
         request_by: requser._id,
@@ -122,7 +123,7 @@ export const create_request = asynchandler(async (req, res, next) => {
       }
 
       //check the request is existed or not
-      const existed_request = await Request.find({
+      const existed_request = await Request.findOne({
         requestType,
         request_dep: reqdepartment._id,
         request_by: requser._id,
@@ -161,7 +162,7 @@ export const create_request = asynchandler(async (req, res, next) => {
   //     );
   //   }
   // }
-  return 1;
+  return { message: 'sucess' };
 });
 
 export const getall_request = asynchandler(async (req, res, next) => {
@@ -170,12 +171,11 @@ export const getall_request = asynchandler(async (req, res, next) => {
 
   //declare the variable for request
   let allrequest = {};
-
-  //check the useris admin or not
-  const reqcollege = await College.findOne({ admin: user_id });
-
   //check the user is admin of any college
-  if (reqcollege && req.user.role === 'Admin') {
+  if (req.user.role === 'Admin') {
+    //check the useris admin or not
+    const reqcollege = await College.findOne({ admin: user_id });
+
     const user_request = await Request.find({
       request_college: reqcollege._id,
     })
@@ -193,18 +193,20 @@ export const getall_request = asynchandler(async (req, res, next) => {
     allrequest.hod = hod_request;
   }
 
-  //check the user is hod or not
-  const reqdepartment = await Department.findOne({ hod: req.user._id });
-  if (reqdepartment) {
-    //find all faculty request
-    // console.log(reqdepartment);
-    const faculty_request = await Request.find({
-      request_dep: reqdepartment._id,
-      request_role: 'faculty',
-    })
-      .populate('request_course')
-      .populate('request_by');
-    allrequest.faculty = faculty_request;
+  if (req.user.role === 'HOD') {
+    //check the user is hod or not
+    const reqdepartment = await Department.findOne({ hod: req.user._id });
+    if (reqdepartment) {
+      //find all faculty request
+      // console.log(reqdepartment);
+      const faculty_request = await Request.find({
+        request_dep: reqdepartment._id,
+        request_role: 'faculty',
+      })
+        .populate('request_course')
+        .populate('request_by');
+      allrequest.faculty = faculty_request;
+    }
   }
 
   //check the user is teacher of any course
@@ -284,7 +286,7 @@ export const updaterequest = asynchandler(async (req, res, next) => {
       reqcourse.teacher = require_request.request_by;
     }
     //add the user in course and save it
-    requser.course.push(require_request.request_by);
+    requser.course.push(require_request.request_course);
     requser.save({ validateBeforeSave: false });
     reqcourse.users.push(require_request.request_by);
     reqcourse.save();
@@ -327,6 +329,7 @@ export const updaterequest = asynchandler(async (req, res, next) => {
       reqcollege.users.push(require_request.request_by);
       requser.department = require_request.request_dep;
       requser.role = require_request.request_role;
+      requser.college = reqcollege._id;
       requser.year = require_request.request_year;
       requser.save({ validateBeforeSave: false });
       reqcollege.save();
@@ -384,7 +387,7 @@ export const updaterequest = asynchandler(async (req, res, next) => {
 
     //if task is not exist give error
     if (!reqtask) {
-      next(new ApiError('Task is not found to update request', 404));
+      return next(new ApiError('Task is not found to update request', 404));
     }
 
     //get the course for the id of the teacher

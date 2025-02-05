@@ -10,6 +10,7 @@ import userroutes from './routers/userrouters.js';
 import requestroutes from './routers/requestroutes.js';
 import { restrict_to, protect } from './controllers/authcontrollers.js';
 import cookieParser from 'cookie-parser';
+import attendanceroutes from './routers/attendanceroutes.js';
 
 const app = express();
 
@@ -29,14 +30,15 @@ app.use('/api/user', userroutes);
 app.use('/api/request', requestroutes);
 //all task routes and only faculty can make change in task
 app.use('/api/task', taskroutes);
+//mark attendace of student
+app.use('/api/attendance', attendanceroutes);
 //all course routes and only hod can make change in courses
 app.use('/api/course', courseroutes);
 //all departmentroute
 app.use('/api/department', departmentroutes);
-//restrict college and department routes to admin
-app.use(restrict_to('Admin'));
+
 //all college routes
-app.use('/api/college', collegeroutes);
+app.use('/api/college', restrict_to('Admin'), collegeroutes);
 // to handle the error
 app.use(globalerrorhandler);
 export default app;

@@ -3,8 +3,27 @@ import ApiError from '../utils/apierror.js';
 import { create_request } from './requestcontrollers.js';
 import College from '../models/collegemodel.js';
 import User from '../models/usermodel.js';
+import Apiquery from '../utils/apiquery.js';
+import Course from '../models/coursemodel.js';
 
-export const getall = asynchandler(async (req, res, next) => {});
+export const getall = asynchandler(async (req, res, next) => {
+  const queryobj = req.query;
+  const course = queryobj.course;
+  delete queryobj.course;
+  console.log(queryobj);
+  console.log(course);
+  let requsers;
+  if (course) {
+    requsers = await Course.findById(course).populate('users');
+  } else {
+    const requiremodel = new Apiquery(User, queryobj);
+    requsers = await requiremodel.filter();
+  }
+  res.status(201).json({
+    message: 'User fetch sucessfully',
+    data: requsers,
+  });
+});
 
 export const deluser = asynchandler(async (req, res, next) => {});
 
@@ -24,7 +43,9 @@ export const updateuser = asynchandler(async (req, res, next) => {
 
   const semail = email.trim().toLowerCase();
   //check the user exist or not
-  const requser = await User.findOne({ email:semail });
+  const requser =
+    (await User.findOne({ email: semail })) ||
+    (await User.findById(req.user._id));
 
   //if not exit then returmn mesaage of sign up
   if (!requser) {
@@ -33,7 +54,9 @@ export const updateuser = asynchandler(async (req, res, next) => {
   //if role is present then create a request
   if (role && requser.role != role) {
     req.body.requestType = 'Add user';
-    await create_request(req, res, next);
+    const result = await create_request(req, res, next); // This will call next(error) if an error occurs
+
+    if (!result) return;
   }
   //update the user by id
   const updateduser = await User.findByIdAndUpdate(

@@ -182,8 +182,9 @@ export const submittask = asynchandler(async (req, res, next) => {
   req.body.task = task_id;
 
   //create request for submit task
-  await create_request(req, res, next);
+  const result = await create_request(req, res, next); // This will call next(error) if an error occurs
 
+  if (!result) return;
   //on sucessfull return sucesss message
   res.status(201).json({
     message: 'request for submit assignment created sucessfully',

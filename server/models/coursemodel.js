@@ -32,6 +32,15 @@ const courseSchema = new mongoose.Schema({
       ref: 'User',
     },
   ],
+  student_attendance: {
+    type: Map,
+    of: Number, // Maps student ID to the number of classes attended
+    default: {},
+  },
+  total_classes: {
+    type: Number,
+    default: 0, // This will hold the total number of classes held
+  },
 });
 
 const Course = mongoose.model('Course', courseSchema);

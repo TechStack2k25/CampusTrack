@@ -5,6 +5,7 @@ import ApiError from '../utils/apierror.js';
 import asynchandler from '../utils/asynchandler.js';
 import { isvaliduser } from './authcontrollers.js';
 import { create_request } from './requestcontrollers.js';
+import User from '../models/usermodel.js';
 export const addcourse = asynchandler(async (req, res, next) => {
   //take the id of the department
   const department_id = req.params.id;
@@ -158,10 +159,12 @@ export const getall = asynchandler(async (req, res, next) => {
   }
   //if the user is student
   else if (req.user.role === 'Student') {
-    allcourses = await req.user.populate({
+    console.log('student');
+    allcourses = await User.findById(req.user._id).populate({
       path: 'course',
       populate: { path: 'teacher' }, // Nested population
     });
+    console.log(allcourses);
     allcourses = allcourses.course;
   }
 
@@ -213,9 +216,12 @@ export const add_course_by_student = asynchandler(async (req, res, next) => {
   }
   req.body.requestType = 'Add Course';
   req.body.course = course_id;
-  await create_request(req, res, next);
+  // Call create_request and let it handle any errors
+  const result = await create_request(req, res, next); // This will call next(error) if an error occurs
 
-  res.status(201).json({
-    message: 'request generated succesfully',
-  });
+  if (!result) return;
+  // If create_request is successful, send the success response
+  return res.status(201).json({
+    message: 'Request generated successfully',
+  }); // This ensures error is passed to error handling middleware
 });

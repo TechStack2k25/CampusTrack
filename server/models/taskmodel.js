@@ -20,17 +20,11 @@ const taskSchema = new mongoose.Schema(
     deadline: {
       type: Date,
     },
-    submitted_by: [
-      {
-        userId: {
-          type: mongoose.Schema.Types.ObjectId,
-          ref: 'User',
-        },
-        file: {
-          type: String,
-        },
-      },
-    ],
+    submitted_by: {
+      type: Map,
+      of: String,
+      default: {},
+    },
     course: {
       type: mongoose.Types.ObjectId,
       ref: 'Course',
