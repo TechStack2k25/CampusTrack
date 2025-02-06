@@ -175,7 +175,7 @@ export const protect = asynchandler(async (req, res, next) => {
 
   //if refresh token is invalid return the error message unauthenticated
   if (!decodedtoken) {
-    return next(new ApiError('You are unautheticated', 403));
+    return next(new ApiError('You are unauthenticated', 403));
   }
 
   //how send new acesstoken when it expire and refresh token is valid

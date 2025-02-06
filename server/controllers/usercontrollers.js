@@ -1,7 +1,6 @@
 import asynchandler from '../utils/asynchandler.js';
 import ApiError from '../utils/apierror.js';
 import { create_request } from './requestcontrollers.js';
-import College from '../models/collegemodel.js';
 import User from '../models/usermodel.js';
 import Apiquery from '../utils/apiquery.js';
 import Course from '../models/coursemodel.js';
@@ -12,12 +11,23 @@ export const getall = asynchandler(async (req, res, next) => {
   delete queryobj.course;
   console.log(queryobj);
   console.log(course);
-  let requsers;
+  let requsers=[];
   if (course) {
-    requsers = await Course.findById(course).populate('users');
+    requsers = await Course.findById(course).populate({
+      path: 'users', // The field to populate
+      match: { role: queryobj.role },//ensure role
+      populate: {
+        path: 'department', // The model to use for populating 'department' (ensure 'Department' is the correct model name)
+        select: 'name', //only name required
+        model: 'Department',
+      },
+    });
+    requsers=requsers?.users
   } else {
     const requiremodel = new Apiquery(User, queryobj);
     requsers = await requiremodel.filter();
+    console.log(requsers);
+    
   }
   res.status(201).json({
     message: 'User fetch sucessfully',

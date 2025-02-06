@@ -1,33 +1,55 @@
-import React from "react";
-import { DataList } from "../Utils/index.js";
+import React, { useState } from "react";
+import {DataList} from "../Utils/index.js";
+import { useDepartments } from "../../data/departments.js";
+import { useAllCourses } from "../../data/allcourses.js";
+import { useUsers } from "../../data/allUsers.js";
+import { useSelector } from "react-redux";
+
 
 const Scholars = () => {
-  const scholarData = [
-    { id: 1, name: "Jane Smith", role: "Scholar", department: "CS", semester: "5" },
-    { id: 2, name: "Tom Wilson", role: "Scholar", department: "EE", semester: "3" },
-    { id: 3, name: "Sarah Johnson", role: "Scholar", department: "CS", semester: "7" },
-    { id: 4, name: "Chris Brown", role: "Scholar", department: "ME", semester: "5" },
-    { id: 5, name: "Emily Davis", role: "Scholar", department: "EE", semester: "7" },
+  
+  const { college }=useSelector((state)=>state.user?.user);
+  // Fetching department, courses, and roles
+  const [query, setQuery] = useState({
+    college: college,
+    department: "",
+    role: "Student",
+    course: "",
+    name: "",
+  });
+  
+  const { data: departments } = useDepartments(college);
+  const { data: allCourses } = useAllCourses(query?.department?{_id:query?.department}: null);
+  const { data:ScholarsData }= useUsers(query);
+
+  // Defining Filters
+  const ScholarsFilters = [
+    { key: "college", label: "College", value: "NIT_UP", enable: false },
+    { key: "department", label: "Department", placeholder: "Search by department", options: departments, enable: true },
+    { key: "course", label: "Course", placeholder: "Search by course", parent: "department", options: allCourses, enable: true },
   ];
 
-  const scholarFilters = [
-    {
-      key: "department",
-      label: "Filter by Department",
-      options: ["CS", "ME", "EE"],
-    },
-    {
-      key: "semester",
-      label: "Filter by Semester",
-      options: ["3", "5", "7"],
-    },
-  ];
+  // Creating Options Object
+  const options = ScholarsFilters.reduce((acc, filter) => {
+    if (filter?.options) {
+      acc[filter.key] = filter.options;
+    }
+    return acc;
+  }, {});
+
+
+
+
 
   return (
-    <DataList title="Scholars"
-      data={scholarData}
-      filters={scholarFilters}
-      itemsPerPage={4} // Customize items per page
+    <DataList
+      title="All Scholars"
+      data={ScholarsData}
+      filters={ScholarsFilters}
+      options={options}
+      query={query}
+      setQuery={setQuery}
+      itemsPerPage={3} // Customizable-> items per page
     />
   );
 };

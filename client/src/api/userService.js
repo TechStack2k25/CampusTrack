@@ -30,11 +30,17 @@ class UserService {
   // get all user
   getUsers= async (data)=> {// Ids of course, department, college
       try {
-        const response = await this.api.get('/all',data);
+        
+        const query=Object.fromEntries(
+          Object.entries(data).filter(([_, v]) => v !== "")
+        );
+        console.log(query);
+        
+        const response = await this.api.get('/all',{params:query});
 
         console.log(response);
 
-        return response;
+        return response?.data?.data;
       } catch (error) {
         console.error('Error userService: getUsers: ', error);
         throw error;
