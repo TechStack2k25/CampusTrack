@@ -17,7 +17,7 @@ export const getall = asynchandler(async (req, res, next) => {
     requsers = await Course.findById(course).populate('users');
   } else {
     const requiremodel = new Apiquery(User, queryobj);
-    requsers = await requiremodel.filter();
+    requsers = await requiremodel.filter().paginate();
   }
   res.status(201).json({
     message: 'User fetch sucessfully',
