@@ -1,7 +1,6 @@
 import asynchandler from '../utils/asynchandler.js';
 import ApiError from '../utils/apierror.js';
 import { create_request } from './requestcontrollers.js';
-import College from '../models/collegemodel.js';
 import User from '../models/usermodel.js';
 import Apiquery from '../utils/apiquery.js';
 import Course from '../models/coursemodel.js';
@@ -12,12 +11,21 @@ export const getall = asynchandler(async (req, res, next) => {
   delete queryobj.course;
   console.log(queryobj);
   console.log(course);
-  let requsers;
+  let requsers = [];
   if (course) {
-    requsers = await Course.findById(course).populate('users');
+    requsers = await Course.findById(course).populate({
+      path: 'users', // The field to populate
+      match: { role: queryobj.role }, //ensure role
+      populate: {
+        path: 'department', // The model to use for populating 'department' (ensure 'Department' is the correct model name)
+        select: 'name', //only name required
+        model: 'Department',
+      },
+    });
+    requsers = requsers?.users;
   } else {
     const requiremodel = new Apiquery(User, queryobj);
-    requsers = await requiremodel.filter().paginate();
+    requsers = (await requiremodel.filter()).models;
   }
   res.status(201).json({
     message: 'User fetch sucessfully',
@@ -54,9 +62,9 @@ export const updateuser = asynchandler(async (req, res, next) => {
   //if role is present then create a request
   if (role && requser.role != role) {
     req.body.requestType = 'Add user';
-    const result = await create_request(req, res, next); // This will call next(error) if an error occurs
+    return await create_request(req, res, next); // This will call next(error) if an error occurs
 
-    if (!result) return;
+    // if (!result) return;
   }
   //update the user by id
   const updateduser = await User.findByIdAndUpdate(

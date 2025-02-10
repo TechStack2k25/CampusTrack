@@ -7,11 +7,11 @@ class Apiquery {
     this.models = models;
     this.queryobj = queryobj;
   }
-  filter() {
-    const queryobj = { ...this.queryobj };
+  async filter() {
+    let queryobj = { ...this.queryobj };
     const excludedFields = ['page', 'limit'];
     excludedFields.forEach((el) => delete queryobj[el]);
-    this.models = this.models.find(queryobj);
+    this.models = await this.models.find(queryobj);
     return this;
   }
 

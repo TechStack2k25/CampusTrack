@@ -11,7 +11,7 @@ const taskSchema = new mongoose.Schema(
     },
     tasktype: {
       type: String,
-      enum: ['Assignment', 'Project'],
+      enum: ['Assignment', 'Project', 'Event'],
       default: 'Assignment',
     },
     reward_point: {

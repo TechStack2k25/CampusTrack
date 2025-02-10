@@ -5,24 +5,23 @@ import { useParams } from 'react-router-dom';
 
 function Assignments() {
   const { courseId } = useParams();
-  const { data: assignments } = useAssignments(courseId || "all");
-  console.log(assignments);
+  const { data: courses } = useAssignments(courseId || "all");
+  console.log(courses);
   
 
   return (
     <div className="container mx-auto px-4 py-6">
       <h1 className="text-2xl font-bold text-center text-gray-800 mb-4">All Assignments</h1>
-      {assignments && assignments?.task && assignments.task?.length > 0 ? (
-
-        <div className='sm:grid sm:grid-cols-2 gap-2'>
-          {assignments.task.map((assignment) => (
-            <AssignmentCard key={assignment.id} assignment={{...assignment,coursename:assignments?.name}} />
-          ))}
-
-        </div>
-      ) : (
+      {
+        courses && courses?.length>0 ?
+          courses?.map((course)=>
+            course?.task && course.task?.length>0 && course.task.map((assignment)=>
+              <AssignmentCard key={assignment?._id} assignment={{...assignment,coursename:course?.name}} />
+            )
+          )
+        :
         <p className="text-center text-gray-600 mt-12 text-lg">No assignments to display.</p>
-      )}
+      }
     </div>
   );
 }

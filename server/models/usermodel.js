@@ -65,10 +65,10 @@ const userSchema = new mongoose.Schema({
     enum: ['User', 'Student', 'faculty', 'HOD', 'Admin'],
     default: 'User',
   },
-  events: {
+  events: [{
     type: mongoose.Types.ObjectId,
     ref: 'Task',
-  },
+  }],
   reward: [{ type: mongoose.Schema.ObjectId, ref: 'Reward' }],
   passwordchangedat: Date,
   passwordResetToken: String,

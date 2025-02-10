@@ -1,4 +1,6 @@
 import axios from 'axios';
+import store from '../store/store.js';
+import { logout } from '../store/slices/userSlice.js';
 
 class DepartmentService {
   constructor() {
@@ -10,7 +12,20 @@ class DepartmentService {
         'Content-Type': 'application/json',
       },
     });
-  }
+
+    // Add Response Interceptor
+  this.api.interceptors.response.use(
+    (response) => response, // Pass successful responses
+    (error) => {
+      if (error.response && error.response.status === 401) {
+        console.warn('Unauthorized! Logging out user...');
+        store.dispatch(logout()); // Dispatch logout action
+        localStorage.removeItem('persist:CTroot');//optional
+      }
+      return Promise.reject(error); // Reject error for further handling
+    }
+  );
+}
 
   // Creating department
   createDepartment=async (data)=> {//data required: name, code, hod
