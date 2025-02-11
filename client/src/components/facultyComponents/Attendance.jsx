@@ -1,14 +1,18 @@
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useCourses } from "../../data/courses";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { userService } from "../../api/userService";
+import { attendanceService } from "../../api/attendance";
+import { setError, setSuccess } from "../../store/slices/userSlice";
 
 const Attendance = () => {
   const { register, handleSubmit, reset } = useForm();
   const [courseDetails, setCourseDetails] = useState(null);
   const [marked,setMarked] =useState([]);
-  const today=new Date.now().toLocaleString();
+  const today=new Date().toLocaleDateString();
+
+  const dispatch=useDispatch();
 
   // Example students database for simplicity
   const [studentsData,setStudentsData] = useState([]);
@@ -20,17 +24,21 @@ const Attendance = () => {
 
   // Fetch students based on course details
   const onSubmit = async(data) => {
+    console.log(data);
+    
     const reqData={
       college,
       department,
       role: "Student",
-      course: data?._id,
+      course: data?.course,
     };
-    setCourseDetails(data);
+
     const studentsList=await userService.getUsers(reqData);// fetching students
     setStudentsData(studentsList);
     reset();
   };
+  console.log(courseDetails);
+  
 
   const handleAttendanceChange = (id) => {
     setMarked((prev) =>
@@ -39,7 +47,20 @@ const Attendance = () => {
   };
 
   const submitAttendance= async ()=>{
-
+    console.log(marked);
+    console.log(courseDetails);
+    
+    try {
+      const response =await attendanceService.markAttendance({courseId:courseDetails?._id, presentStudentIds:marked});
+      if(response){
+        dispatch(setSuccess(response));
+      }
+      else{
+        dispatch(setError("Try Again!"));
+      }
+    } catch (error) {
+      dispatch(setError(error?.response?.data?.message));
+    }
   }
 
   return (
@@ -47,7 +68,7 @@ const Attendance = () => {
       <h1 className="text-2xl font-bold text-center mb-6">Attendance</h1>
 
       {/* Course Input Form */}
-      {!courseDetails && (
+      
         <form
           onSubmit={handleSubmit(onSubmit)}
           className="bg-white p-6 shadow rounded mb-6 max-w-md mx-auto"
@@ -57,11 +78,17 @@ const Attendance = () => {
             <select
               {...register("course", { required: "Course is required" })}
               className="w-full px-3 py-2 border rounded"
+              onChange={(e) => {
+                const selectedCourse = allCourses.find(
+                  (item) => item._id === e.target.value
+                );
+                setCourseDetails(selectedCourse);
+              }}
             >
               <option value="">Select a course</option>
               {/* array of courses  of faculty */}
               {allCourses && allCourses?.length>0 && allCourses.map((item)=> 
-              <option value={item}>{item?.name}</option>)}
+              <option  key={item?._id || item?.name || item?.email} value={item?._id}>{item?.name}</option>)}
             </select>
           </div>
           {/* <div className="mb-4">
@@ -90,10 +117,9 @@ const Attendance = () => {
             Load Students
           </button>
         </form>
-      )}
 
       {/* Attendance Marking */}
-      {courseDetails && (
+      {studentsData.length>0 && (
         <div className="bg-white p-6 shadow rounded">
             <div>
                 <h2 className="text-xl font-bold mb-4">Course: {courseDetails?.name}</h2>

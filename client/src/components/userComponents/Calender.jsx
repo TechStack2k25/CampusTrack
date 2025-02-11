@@ -1,10 +1,27 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import interactionPlugin from "@fullcalendar/interaction";
 import listPlugin from "@fullcalendar/list";
 import { CalendarModal } from '../Utils/index.js';
 import {useNavigate} from 'react-router-dom'
+import { eventService } from "../../api/eventService.js";
+import { current } from "@reduxjs/toolkit";
+
+
+const EventItem = ({ event }) => (
+  <div
+    className={`text-xs ${
+      event?.tasktype === "Event"
+        ? "bg-blue-500"
+        : new Date(event?.start) < new Date()
+        ? "bg-yellow-500"
+        : "bg-red-500"
+    } rounded px-2 truncate text-white text-center`}
+  >
+    {event.title}
+  </div>
+);
 
 const Calender = () => {
   const navigate=useNavigate();
@@ -14,16 +31,17 @@ const Calender = () => {
   const [selectedInfo, setSelectedInfo] = useState(null);
   const [isCalendarModalOpen, setIsCalendarModalOpen] = useState(false);
 
-  const events = [
-    { title: "Math Assignment Due", start: "2025-01-10", color: "#f87171", location:'hyderabad' },
-    { title: "Project Presentation", start: "2025-01-12", color: "#34d399", location:'hyderabad' },
-    { title: "Team Meeting", start: "2025-01-15T14:00:00", color: "#60a5fa", location:'hyderabad' },
-    { title: "Science Fair", start: "2025-01-15T10:00:00", color: "#fbbf24", location:'hyderabad' },
-  ];
+  // const events = [
+  //   { title: "Math Assignment Due", start: "2025-01-10", color: "#f87171", location:'hyderabad' },
+  //   { title: "Project Presentation", start: "2025-01-12", color: "#34d399", location:'hyderabad' },
+  //   { title: "Team Meeting", start: "2025-01-15T14:00:00", color: "#60a5fa", location:'hyderabad' },
+  //   { title: "Science Fair", start: "2025-01-15T10:00:00", color: "#fbbf24", location:'hyderabad' },
+  // ];
+  const [events,setEvents] =useState([]);
 
-  const handleDatesSet = (dateInfo) => {
+  const handleDatesSet = async(dateInfo) => {
     const viewType = dateInfo.view.type;  // Detect current view mode (month, week, day)
-    console.log(viewType);
+    // console.log(dateInfo);
     
 
     const currentVisibleDate = dateInfo.view.calendar.getDate(); 
@@ -47,7 +65,25 @@ const Calender = () => {
     }
   };
 
-  console.log(currData);
+  const fetchData=async()=>{
+    
+    console.log(currData);
+    const response=await eventService.getSchedule(currData);
+    console.log(response);
+    
+    setEvents(
+      response.map(event => ({
+        id: event?._id,
+        title: event.title || "Untitled Event",
+        start: event?.deadline || new Date().toISOString(),
+      }))
+    );
+  }
+
+  useEffect(()=>{
+    fetchData();
+  },[currData]);
+  // console.log(events);
   
   
 
@@ -61,21 +97,20 @@ const Calender = () => {
   };
 
   const handleEventClick = (info) => {
-    console.log(info)
+    // console.log(info)
     setSelectedInfo({
       type: "event",
       title: info.event.title,
-      start: info.event.start,
-      ...info.event.extendedProps
+      start: info.event.start
     });
     
     setIsCalendarModalOpen(true);
-    console.log(selectedInfo);
+    // console.log(selectedInfo);
   };
 
-  const deleteEvent=()=>{
-    console.log("delete: ",selectedInfo);
-  }
+  // const deleteEvent=()=>{
+  //   console.log("delete: ",selectedInfo);
+  // }
 
   return (
     <div className="p-6 bg-gray-50">
@@ -83,18 +118,19 @@ const Calender = () => {
         <FullCalendar
           plugins={[dayGridPlugin, interactionPlugin, listPlugin]}
           initialView="dayGridMonth"
-          datesSet={handleDatesSet}
+          events={events}
+          eventContent={(info) => <EventItem event={info.event}/>}
+          eventClick={(info) => handleEventClick(info)}
           headerToolbar={{
             left: "prev,next today",
             center: "title",
             right: "dayGridMonth,dayGridDay",
           }}
+          displayEventTime={false}
           editable={true}
           selectable={true}
-          events={events}
-          eventColor="#6366f1" // Default color for events
+          datesSet={handleDatesSet}
           height="auto"
-          eventClick={(info) => handleEventClick(info)}
           dateClick={(info) => handleDateClick(info)}
         />
         {isCalendarModalOpen && (
@@ -117,14 +153,14 @@ const Calender = () => {
                 Event: {selectedInfo.title}
               </h2>
               <p className="text-gray-600 mb-4">
-                On: {new Date(selectedInfo.start).toLocaleString()} 
+                On: {new Date(selectedInfo.start).toLocaleDateString()} 
               </p>
-              <button
+              {/* <button
                 className="bg-red-500 text-white px-4 py-2 rounded-lg"
                 onClick={deleteEvent}
               >
                 Delete Event
-              </button>
+              </button> */}
             </div>
           )}
         </CalendarModal>

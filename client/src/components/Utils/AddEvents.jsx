@@ -6,11 +6,13 @@ const AddEvent = ({ addEvent, openForm, setOpenForm }) => {
     register,
     handleSubmit,
     formState: { errors },
+    reset,
   } = useForm();
 
   const onSubmit = (data) => {
     // Add the new event 
     addEvent(data);
+    reset();
   };
 
   return (

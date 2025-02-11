@@ -17,6 +17,7 @@ const app = express();
 
 // extract json payload from request body and make available in req.body;
 app.use(express.json());
+
 // extract json payload from request cookie and make available in req.cookies;
 app.use(cookieParser());
 //to console the http request
@@ -29,7 +30,7 @@ app.use(protect);
 app.use('/api/user', userroutes);
 //to accept and get all request
 app.use('/api/request', requestroutes);
-//all event routes 
+//all event routes
 app.use('/api/event', eventroutes);
 //all task routes and only faculty can make change in task
 app.use('/api/task', taskroutes);
