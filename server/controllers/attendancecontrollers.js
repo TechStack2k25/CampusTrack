@@ -28,3 +28,26 @@ export const mark_attendace = asynchandler(async (req, res, next) => {
     message: 'Attendance Updated Sucessfully',
   });
 });
+
+export const all_course_attendence = asynchandler(async (req, res, next) => {
+  const requser = req.user;
+
+  let reqcourses = await Course.find({
+    _id: { $in: requser.course },
+  })
+    .select('-_id -credit -task -users')
+    .populate('teacher');
+
+  for (const course of reqcourses) {
+    course.attendance = course.student_attendance?.get(requser._id) || 0;
+  }
+
+  res.status(201).json({
+    message: 'Attendance fetched successfully',
+    data: reqcourses,
+  });
+});
+
+export const all_student_attendance = asynchandler(
+  async (req, res, next) => {}
+);
