@@ -1,51 +1,46 @@
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
+import { useCourses } from "../../data/courses";
+import { useSelector } from "react-redux";
+import { userService } from "../../api/userService";
 
 const Attendance = () => {
   const { register, handleSubmit, reset } = useForm();
   const [courseDetails, setCourseDetails] = useState(null);
-  const [attendance, setAttendance] = useState({});
+  const [marked,setMarked] =useState([]);
+  const today=new Date.now().toLocaleString();
 
   // Example students database for simplicity
-  const studentsData = {
-    "IT-Sem1": [
-      { id: 1, name: "John Doe" },
-      { id: 2, name: "Jane Smith" },
-    ],
-    "IT-Sem2": [
-      { id: 3, name: "Alice Brown" },
-      { id: 4, name: "Bob Johnson" },
-    ],
-  };
+  const [studentsData,setStudentsData] = useState([]);
 
-// Example courseDetails for simplicity
-//   { 
-//      others: xyz,
-//     students:[
-//     {
-//         id: 123,
-//         name: 'Ramesh'
-//     },
-//     {
-//         id: 13,
-//         name: 'Ramesh'
-//     },
-//     {
-//         id: 23,
-//         name: 'Ramesh'
-//     },
-//   ]}
+  const { college, department }=useSelector((state)=>state.user?.user);
+
+  
+    const { data: allCourses } = useCourses();
 
   // Fetch students based on course details
-  const onSubmit = (data) => {
-    const key = `${data.course}-${data.semester}`;
-    setCourseDetails({ ...data, students: studentsData[key] || [] });
+  const onSubmit = async(data) => {
+    const reqData={
+      college,
+      department,
+      role: "Student",
+      course: data?._id,
+    };
+    setCourseDetails(data);
+    const studentsList=await userService.getUsers(reqData);// fetching students
+    setStudentsData(studentsList);
     reset();
   };
 
-  const handleAttendanceChange = (id, status) => {
-    setAttendance((prev) => ({ ...prev, [id]: status }));
+  const handleAttendanceChange = (id) => {
+    setMarked((prev) =>
+      prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]
+    );
   };
+
+  const submitAttendance= async ()=>{
+
+  }
 
   return (
     <div className="flex-1 p-6 bg-gray-100 min-h-screen">
@@ -58,18 +53,18 @@ const Attendance = () => {
           className="bg-white p-6 shadow rounded mb-6 max-w-md mx-auto"
         >
           <div className="mb-4">
-            <label className="block font-medium mb-1">Course</label>
+            <label className="block font-medium mb-1">Course:</label>
             <select
               {...register("course", { required: "Course is required" })}
               className="w-full px-3 py-2 border rounded"
             >
               <option value="">Select a course</option>
-              {/* require array of courses  of faculty */}
-              <option value="IT">IT</option>
-              <option value="CSE">CSE</option>
+              {/* array of courses  of faculty */}
+              {allCourses && allCourses?.length>0 && allCourses.map((item)=> 
+              <option value={item}>{item?.name}</option>)}
             </select>
           </div>
-          <div className="mb-4">
+          {/* <div className="mb-4">
             <label className="block font-medium mb-1">Semester</label>
             <select
               {...register("semester", { required: "Semester is required" })}
@@ -79,15 +74,15 @@ const Attendance = () => {
               <option value="Sem1">Semester 1</option>
               <option value="Sem2">Semester 2</option>
             </select>
-          </div>
-          <div className="mb-4">
+          </div> */}
+          {/* <div className="mb-4">
             <label className="block font-medium mb-1">Date</label>
             <input
               type="date"
               {...register("date", { required: "Date is required" })}
               className="w-full px-3 py-2 border rounded"
             />
-          </div>
+          </div> */}
           <button
             type="submit"
             className="w-full bg-blue-500 text-white px-4 py-2 rounded"
@@ -101,33 +96,40 @@ const Attendance = () => {
       {courseDetails && (
         <div className="bg-white p-6 shadow rounded">
             <div>
-                <h2 className="text-xl font-bold mb-4">Course: {courseDetails.course}</h2>
+                <h2 className="text-xl font-bold mb-4">Course: {courseDetails?.name}</h2>
                 <div className="grid grid-cols-2 space-x-2">
-                    <h3 className="text-lg mb-4">Semester: {courseDetails.semester}</h3>
-                    <h4 className="text-md mb-6">Date: {courseDetails.date}</h4>
+                    {/* <h3 className="text-lg mb-4">Semester: {courseDetails.semester}</h3> */}
+                    <h4 className="text-md mb-6">Date: {today}</h4>
                 </div>
             </div>
 
-          {courseDetails.students.length > 0 ? (
-            courseDetails.students.map((student) => (
+          {studentsData.length > 0 ? 
+            <div>
+              {studentsData.map((student) => (
               <div
-                key={student.id}
+                key={student._id}
                 className="grid grid-cols-2 space-x-2 mb-4"
               >
-                <p className="font-medium">{student.name}</p>
+                <p className="font-medium">{student?.name || student?.email?.split('@')[0]}</p>
                 <div className="space-x-4">
                   <label className="flex items-center space-x-2">
                     <input
                       type="checkbox"
-                      checked={attendance[student.id] === "present"}
-                      onChange={() => handleAttendanceChange(student.id, "present")}
+                      checked={marked?.includes(student?._id)}
+                      onChange={() => handleAttendanceChange(student._id)}
                     />
-                    <span>Present</span>
+                    <span className={`${marked?.includes(student?._id) ? "bg-green-500":""}`}>Present</span>
                   </label>
                 </div>
-              </div>
-            ))
-          ) : (
+              </div>))}
+              <button
+                type="button"
+                className="w-full bg-blue-500 text-white px-4 py-2 rounded"
+                onClick={submitAttendance}
+              >
+                Marked!
+              </button>
+              </div> : (
             <p>No students found for this course and semester.</p>
           )}
         </div>

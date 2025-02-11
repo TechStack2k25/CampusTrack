@@ -1,20 +1,16 @@
-// src/components/userComponents/Calender.jsx
 import React, { useState } from "react";
 import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
-import timeGridPlugin from "@fullcalendar/timegrid";
 import interactionPlugin from "@fullcalendar/interaction";
 import listPlugin from "@fullcalendar/list";
-// import "@fullcalendar/common/main.css";
-// import "@fullcalendar/daygrid/main.css";
-// import "@fullcalendar/timegrid/main.css";
-// import "@fullcalendar/list/main.css";
 import { CalendarModal } from '../Utils/index.js';
 import {useNavigate} from 'react-router-dom'
 
 const Calender = () => {
   const navigate=useNavigate();
+  
 
+  const [currData,setCurrData]=useState();
   const [selectedInfo, setSelectedInfo] = useState(null);
   const [isCalendarModalOpen, setIsCalendarModalOpen] = useState(false);
 
@@ -24,6 +20,36 @@ const Calender = () => {
     { title: "Team Meeting", start: "2025-01-15T14:00:00", color: "#60a5fa", location:'hyderabad' },
     { title: "Science Fair", start: "2025-01-15T10:00:00", color: "#fbbf24", location:'hyderabad' },
   ];
+
+  const handleDatesSet = (dateInfo) => {
+    const viewType = dateInfo.view.type;  // Detect current view mode (month, week, day)
+    console.log(viewType);
+    
+
+    const currentVisibleDate = dateInfo.view.calendar.getDate(); 
+
+    // Extract month and year
+    const visibleMonth = currentVisibleDate.getMonth() + 1; // JS months are 0-based
+    const visibleYear = currentVisibleDate.getFullYear();
+
+    if (viewType === "dayGridMonth") {
+      setCurrData({
+        month: visibleMonth,
+        year: visibleYear,
+      }) // Show all events for the month
+    } 
+    else if (viewType === "dayGridDay") {
+      setCurrData({
+        date: currentVisibleDate?.getDate(),
+        month: visibleMonth,
+        year: visibleYear,
+      }) // Day view
+    }
+  };
+
+  console.log(currData);
+  
+  
 
   const handleDateClick = (info) => {
     // console.log(info)
@@ -55,12 +81,13 @@ const Calender = () => {
     <div className="p-6 bg-gray-50">
       <div className="sm:max-w-6xl sm:mx-auto bg-white shadow-lg rounded-lg p-4">
         <FullCalendar
-          plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin, listPlugin]}
+          plugins={[dayGridPlugin, interactionPlugin, listPlugin]}
           initialView="dayGridMonth"
+          datesSet={handleDatesSet}
           headerToolbar={{
             left: "prev,next today",
             center: "title",
-            right: "dayGridMonth,timeGridWeek,timeGridDay,listWeek",
+            right: "dayGridMonth,dayGridDay",
           }}
           editable={true}
           selectable={true}

@@ -40,7 +40,7 @@ function App() {
   }, [error, dispatch]);
 
   return (
-    <div>
+    <div className="dark:bg-gradient-to-b dark:from-gray-800 dark:via-gray-900 dark:to-black bg-white">
       <ToastContainer />
       <Header />
         <main className="min-h-screen">
