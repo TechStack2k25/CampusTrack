@@ -56,7 +56,7 @@ export const addtask = asynchandler(async (req, res, next) => {
 
 export const getall = asynchandler(async (req, res, next) => {
   const course_id = req.params.id;
-  let reqcourses = [];
+  let alltask = [];
   //check we want all task or task of specific course
   if (mongoose.Types.ObjectId.isValid(course_id)) {
     reqcourses = await Course.findById(course_id);
