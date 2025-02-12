@@ -40,16 +40,14 @@ export const all_course_attendence = asynchandler(async (req, res, next) => {
     .select('-_id -credit -task -users')
     .populate('teacher');
 
-  for (const course of reqcourses) {
-    course.attendance = course.student_attendance?.get(requser._id) || 0;
-  }
+  reqcourses = reqcourses.map((course) => {
+    const courseObj = course.toObject(); // Convert to plain object
+    courseObj.attendance = course.student_attendance?.get(requser._id) || 0;
+    return courseObj;
+  });
 
   res.status(201).json({
     message: 'Attendance fetched successfully',
     data: reqcourses,
   });
 });
-
-export const all_student_attendance = asynchandler(
-  async (req, res, next) => {}
-);

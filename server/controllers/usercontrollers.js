@@ -13,7 +13,7 @@ export const getall = asynchandler(async (req, res, next) => {
   console.log(course);
   let requsers = [];
   if (course) {
-    requsers = await Course.findById(course).populate({
+    const reqcourse = await Course.findById(course).populate({
       path: 'users', // The field to populate
       match: { role: queryobj.role }, //ensure role
       populate: {
@@ -22,7 +22,11 @@ export const getall = asynchandler(async (req, res, next) => {
         model: 'Department',
       },
     });
-    requsers = requsers?.users;
+    requsers = reqcourse?.users?.map((user) => {
+      const userObj = user.toObject(); // Convert to plain object
+      userObj.attendance = reqcourse.student_attendance?.get(user._id) || 0;
+      return userObj;
+    });
   } else {
     const requiremodel = new Apiquery(User, queryobj);
     requsers = (await requiremodel.filter()).models;
