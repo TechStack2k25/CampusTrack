@@ -5,6 +5,8 @@ import asynchandler from '../utils/asynchandler.js';
 export const mark_attendace = asynchandler(async (req, res, next) => {
   const { courseId, presentStudentIds } = req.body;
 
+  console.log(courseId,presentStudentIds);
+  
   const course = await Course.findById(courseId);
 
   if (!course) {

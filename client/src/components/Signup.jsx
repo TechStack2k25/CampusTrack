@@ -42,16 +42,16 @@ const Signup = () => {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-100">
-      <div className="bg-white shadow-lg rounded-lg p-6 sm:w-full max-w-md">
-        <h2 className="text-2xl font-semibold text-center text-gray-700 mb-4">
+    <div className="flex items-center justify-center min-h-screen">
+      <div className="w-full max-w-md dark:bg-gray-900 dark:border-gray-700 border border-gray-200  rounded-lg shadow-lg p-8">
+        <h2 className="text-3xl font-bold text-gray-800 dark:text-white text-center mb-6">
           Create Your Account
         </h2>
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           
           <div>
-            <label htmlFor="email" className="block text-sm font-medium text-gray-600">
-              Email
+            <label htmlFor="email" className="block text-sm font-medium text-gray-700 dark:text-gray-500">
+              Email:
             </label>
             <input
               type="email"
@@ -71,8 +71,8 @@ const Signup = () => {
           </div>
 
           <div>
-            <label htmlFor="password" className="block text-sm font-medium text-gray-600">
-              Password
+            <label htmlFor="password" className="block text-sm font-medium text-gray-700 dark:text-gray-500">
+              Password:
             </label>
             <input
               type="password"
@@ -94,8 +94,8 @@ const Signup = () => {
           </div>
 
           <div>
-            <label htmlFor="confirmpassword" className="block text-sm font-medium text-gray-600">
-              Confirm password
+            <label htmlFor="confirmpassword" className="block text-sm font-medium text-gray-700 dark:text-gray-500">
+              Confirm password:
             </label>
             <input
               type="password"
@@ -138,7 +138,7 @@ const Signup = () => {
           </button>
         </div>
 
-        <p className="mt-4 text-sm text-center text-gray-600">
+        <p className="mt-6 text-center text-sm dark:text-gray-500 text-gray-600">
           Already have an account?{" "}
           <Link to="/login" className="text-indigo-500 hover:underline">
             Login

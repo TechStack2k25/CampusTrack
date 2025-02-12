@@ -34,19 +34,19 @@ const Login = () => {
   }
   
   return (
-    <div className="flex justify-center items-center h-screen bg-gray-100 ">
+    <div className="flex justify-center items-center min-h-screen">
       <div className="flex flex-col justify-center items-center sm:w-full md:w-1/2 px-6 py-12">
-        <div className="w-full max-w-md bg-white  rounded-lg shadow-lg p-8">
-          <h2 className="text-3xl font-bold text-gray-800 text-center mb-6">
+        <div className="w-full max-w-md dark:bg-gray-900 dark:border-gray-700 border border-gray-200  rounded-lg shadow-lg p-8">
+          <h2 className="text-3xl font-bold text-gray-800 dark:text-white text-center mb-6">
             Login
           </h2>
           <form onSubmit={handleSubmit(handleSubmission)}>
             <div className="mb-4">
               <label
                 htmlFor="email"
-                className="block text-sm font-medium text-gray-700"
+                className="block text-sm font-medium text-gray-700 dark:text-gray-500"
               >
-                Email
+                Email:
               </label>
               <input
                 type="email"
@@ -70,9 +70,9 @@ const Login = () => {
             <div className="mb-4">
               <label
                 htmlFor="password"
-                className="block text-sm font-medium text-gray-700"
+                className="block text-sm font-medium text-gray-700 dark:text-gray-500"
               >
-                Password
+                Password:
               </label>
               <input
                 type="password"
@@ -111,7 +111,7 @@ const Login = () => {
                 </p>
               )}
           </form>
-          <p className="mt-6 text-center text-sm text-gray-600">
+          <p className="mt-6 text-center text-sm dark:text-gray-500 text-gray-600">
             Don't have an account?{' '}
             <Link to={'/signup'} className="text-indigo-600 hover:underline">
               Sign up

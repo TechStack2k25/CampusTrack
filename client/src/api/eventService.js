@@ -56,6 +56,21 @@ class EventService {
     }
   }
 
+  // get all events and tasks
+  getSchedule=async (data)=> {//data required: year,month,day
+    try {
+      const response = await this.api.post('/schedule',data);
+      console.log(response);
+
+      return response?.data?.data?.tasks;
+      //received all schedule data
+      
+    } catch (error) {
+      console.error('Error eventService: getSchedule: ', error);
+      throw error;
+    }
+  }
+
 }
 
 export const eventService = new EventService();
