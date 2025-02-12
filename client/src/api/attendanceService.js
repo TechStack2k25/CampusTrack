@@ -45,12 +45,12 @@ class AttendanceService {
 
   
   // all courses student
-  studentCoursesAttendance=async ()=> {//cookies
+  studentCoursesAttendance=async ()=> {//cookies required
     try {
       
       const response = await this.api.get(`/get_student`);
 
-      // console.log(response);
+      console.log(response);
       
       return response.data?.data;
       //getting all courses student attendance

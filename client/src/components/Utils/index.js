@@ -8,6 +8,7 @@ import AttendanceOverview from "./AttendanceOverview";
 import AttendanceRecords from "./AttendanceRecords";
 import Pagination from "./Pagination";
 import DataList from "./DataList";
+import AllAttendance from "./AllAttendance";
 
 export {
     CourseCard,
@@ -20,5 +21,6 @@ export {
     AttendanceRecords,
     DataList,
     Pagination,
+    AllAttendance,
     
 }

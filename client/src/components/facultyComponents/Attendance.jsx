@@ -3,7 +3,7 @@ import { useForm } from "react-hook-form";
 import { useCourses } from "../../data/courses";
 import { useDispatch, useSelector } from "react-redux";
 import { userService } from "../../api/userService";
-import { attendanceService } from "../../api/attendance";
+import { attendanceService } from "../../api/attendanceService";
 import { setError, setSuccess } from "../../store/slices/userSlice";
 
 const Attendance = () => {
@@ -137,23 +137,50 @@ const Attendance = () => {
                 className="grid grid-cols-2 space-x-2 mb-4"
               >
                 <p className="font-medium">{student?.name || student?.email?.split('@')[0]}</p>
-                <div className="space-x-4">
-                  <label className="flex items-center space-x-2">
-                    <input
-                      type="checkbox"
-                      checked={marked?.includes(student?._id)}
-                      onChange={() => handleAttendanceChange(student._id)}
-                    />
-                    <span className={`${marked?.includes(student?._id) ? "bg-green-500":""}`}>Present</span>
-                  </label>
-                </div>
+                <div className="flex items-center space-x-4">
+  <label className="flex items-center cursor-pointer">
+    <input
+      type="checkbox"
+      checked={marked?.includes(student?._id)}
+      onChange={() => handleAttendanceChange(student._id)}
+      className="hidden"
+    />
+    <div
+      className={`w-6 h-6 flex items-center justify-center border-2 rounded-lg transition-all 
+        ${marked?.includes(student?._id) ? "bg-green-500 border-green-600" : "bg-gray-200 border-gray-400"} 
+        hover:bg-green-400 hover:border-green-500 active:scale-95`}
+    >
+      {marked?.includes(student?._id) && (
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          className="w-4 h-4 text-white"
+          viewBox="0 0 20 20"
+          fill="currentColor"
+        >
+          <path
+            fillRule="evenodd"
+            d="M16.707 5.293a1 1 0 010 1.414l-7 7a1 1 0 01-1.414 0l-3-3a1 1 0 111.414-1.414L9 11.586l6.293-6.293a1 1 0 011.414 0z"
+            clipRule="evenodd"
+          />
+        </svg>
+      )}
+    </div>
+                  <span
+                    className={`ml-2 px-3 py-1 text-sm font-medium rounded-md transition-all 
+                      ${marked?.includes(student?._id) ? "bg-green-500 text-white" : "bg-gray-200 text-gray-700"} 
+                      hover:bg-green-400 hover:text-white`}
+                  >
+                    Present
+                  </span>
+                </label>
+              </div>
               </div>))}
               <button
                 type="button"
                 className="w-full bg-blue-500 text-white px-4 py-2 rounded"
                 onClick={submitAttendance}
               >
-                Marked!
+                Marked Attendance!
               </button>
               </div> : (
             <p>No students found for this course and semester.</p>

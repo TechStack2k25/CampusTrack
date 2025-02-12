@@ -1,11 +1,13 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { challenges } from '../../data/challenges.js'
+import AllAttendance from '../Utils/AllAttendance.jsx';
 
 const DashboardContent = () => {
   return (
     <main className="flex-1 p-6">
       <h2 className="text-center text-2xl font-bold mb-8">Welcome to Your Dashboard</h2>
+      <AllAttendance />
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
         {/* Cards for each feature */}
         <div className="bg-white shadow-md rounded p-4">
