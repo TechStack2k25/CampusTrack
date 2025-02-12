@@ -9,9 +9,12 @@ import { useAssignments } from "../../data/assignments.js";
 import AssignmentCard from "../Utils/AssignmentCard.jsx";
 
 const AssignmentsFaculty = () => {
+  const [filter, setFilter] = useState("upcoming");
   const dispatch=useDispatch();
   const { register, handleSubmit, reset, formState:{ errors } } = useForm();
   const queryClient= useQueryClient();
+
+    const currentDate = new Date();
   
     const { data: allCourses } = useCourses();
 
@@ -130,7 +133,29 @@ const AssignmentsFaculty = () => {
 
       {/* Assignment List */}
         {coursesHavingAssignments && coursesHavingAssignments?.length>0 && coursesHavingAssignments[0]?.task.length>0 && 
-      <h1 className="text-2xl font-bold text-center mb-6">All Assignments</h1>}
+      <>
+      <h1 className="text-2xl font-bold text-center mb-6">All Assignments</h1>
+      <div className="flex justify-center mb-6 space-x-4 flex-wrap">
+        <button
+          className={`px-4 py-2 rounded ${filter === "upcoming"
+              ? "bg-green-500 text-white"
+              : "bg-gray-200 hover:bg-gray-300"
+            }`}
+          onClick={() => setFilter("upcoming")}
+        >
+          Upcoming
+        </button>
+        <button
+          className={`px-4 py-2 rounded ${filter === "past"
+              ? "bg-blue-500 text-white"
+              : "bg-gray-200 hover:bg-gray-300"
+            }`}
+          onClick={() => setFilter("past")}
+        >
+          Past
+        </button>
+      </div>
+      </>}
       <div className="grid gap-2 grid-cols-2">
         {coursesHavingAssignments && coursesHavingAssignments?.length>0 && coursesHavingAssignments.map((course) => (
           // <div
@@ -149,7 +174,12 @@ const AssignmentsFaculty = () => {
           //     Remove
           //   </button>
           // </div>
-          course && course?.task &&  course?.task?.map((assignment)=><AssignmentCard key={assignment._id} assignment={{...assignment,coursename:course?.name}}/>)
+          course && course?.task &&  course?.task?.map((assignment)=>{
+            const assignmentDate = new Date(assignment?.deadline);
+            return (filter === "upcoming"
+              ? assignmentDate >= currentDate && <AssignmentCard key={assignment?._id} assignment={{ ...assignment, coursename: course?.name }} />
+              : assignmentDate < currentDate && <AssignmentCard key={assignment?._id} assignment={{ ...assignment, coursename: course?.name }} />)
+          })
         ))}
       </div>
     </div>

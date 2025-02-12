@@ -4,7 +4,7 @@ export const scholarMenu = [
     { name: 'Assignments', link: '/assignments',roles:["Student"]  },
     { name: 'Events', link: '/events',roles:["User","Student"]  },
     { name: 'Schedule', link: '/schedule',roles:["User","Student"]  },
-    { name: 'Lectures', link: '/lectures',roles:["Student"]  },
+    // { name: 'Lectures', link: '/lectures',roles:["Student"]  },
     { name: 'Leaderboard', link: '/leaderboard',roles:["Student"]  },
     // { name: 'Challenges', link: '/challenges' },
   ];

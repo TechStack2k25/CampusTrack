@@ -6,7 +6,7 @@ import AllAttendance from '../Utils/AllAttendance.jsx';
 const DashboardContent = () => {
   return (
     <main className="flex-1 p-6">
-      <h2 className="text-center text-2xl font-bold mb-8">Welcome to Your Dashboard</h2>
+      {/* <h2 className="text-center text-2xl font-bold mb-8">Welcome to Your Dashboard</h2> */}
       <AllAttendance />
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
         {/* Cards for each feature */}
@@ -27,7 +27,7 @@ const DashboardContent = () => {
         </div>
       </div>
       <div className="mb-8">
-          <h2 className="text-2xl font-bold mb-4">Ongoing Challenges</h2>
+          <h2 className="text-2xl font-bold mb-6 text-center text-blue-700">Ongoing Challenges</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {challenges.map((challenge) => (
               <div
@@ -54,7 +54,7 @@ const DashboardContent = () => {
 
         {/* Goal Tracker */}
         <div>
-          <h2 className="text-2xl font-bold mb-4">Goal Tracker</h2>
+        <h2 className="text-2xl font-bold mb-6 text-center text-blue-700">Goal Tracker</h2>
           <div className="bg-white shadow-md rounded-lg p-6">
             <p className="text-gray-600">
               <strong>Weekly Goal:</strong> Complete 2 challenges

@@ -88,7 +88,7 @@ const Routers = () => {
             <Route path="assignments" element={<Assignments />} />
             <Route path="events" element={<Events />} />
             <Route path="schedule" element={<Schedule />} />
-            <Route path="lectures" element={<Lectures />} />
+            {/* <Route path="lectures" element={<Lectures />} /> */}
             <Route path="request" element={<Request/>} />
             <Route path="leaderboard" element={<Leaderboard />} />
             <Route path='*' element={<Notfound/>} />

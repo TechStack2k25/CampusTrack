@@ -41,7 +41,7 @@ export const all_course_attendence = asynchandler(async (req, res, next) => {
     .populate('teacher');
 
   reqcourses = reqcourses.map((course) => {
-    const courseObj = course.toObject(); // Convert to plain object
+    let courseObj = course.toObject(); // Convert to plain object
     courseObj.attendance = course.student_attendance?.get(requser._id) || 0;
     return courseObj;
   });
