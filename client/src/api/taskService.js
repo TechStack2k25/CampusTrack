@@ -1,6 +1,7 @@
 import axios from 'axios';
 import store from '../store/store.js';
 import { logout } from '../store/slices/userSlice.js';
+// import { toast } from 'react-toastify'
 
 class TaskService {
   constructor() {
@@ -25,10 +26,23 @@ class TaskService {
       }
     );
   }
-  // submisssion of task
+  // submission of task
   submitTask=async (data)=> {//data required: task_Id
     try {
-      const response = await this.api.post(`/submit/${data?.id}`,data);
+      const formData = new FormData();
+      formData.append("file", data?.file); 
+      const response = await this.api.post(`/submit/${data?.id}`,formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+        timeout: 60000, // Increase timeout for file uploads
+        // onUploadProgress: (progressEvent) => {
+        //   const percentCompleted = Math.round(
+        //     (progressEvent.loaded / progressEvent.total) * 100
+        //   );
+        //   toast.info(`Uploading: ${percentCompleted}%`); // Show Toastify notification
+        // },
+      });
 
       console.log(response);
       return response.status===201;
@@ -51,7 +65,7 @@ class TaskService {
       throw error;
     }
   }
-  // getting all task
+  // getting all task for student
   getAll=async (data)=> {//data required: course_id/user_id
     try {
       const response = await this.api.get(`/all/${data?.id}`);
@@ -62,6 +76,21 @@ class TaskService {
 
     } catch (error) {
       console.error('Error taskService: getAll: ', error);
+      throw error;
+    }
+  }
+
+  // getting all task for faculty
+  getAllAssignments=async (data)=> {//data required: course_id/user_id
+    try {
+      const response = await this.api.get(`/get_submission/${data?.id}`);
+
+      console.log(response);
+      
+      return response.data?.data?.data;
+
+    } catch (error) {
+      console.error('Error taskService: getAllAssignments: ', error);
       throw error;
     }
   }

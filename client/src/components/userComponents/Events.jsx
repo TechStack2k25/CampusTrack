@@ -47,10 +47,10 @@ const Events = () => {
   };
 
   return (
-    <div className="flex-1 bg-gray-100 min-h-screen sm:py-4">
+    <div className="flex-1 min-h-screen sm:py-4">
         {openForm && <AddEvents addEvent={addEvent} openForm={openForm} setOpenForm={setOpenForm} />}
     <div className="container mx-auto p-6">
-      <h1 className="text-2xl text-center font-bold text-gray-800 mb-6">My Events</h1>
+      <h1 className="text-2xl text-center font-bold text-gray-800 dark:text-white tracking-tight mb-6">My Events</h1>
 
       <div className="flex justify-center mb-6 space-x-4 flex-wrap">
         <button

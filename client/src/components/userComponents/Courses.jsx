@@ -71,7 +71,7 @@ function Courses() {
   return (
     <div className="container mx-auto px-4 py-6">
       {user && user?.role==='HOD' && openForm && <AddCourse addCourse={addCourse} data={dataToUpdate} setData={setDataToUpdate} openForm={openForm} setOpenForm={setOpenForm} />}
-      <h1 className="text-2xl font-bold text-center text-gray-800 ">Courses</h1>
+      <h1 className="text-2xl font-bold text-center text-gray-800 dark:text-white tracking-tight mb-2">Courses</h1>
       {courses && courses?.length>0 ? <div className='sm:grid sm:grid-cols-2 gap-2'>
         {courses && courses?.map((course) => (
           <CourseCard key={course._id} course={course} updatefn={updateData} deletefn={deleteCourse} />

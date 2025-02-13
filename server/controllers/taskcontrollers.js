@@ -61,9 +61,10 @@ export const getall = asynchandler(async (req, res, next) => {
   }
   const course_id = req.params.id;
   let alltask = [];
+  let reqcourses;
   //check we want all task or task of specific course
   if (mongoose.Types.ObjectId.isValid(course_id)) {
-    reqcourses = await Course.findById(course_id);
+    reqcourses= await Course.findById(course_id);
 
     //check course exist or not
     if (!reqcourses) {
@@ -73,7 +74,7 @@ export const getall = asynchandler(async (req, res, next) => {
     //get all courses
     reqcourses = await reqcourses.populate('task');
     alltask = reqcourses?.task?.map((tsk) => {
-      const file = tsk.submitted_by?.get(req.user._id) || null;
+      const file = tsk.submitted_by?.get(req.user._id.toString()) || null;
       const taskstatus = file ? 'Submitted' : 'Pending';
 
       // Remove submitted_by from the final object
@@ -93,16 +94,16 @@ export const getall = asynchandler(async (req, res, next) => {
     course.alltask = course.task.map((tsk) => {
       // Ensure tsk is a plain object
       const taskObject = tsk.toObject ? tsk.toObject() : tsk;
-
+      
       // Extract file from submitted_by
-      const file = taskObject.submitted_by?.get(req.user._id) || null;
+      const file = taskObject.submitted_by?.get(req.user._id?.toString()) || null;
       const taskstatus = file ? 'Submitted' : 'Pending';
 
       // Remove submitted_by field
       const { submitted_by, ...taskWithoutSubmittedBy } = taskObject;
-
-      return { ...taskWithoutSubmittedBy, taskstatus, file };
+      return { ...taskWithoutSubmittedBy, taskstatus, file, coursename:course?.name };
     });
+    alltask=[...alltask,...course?.alltask];
   });
 
   res.status(201).json({
@@ -125,37 +126,43 @@ export const getall_submission = asynchandler(async (req, res, next) => {
     return next(new ApiError('Course not found', 422));
   }
   let alltasks = await Task.find({ _id: { $in: reqcourse.task } });
-
+  console.log(alltasks);
+  
   const userIdsSet = new Set();
-  alltasks.forEach((task) => {
-    if (task.submitted_by) {
-      Object.keys(task.submitted_by).forEach((userId) =>
-        userIdsSet.add(userId)
-      );
-    }
-  });
+
+alltasks.forEach((task) => {
+  if (task.submitted_by instanceof Map) {
+    task.submitted_by.forEach((value, key) => {
+      userIdsSet.add(key);
+    });
+  }
+});
 
   const userIds = Array.from(userIdsSet);
 
-  const all_users = await User.find({ _id: { $in: userIds } }).select(
-    '-department -college -currentdegree -pastdegree -pastcolleges -qualification -pastcourse -events'
+  const all_users = await User.find({ _id: { $in: userIds} }).select(
+    '-department -college -currentdegree -course -pastdegree -pastcolleges -qualification -pastcourse -events'
   );
 
   alltasks = alltasks.map((task) => {
     const { submitted_by } = task;
+    
     const task_users = all_users.map((user) => {
-      const file = submitted_by.get(user._id);
+      const file = submitted_by.get(user._id?.toString());
       if (file) {
-        return { ...user, file };
-      } else return null;
+        const userData=user?.toObject();
+        // console.log(userData);
+        
+        return {...userData, file };
+      }
     });
-    return { ...task, task_users };
+    return { ...task.toObject, task_users };
   });
-
+ 
   res.status(201).json({
     message: 'All task fetch succesfullly',
     data: {
-      data: alltasks,
+      data: {alltasks,reqcourse},
     },
   });
 });
@@ -250,8 +257,10 @@ export const submittask = asynchandler(async (req, res, next) => {
   if (!reqtask) {
     return next(new ApiError('Task not found', 404));
   }
+  console.log(req?.body?.file);
+  
 
-  console.log(req.file);
+  // console.log(req.file);
 
   const uploadedfile = await uploadOnCloudinary(req.file.path);
 
@@ -259,7 +268,7 @@ export const submittask = asynchandler(async (req, res, next) => {
     return next(new ApiError('Error in Submitted Assignment', 444));
   }
 
-  const submitted_file = reqtask.submitted_by.get(req.user._id);
+  const submitted_file = reqtask.submitted_by.get(req.user._id.toString());
 
   if (submitted_file) {
     await deleteOnCloudinary(submitted_file);
