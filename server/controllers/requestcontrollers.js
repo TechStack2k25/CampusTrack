@@ -10,8 +10,7 @@ import { isvaliduser } from './authcontrollers.js';
 
 export const create_request = asynchandler(async (req, res, next) => {
   // extract data from req.body
-  const { requestType, course, college, dep_id, task, file, role, year } =
-    req.body;
+  const { requestType, course, college, dep_id, role, year } = req.body;
 
   //get the data of user from req.user
   const requser = req.user;
@@ -142,30 +141,9 @@ export const create_request = asynchandler(async (req, res, next) => {
       });
     }
   }
-
-  //create request for submissin of task
-  // else if (requestType === 'Submit Task') {
-  //   if (!task) {
-  //     return next(new ApiError('To submit task it not found', 404));
-  //   }
-  //   const newrequest = await Request.create({
-  //     requestType,
-  //     request_course: course,
-  //     request_task: task,
-  //     request_by: req.user._id,
-  //     request_file: file,
-  //   });
-
-  //   if (!newrequest) {
-  //     return next(
-  //       new ApiError('Error in create request for submit assignment', 422)
-  //     );
-  //   }
-  // }
-  // return { message: 'success' };
   return res.status(201).json({
-      message: 'Request generated successfully',
-    }); 
+    message: 'Request generated successfully',
+  });
 });
 
 export const getall_request = asynchandler(async (req, res, next) => {
@@ -223,14 +201,7 @@ export const getall_request = asynchandler(async (req, res, next) => {
     })
       .populate('request_by')
       .populate('request_course');
-
-    //to get all submit request
-    const submit_request = await Request.find({
-      requestType: 'Submit Task',
-      request_course: { $in: courseIds },
-    });
     allrequest.student = student_request;
-    allrequest.submit = submit_request;
   }
   if (req.user.role === 'User' || req.user.role === 'Student') {
     return next(
@@ -275,7 +246,6 @@ export const updaterequest = asynchandler(async (req, res, next) => {
     if (!reqcourse) {
       return next(new ApiError('error in updated request', 422));
     }
-    console.log(require_request.requestType);
 
     //get the user for which we update
     const requser = await User.findById(require_request.request_by);
@@ -297,10 +267,12 @@ export const updaterequest = asynchandler(async (req, res, next) => {
     const deleted_request = await Request.findByIdAndDelete(request_id);
 
     //check the request is deleted or not
-    if (deleted_request.deletedCount === 0) {
+    if (!deleted_request) {
       //if not deleted change the update and give error
       requser.course.pop();
       requser.save({ validateBeforeSave: false });
+      reqcourse.users.pop();
+      reqcourse.save();
       return next(new ApiError('Error in updating request', 422));
     }
   }
@@ -367,59 +339,6 @@ export const updaterequest = asynchandler(async (req, res, next) => {
 
     // if update request then delete it
     const deleted_request = await Request.findByIdAndDelete(request_id);
-
-    //  // check the request is deleted or not
-    //   if (deleted_request.deletedCount === 0) {
-    //     //if not delete update the change
-    //     reqcollege.users.pop();
-    //     reqcollege.save();
-    //     return next(new ApiError('Error in updating request', 422));
-    //   }
-  }
-
-  //update the request of submit assignment
-  else if (
-    require_request.requestType === 'Submit Task' &&
-    new_status === 'Approved'
-  ) {
-    //get the id of the task
-    const task_id = require_request.request_task;
-
-    //check the task is exist or not
-    const reqtask = await Task.findById(task_id);
-
-    //if task is not exist give error
-    if (!reqtask) {
-      return next(new ApiError('Task is not found to update request', 404));
-    }
-
-    //get the course for the id of the teacher
-    const reqcourse = await Course.findById(require_request.request_course);
-
-    //if course not found give error
-    if (!reqcourse) {
-      return next(new ApiError('Course not found', 404));
-    }
-
-    //check the user is valid or not
-    isvaliduser(req.user._id, reqcourse.teacher);
-
-    //if user is authorised add submit status of user and delete it
-    const user_id = require_request.request_by;
-    const file = require_request.request_file;
-    reqtask.submitted_by.push({ user: user_id, file });
-    reqtask.save();
-
-    //if update request then delete it
-    const deleted_request = Request.findByIdAndDelete(request_id);
-
-    //check the request is deleted or not
-    if (deleted_request.deletedCount === 0) {
-      //if not delete update the change
-      reqtask.submitted_by.pop();
-      reqtask.save();
-      return next(new ApiError('Error in updating request', 422));
-    }
   }
 
   if (new_status === 'rejected') {

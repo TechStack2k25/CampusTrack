@@ -7,6 +7,7 @@ import Reward from '../models/rewardmodel.js';
 import { create_request } from './requestcontrollers.js';
 import { isvaliduser } from './authcontrollers.js';
 import mongoose from 'mongoose';
+import { deleteOnCloudinary, uploadOnCloudinary } from '../utils/cloudinary.js';
 
 export const addtask = asynchandler(async (req, res, next) => {
   //get the course id
@@ -55,6 +56,9 @@ export const addtask = asynchandler(async (req, res, next) => {
 });
 
 export const getall = asynchandler(async (req, res, next) => {
+  if (req.user.role !== 'Student') {
+    return next(new ApiError('You cannot perform that action'));
+  }
   const course_id = req.params.id;
   let alltask = [];
   //check we want all task or task of specific course
@@ -68,19 +72,90 @@ export const getall = asynchandler(async (req, res, next) => {
 
     //get all courses
     reqcourses = await reqcourses.populate('task');
+    alltask = reqcourses?.task?.map((tsk) => {
+      const file = tsk.submitted_by?.get(req.user._id) || null;
+      const taskstatus = file ? 'Submitted' : 'Pending';
+
+      // Remove submitted_by from the final object
+      const { submitted_by, ...taskWithoutSubmittedBy } = tsk.toObject
+        ? tsk.toObject()
+        : tsk;
+
+      return { ...taskWithoutSubmittedBy, taskstatus, file };
+    });
   }
 
   const courseIds = req.user.course;
   //  get all the course of all ids
   reqcourses = await Course.find({ _id: { $in: courseIds } }).populate('task');
 
-  if (req.user.role === 'faculty')
-    reqcourses = await Course.find({ teacher: req.user._id }).populate('task');
+  reqcourses.forEach((course) => {
+    course.alltask = course.task.map((tsk) => {
+      // Ensure tsk is a plain object
+      const taskObject = tsk.toObject ? tsk.toObject() : tsk;
+
+      // Extract file from submitted_by
+      const file = taskObject.submitted_by?.get(req.user._id) || null;
+      const taskstatus = file ? 'Submitted' : 'Pending';
+
+      // Remove submitted_by field
+      const { submitted_by, ...taskWithoutSubmittedBy } = taskObject;
+
+      return { ...taskWithoutSubmittedBy, taskstatus, file };
+    });
+  });
 
   res.status(201).json({
     message: 'tasks fetch suceesfully',
     data: {
-      data: reqcourses,
+      data: alltask,
+    },
+  });
+});
+
+export const getall_submission = asynchandler(async (req, res, next) => {
+  if (req.user.role !== 'faculty') {
+    return next(new ApiError('You cannot perform that action'));
+  }
+  const course_id = req.params.id;
+
+  const reqcourse = await Course.findById(course_id);
+
+  if (!reqcourse) {
+    return next(new ApiError('Course not found', 422));
+  }
+  let alltasks = await Task.find({ _id: { $in: reqcourse.task } });
+
+  const userIdsSet = new Set();
+  alltasks.forEach((task) => {
+    if (task.submitted_by) {
+      Object.keys(task.submitted_by).forEach((userId) =>
+        userIdsSet.add(userId)
+      );
+    }
+  });
+
+  const userIds = Array.from(userIdsSet);
+
+  const all_users = await User.find({ _id: { $in: userIds } }).select(
+    '-department -college -currentdegree -pastdegree -pastcolleges -qualification -pastcourse -events'
+  );
+
+  alltasks = alltasks.map((task) => {
+    const { submitted_by } = task;
+    const task_users = all_users.map((user) => {
+      const file = submitted_by.get(user._id);
+      if (file) {
+        return { ...user, file };
+      } else return null;
+    });
+    return { ...task, task_users };
+  });
+
+  res.status(201).json({
+    message: 'All task fetch succesfullly',
+    data: {
+      data: alltasks,
     },
   });
 });
@@ -176,19 +251,26 @@ export const submittask = asynchandler(async (req, res, next) => {
     return next(new ApiError('Task not found', 404));
   }
 
-  //add some point in request object
-  req.body.requestType = 'Submit Task';
-  req.body.course = reqtask.course;
-  req.body.task = task_id;
+  console.log(req.file);
 
-  //create request for submit task
-  return await create_request(req, res, next); // This will call next(error) if an error occurs
+  const uploadedfile = await uploadOnCloudinary(req.file.path);
 
-  // if (!result) return;
-  // //on sucessfull return sucesss message
-  // res.status(201).json({
-  //   message: 'request for submit assignment created sucessfully',
-  // });
+  if (!uploadedfile.url) {
+    return next(new ApiError('Error in Submitted Assignment', 444));
+  }
+
+  const submitted_file = reqtask.submitted_by.get(req.user._id);
+
+  if (submitted_file) {
+    await deleteOnCloudinary(submitted_file);
+  }
+
+  reqtask.submitted_by.set(req.user._id, uploadedfile.url);
+  reqtask.save();
+
+  res.status(201).json({
+    message: 'Assignment Submitted successfully',
+  });
 });
 
 // //check the previous status task is alredy submit or submit now

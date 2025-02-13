@@ -6,15 +6,18 @@ import {
   deltask,
   updatetask,
   submittask,
+  getall_submission,
 } from '../controllers/taskcontrollers.js';
+import { upload } from '../controllers/filescontrollers.js';
 
 const router = express.Router();
 //submit the assignment
-router.post('/submit/:id', submittask);
+router.post('/submit/:id', upload.single('file'), submittask);
 //get all task
 router.get('/all/:id', getall);
 //allow faculty to change in task
 router.use(restrict_to('faculty'));
+router.use('/get_submission', getall_submission);
 //create
 router.post('/create/:id', addtask);
 //delete
