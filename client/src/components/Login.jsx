@@ -52,7 +52,7 @@ const Login = () => {
                 type="email"
                 id="email"
                 placeholder="Enter your email"
-                className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
+                className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm outline-none transition-all duration-300 focus:ring-1 focus:ring-blue-500 dark:focus:ring-blue-700"
                 {...register("email", {
                   required: "Email is required",
                   pattern: {
@@ -78,7 +78,7 @@ const Login = () => {
                 type="password"
                 id="password"
                 placeholder="Enter your password"
-                className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
+                className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm outline-none transition-all duration-300 focus:ring-1 focus:ring-blue-500 dark:focus:ring-blue-700"
                 {...register("password", {
                   required: "Password is required",
                   minLength: {

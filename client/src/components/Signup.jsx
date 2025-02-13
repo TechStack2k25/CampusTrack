@@ -65,7 +65,7 @@ const Signup = () => {
               })}
               className={`w-full px-4 py-2 mt-1 border ${
                 errors.email ? "border-red-500" : "border-gray-300"
-              } rounded-md focus:outline-none focus:ring focus:ring-blue-200`}
+              } rounded-md outline-none transition-all duration-300 focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-700 `}
             />
             {errors && errors?.email && <p className="text-sm text-red-500 mt-1">{errors.email?.message}</p>}
           </div>
@@ -86,7 +86,7 @@ const Signup = () => {
               })}
               className={`w-full px-4 py-2 mt-1 border ${
                 errors.password ? "border-red-500" : "border-gray-300"
-              } rounded-md focus:outline-none focus:ring focus:ring-blue-200`}
+              } rounded-md outline-none transition-all duration-300 focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-700 `}
             />
             {errors && errors?.password && (
               <p className="text-sm text-red-500 mt-1">{errors.password.message}</p>
@@ -111,7 +111,7 @@ const Signup = () => {
               })}
               className={`w-full px-4 py-2 mt-1 border ${
                 errors.confirmpassword ? "border-red-500" : "border-gray-300"
-              } rounded-md focus:outline-none focus:ring focus:ring-blue-200`}
+              } rounded-md outline-none transition-all duration-300 focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-700 `}
             />
             {errors && errors?.confirmpassword && (
               <p className="text-sm text-red-500 mt-1">{errors.confirmpassword.message}</p>

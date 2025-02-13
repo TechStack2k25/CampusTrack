@@ -37,7 +37,7 @@ const Profile = () => {
   return (
     <div className="flex-1 p-6">
         <div className="max-w-md mx-auto mt-10 p-6 bg-white shadow-lg rounded-lg">
-            <h2 className="text-xl font-bold text-center mb-4">User Profile</h2>
+            <h2 className="text-xl font-bold text-center mb-4">Profile</h2>
             {/* Edit Profile Form */}
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
 

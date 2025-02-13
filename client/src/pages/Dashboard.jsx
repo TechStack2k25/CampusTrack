@@ -15,7 +15,7 @@ function Dashboard() {
   },[userRole,scholarMenu]);
   
   return (
-    <div className="relative flex flex-1 min-h-screen bg-gray-100">
+    <div className="relative flex flex-1 min-h-scree">
         <Sidebar menuItems={menu} />
         <Outlet />
     </div>

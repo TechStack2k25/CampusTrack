@@ -6,22 +6,27 @@ import listPlugin from "@fullcalendar/list";
 import { CalendarModal } from '../Utils/index.js';
 import {useNavigate} from 'react-router-dom'
 import { eventService } from "../../api/eventService.js";
-import { current } from "@reduxjs/toolkit";
 
 
-const EventItem = ({ event }) => (
-  <div
-    className={`text-xs ${
-      event?.tasktype === "Event"
-        ? "bg-blue-500"
-        : new Date(event?.start) < new Date()
-        ? "bg-yellow-500"
-        : "bg-red-500"
-    } rounded px-2 truncate text-white text-center`}
-  >
-    {event.title}
-  </div>
-);
+const EventItem = ({ event }) => {
+  const isEvent = event?.extendedProps?.tasktype === "Event";
+  const isPastEvent = new Date(event?.start) < new Date();
+  console.log( event, isEvent, isPastEvent);
+ 
+  return (
+    <div
+      className={`text-xs rounded px-2 truncate text-white text-center ${
+        isEvent
+          ? "bg-blue-500"
+          : isPastEvent
+          ? "bg-yellow-500"
+          : "bg-red-500"
+      }`}
+    >
+      {event.title}
+    </div>
+  );
+};
 
 const Calender = () => {
   const navigate=useNavigate();
@@ -76,6 +81,7 @@ const Calender = () => {
         id: event?._id,
         title: event.title || "Untitled Event",
         start: event?.deadline || new Date().toISOString(),
+        tasktype: event?.tasktype,
       }))
     );
   }
