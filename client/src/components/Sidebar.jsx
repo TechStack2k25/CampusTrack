@@ -51,7 +51,7 @@ const Sidebar = ({menuItems}) => {
   return (
     <>
         <aside className={`absolute z-20 sm:rounded-none rounded top-16 left-0 sm:static  text-white ${open ? 'block' : 'hidden'} sm:block`}>
-            <div ref={ref} className='bg-gray-800  sm:w-56 mx-1 sm:pl-4 px-2 sm:py-4 py-1 sm:my-1 rounded-md'>
+            <div ref={ref} className='bg-gray-800  sm:w-56 mx-1 sm:pl-4 px-2 sm:py-4 py-1 sm:my-1 rounded-md border-2 dark:border-gray-700 border-gray-200'>
                 <div className='flex my-2 px-2 space-x-4 items-center'>
                             <div onClick={()=>navigate('/dashboard')} className="cursor-pointer h-8 sm:h-12 text-xl aspect-square bg-blue-500 rounded-full flex items-center justify-center text-white font-bold">
                                 {user?.name?.toUpperCase()[0] || user?.email.toUpperCase()[0]}
