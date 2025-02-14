@@ -18,7 +18,7 @@ const AllAttendance = () => {
     }, []);
 
     return (
-        <div className="py-6 px-1 bg-gray-100 rounded-lg shadow mb-4">
+        <div className="py-6 px-1 rounded-lg shadow mb-4 border border-gray-200 dark:border-gray-700 bg-black bg-opacity-10">
             <h2 className="text-2xl font-bold mb-6 text-center text-blue-700">Academic Records</h2>
             
             {courses.length > 0 ? (
@@ -29,10 +29,10 @@ const AllAttendance = () => {
                             : 0;
 
                         return (
-                            <div key={course?._id || course?.name} className="bg-white shadow-md rounded-lg p-6 hover:shadow-lg transition">
+                            <div key={course?._id || course?.name} className="bg-white border-gray-200 dark:bg-gray-900 dark:border-gray-700 border shadow-md rounded-lg p-6 hover:shadow-lg transition duration-300 transform hover:-translate-y-1">
                                 <div className="flex justify-between items-center mb-2">
                                     <h3 className="text-lg font-bold text-blue-600">{course?.name}</h3>
-                                    <span className="text-gray-700 text-sm">{course?.attendance} / {course?.total_classes}</span>
+                                    <span className="text-gray-700 text-sm dark:text-gray-400">{course?.attendance} / {course?.total_classes}</span>
                                 </div>
 
                                 {/* Progress Bar */}
