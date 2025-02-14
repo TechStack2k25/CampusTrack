@@ -43,7 +43,7 @@ const ForgotPassword = () => {
       }
       setRequesting(true);
       try {
-        const res=await authService.userForgotPassword({resetToken:token, password, confirmpassword:confirmPassword});
+        const res=await authService.userResetPassword({resetToken:token, password, confirmpassword:confirmPassword});
         if(res){
           dispatch(loginSuccess(res));
           dispatch(setSuccess("Password has been reset!"));

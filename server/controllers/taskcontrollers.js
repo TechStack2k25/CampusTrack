@@ -56,9 +56,6 @@ export const addtask = asynchandler(async (req, res, next) => {
 });
 
 export const getall = asynchandler(async (req, res, next) => {
-  if (req.user.role !== 'Student') {
-    return next(new ApiError('You cannot perform that action'));
-  }
   const course_id = req.params.id;
   let alltask = [];
   let reqcourses;
@@ -73,19 +70,24 @@ export const getall = asynchandler(async (req, res, next) => {
 
     //get all courses
     reqcourses = await reqcourses.populate('task');
-    alltask = reqcourses?.task?.map((tsk) => {
-      const file = tsk.submitted_by?.get(req.user._id.toString()) || null;
-      const taskstatus = file ? 'Submitted' : 'Pending';
-
-      // Remove submitted_by from the final object
-      const { submitted_by, ...taskWithoutSubmittedBy } = tsk.toObject
-        ? tsk.toObject()
-        : tsk;
-
-      return { ...taskWithoutSubmittedBy, taskstatus, file };
-    });
+    if(req.user.role==='Student'){
+      alltask = reqcourses?.task?.map((tsk) => {
+        const file = tsk.submitted_by?.get(req.user._id.toString()) || null;
+        const taskstatus = file ? 'Submitted' : 'Pending';
+  
+        // Remove submitted_by from the final object
+        const { submitted_by, ...taskWithoutSubmittedBy } = tsk.toObject
+          ? tsk.toObject()
+          : tsk;
+  
+        return { ...taskWithoutSubmittedBy, taskstatus, file };
+      });
+    }
+    else {
+      alltask=reqcourses.task
+    }
   }
-
+  else{
   const courseIds = req.user.course;
   //  get all the course of all ids
   reqcourses = await Course.find({ _id: { $in: courseIds } }).populate('task');
@@ -111,7 +113,7 @@ export const getall = asynchandler(async (req, res, next) => {
     });
     alltask = [...alltask, ...course?.alltask];
   });
-
+}
   res.status(201).json({
     message: 'tasks fetch suceesfully',
     data: {

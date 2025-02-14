@@ -1,11 +1,11 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { taskService } from "../../api/taskService";
 import { setError, setSuccess } from "../../store/slices/userSlice";
 import { useDispatch } from "react-redux";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import AssignmentCard from "../Utils/AssignmentCard.jsx";
 import AddAssignment from "../Utils/AddAssignments.jsx";
-import { useCoursesAssignments } from "../../data/courseAssignments.js";
+import { useAssignments } from "../../data/assignments.js"
 import { useCourses } from "../../data/courses.js";
 
 const AssignmentsFaculty = () => {
@@ -20,11 +20,8 @@ const AssignmentsFaculty = () => {
 
     const { data:courses }=useCourses();
 
-    const { data:allData } = useCoursesAssignments(course);
-    const coursesHavingAssignments = allData?.alltasks ?? [];
-    const reqcourse = allData?.reqcourse ?? {};
+    const { data:coursesHavingAssignments=[] } = useAssignments(course);
     console.log(coursesHavingAssignments);
-    console.log(reqcourse);
     
 
   // Defined mutation using useMutation hook
@@ -47,6 +44,15 @@ const AssignmentsFaculty = () => {
     mutationTocreateAssignment.mutate(data);
     reset(); // Reset the form fields
   };
+
+  const filteredAssignments = coursesHavingAssignments
+  ? coursesHavingAssignments.filter((assignment) => {
+      const assignmentDate = new Date(assignment?.deadline);
+      return filter === "upcoming"
+        ? assignmentDate >= currentDate
+        : assignmentDate < currentDate;
+    })
+  : [];
 
 
   return (
@@ -110,7 +116,7 @@ const AssignmentsFaculty = () => {
       </div>
       </>}
       <div className="grid gap-2 grid-cols-2">
-        {reqcourse && coursesHavingAssignments && coursesHavingAssignments?.length>0 && coursesHavingAssignments.map((data) => {
+        {filteredAssignments && filteredAssignments?.length>0 && filteredAssignments.map((assignment) => (
           // <div
           //   key={assignment._id}
           //   className="bg-white p-4 shadow rounded mb-2 flex justify-between items-center"
@@ -127,12 +133,8 @@ const AssignmentsFaculty = () => {
           //     Remove
           //   </button>
           // </div>
-            const assignment=data?._doc;
-            const assignmentDate = new Date(assignment?.deadline);
-            return (filter === "upcoming"
-              ? assignmentDate >= currentDate && <AssignmentCard key={assignment?._id} assignment={{ ...assignment, coursename: reqcourse?.name }} />
-              : assignmentDate < currentDate && <AssignmentCard key={assignment?._id} assignment={{ ...assignment, coursename: reqcourse?.name }} />)
-          }
+            <AssignmentCard key={assignment?._id} assignment={{ ...assignment }} />
+        )
         )}
       </div>
       </div>

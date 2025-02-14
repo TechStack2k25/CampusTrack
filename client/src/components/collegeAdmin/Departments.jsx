@@ -56,18 +56,25 @@ const Departments = () => {
       {/* Departments List */}
         {departments && departments?.length>0 ? 
          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {departments?.map((dept) => 
-          <div
-          key={dept._id}
-          className="bg-gradient-to-br from-blue-50 to-white p-6 rounded-2xl shadow-md hover:shadow-xl transition duration-300 transform hover:-translate-y-1 border border-gray-200 dark:border-gray-800 dark:from-blue-900 dark:to-black"
-        >
-          <h2 className="text-xl font-bold text-blue-600">{dept.name}</h2>
-          <p className="text-sm font-bold text-gray-600 dark:text-gray-400 mt-1 bg-gray-100 dark:bg-gray-950 px-2 py-1 rounded-md inline-block">
-            {dept?.code}
-          </p>
-        </div>
-        )}
-         </div>
+         {departments?.map((dept) => (
+           <div
+             key={dept._id}
+             className="bg-gradient-to-br from-blue-50 to-white p-6 rounded-2xl shadow-md hover:shadow-xl transition duration-300 transform hover:-translate-y-1 border border-gray-200 dark:border-gray-800 dark:from-blue-900 dark:to-black"
+           >
+            
+            <div className="flex justify-between">
+             <h2 className="text-xl font-bold text-blue-600">{dept.name}</h2>
+             <p className="text-sm font-bold text-gray-600 dark:text-gray-50 mt-1 bg-gray-100 dark:bg-blue-950  px-2 py-1 rounded-md inline-block">
+               {dept?.code}
+             </p>
+             </div>
+             {dept?.hod && <p className="text-sm font-bold text-gray-600 dark:text-gray-400 mt-1 bg-gray-100 dark:bg-gray-950 px-2 py-1 rounded-md inline-block">
+               <span className="font-semibold tracking-tighter">Head : </span> {dept?.hod?.name || dept?.hod?.email?.split('@')[0] || "N/A"}
+             </p>}
+           </div>
+         ))}
+       </div>
+       
           :
           
             <p className="text-center text-gray-600 mt-12 text-lg">

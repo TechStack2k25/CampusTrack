@@ -95,7 +95,7 @@ export const getall = asynchandler(async (req, res, next) => {
   //if exist return all department
   const all_department = await Department.find({
     college: reqcollege._id,
-  });
+  }).populate('hod');
 
   //check department fetch successfull or not
   if (!all_department) {
