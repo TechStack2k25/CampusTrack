@@ -251,8 +251,6 @@ export const submittask = asynchandler(async (req, res, next) => {
     return next(new ApiError('Task not found', 404));
   }
 
-  console.log(req.file);
-
   const uploadedfile = await uploadOnCloudinary(req.file.path);
 
   if (!uploadedfile.url) {

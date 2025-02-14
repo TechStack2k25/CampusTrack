@@ -9,8 +9,6 @@ export const getall = asynchandler(async (req, res, next) => {
   const queryobj = req.query;
   const course = queryobj.course;
   delete queryobj.course;
-  console.log(queryobj);
-  console.log(course);
   let requsers = [];
   if (course) {
     const reqcourse = await Course.findById(course).populate({
@@ -29,7 +27,7 @@ export const getall = asynchandler(async (req, res, next) => {
     });
   } else {
     const requiremodel = new Apiquery(User, queryobj);
-    requsers = (await requiremodel.filter()).models;
+    requsers = await requiremodel.filter().paginate().models;
   }
   res.status(201).json({
     message: 'User fetch sucessfully',

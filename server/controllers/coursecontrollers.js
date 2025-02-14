@@ -130,7 +130,6 @@ export const getall = asynchandler(async (req, res, next) => {
   ) {
     if (!mongoose.Types.ObjectId.isValid(department_id))
       department_id = req.user.department;
-    // console.log(department_id);
     //check the department exist or not
     const reqdepartment = await Department.findById(department_id).populate(
       'courses'
@@ -155,16 +154,13 @@ export const getall = asynchandler(async (req, res, next) => {
     allcourses = await Course.find({ teacher: req.user._id }).populate(
       'teacher'
     );
-    // console.log(allcourses);
   }
   //if the user is student
   else if (req.user.role === 'Student') {
-    console.log('student');
     allcourses = await User.findById(req.user._id).populate({
       path: 'course',
       populate: { path: 'teacher' }, // Nested population
     });
-    console.log(allcourses);
     allcourses = allcourses.course;
   }
 
@@ -217,15 +213,6 @@ export const add_course_by_student = asynchandler(async (req, res, next) => {
   req.body.requestType = 'Add Course';
   req.body.course = course_id;
   // Call create_request and let it handle any errors
-  // const result = 
+  // const result =
   return await create_request(req, res, next); // This will call next(error) if an error occurs
-
-  // console.log(result);
-  // if (result?.message!=='success') return;
-  // console.log(result);
-
-  // If create_request is successful, send the success response
-  // return res.status(201).json({
-  //   message: 'Request generated successfully',
-  // }); // This ensures error is passed to error handling middleware
 });
