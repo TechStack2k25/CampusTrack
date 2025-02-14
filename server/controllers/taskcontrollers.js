@@ -64,7 +64,7 @@ export const getall = asynchandler(async (req, res, next) => {
   let reqcourses;
   //check we want all task or task of specific course
   if (mongoose.Types.ObjectId.isValid(course_id)) {
-    reqcourses= await Course.findById(course_id);
+    reqcourses = await Course.findById(course_id);
 
     //check course exist or not
     if (!reqcourses) {
@@ -94,16 +94,22 @@ export const getall = asynchandler(async (req, res, next) => {
     course.alltask = course.task.map((tsk) => {
       // Ensure tsk is a plain object
       const taskObject = tsk.toObject ? tsk.toObject() : tsk;
-      
+
       // Extract file from submitted_by
-      const file = taskObject.submitted_by?.get(req.user._id?.toString()) || null;
+      const file =
+        taskObject.submitted_by?.get(req.user._id?.toString()) || null;
       const taskstatus = file ? 'Submitted' : 'Pending';
 
       // Remove submitted_by field
       const { submitted_by, ...taskWithoutSubmittedBy } = taskObject;
-      return { ...taskWithoutSubmittedBy, taskstatus, file, coursename:course?.name };
+      return {
+        ...taskWithoutSubmittedBy,
+        taskstatus,
+        file,
+        coursename: course?.name,
+      };
     });
-    alltask=[...alltask,...course?.alltask];
+    alltask = [...alltask, ...course?.alltask];
   });
 
   res.status(201).json({
@@ -127,43 +133,40 @@ export const getall_submission = asynchandler(async (req, res, next) => {
   }
   let alltasks = await Task.find({ _id: { $in: reqcourse.task } });
   // console.log(alltasks);
-  
   const userIdsSet = new Set();
 
-alltasks.forEach((task) => {
-  if (task.submitted_by instanceof Map) {
-    task.submitted_by.forEach((value, key) => {
-      userIdsSet.add(key);
-    });
-  }
-});
+  alltasks.forEach((task) => {
+    if (task.submitted_by instanceof Map) {
+      task.submitted_by.forEach((value, key) => {
+        userIdsSet.add(key);
+      });
+    }
+  });
 
   const userIds = Array.from(userIdsSet);
 
-  const all_users = await User.find({ _id: { $in: userIds} }).select(
+  const all_users = await User.find({ _id: { $in: userIds } }).select(
     '-department -college -currentdegree -course -pastdegree -pastcolleges -qualification -pastcourse -events'
   );
 
   alltasks = alltasks.map((task) => {
     const { submitted_by } = task;
-    
+
     const task_users = all_users.map((user) => {
       const file = submitted_by.get(user._id?.toString());
       if (file) {
-        const userData=user?.toObject();
+        const userData = user?.toObject();
         // console.log(userData);
-        
-        return {...userData, file };
+
+        return { ...userData, file };
       }
     });
     return { task,task_users };
   });
-  
- 
   res.status(201).json({
     message: 'All task fetch successfully',
     data: {
-      data: {alltasks,reqcourse},
+      data: { alltasks, reqcourse },
     },
   });
 });
@@ -259,9 +262,6 @@ export const submittask = asynchandler(async (req, res, next) => {
     return next(new ApiError('Task not found', 404));
   }
   console.log(req?.body?.file);
-  
-
-  // console.log(req.file);
 
   const uploadedfile = await uploadOnCloudinary(req.file.path);
 

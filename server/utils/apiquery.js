@@ -4,15 +4,17 @@
 
 class Apiquery {
   constructor(models, queryobj) {
-    this.models = models;
+    this.models = models; // Keep the Mongoose model reference
     this.queryobj = queryobj;
   }
-  async filter() {
+
+  filter() {
     let queryobj = { ...this.queryobj };
     const excludedFields = ['page', 'limit'];
     excludedFields.forEach((el) => delete queryobj[el]);
-    this.models = await this.models.find(queryobj);
-    return this;
+
+    this.models = this.models.find(queryobj); // Don't await here
+    return this; // Allows chaining
   }
 
   paginate() {
@@ -20,9 +22,9 @@ class Apiquery {
     const limit = this.queryobj.limit * 1 || 20;
     const skip = (page - 1) * limit;
 
-    this.models = this.models.skip(skip).limit(limit);
-
+    this.models = this.models.skip(skip).limit(limit); // Works on a query object
     return this;
   }
 }
+
 export default Apiquery;

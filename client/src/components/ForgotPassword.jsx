@@ -1,5 +1,8 @@
 import React, { useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
+import { authService } from "../api/authService.js"
+import { useDispatch } from "react-redux";
+import { loginSuccess, setError, setSuccess } from "../store/slices/userSlice.js";
 
 const ForgotPassword = () => {
   const { token } = useParams();
@@ -8,18 +11,51 @@ const ForgotPassword = () => {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [requesting,setRequesting]=useState(false);
   const [errormsg,setErrormsg]=useState('');
+  const dispatch=useDispatch();
 
   const handleEmail=async()=>{
     console.log(email);
+    setErrormsg('');
+    setRequesting(true);
+    try {
+      const res=await authService.userForgotPassword({email});
+      if(res){
+        dispatch(setSuccess("Reset link has been sent to your email!"))
+        setEmail("");
+      }
+      else{
+        dispatch(setError("Try Again!"));
+      }
+    } catch (error) {
+      dispatch(setError(error?.response?.data?.message));
+    }
+    setRequesting(false);
+
   }
 
   const resetPassword=async()=>{
       console.log(password,confirmPassword);
+      setErrormsg('');
       if(password!==confirmPassword){
         setErrormsg("Password do not match!");
         setTimeout(() => setErrormsg(""), 3000);
         return;
       }
+      setRequesting(true);
+      try {
+        const res=await authService.userForgotPassword({resetToken:token, password, confirmpassword:confirmPassword});
+        if(res){
+          dispatch(loginSuccess(res));
+          dispatch(setSuccess("Password has been reset!"));
+          setEmail("");
+        }
+        else{
+          dispatch(setError("Try Again!"));
+        }
+      } catch (error) {
+        dispatch(setError(error?.response?.data?.message));
+      }
+      setRequesting(false);
   }
 
   return (

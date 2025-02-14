@@ -4,7 +4,7 @@ import ApiError from '../utils/apierror.js';
 import { promisify } from 'util';
 import jwt from 'jsonwebtoken';
 import Email from '../utils/emailhandler.js';
-
+import * as crypto from 'crypto';
 //to create acess and refreshtoken
 const createacessandrefreshtoken = (id) => {
   //await is not used it is synchronous it generate token and return immediately
@@ -229,10 +229,9 @@ export const forgotpassword = asynchandler(async (req, res, next) => {
 
   const resetToken = requser.createResettoken();
   await requser.save({ validateBeforeSave: false });
+
   try {
-    const resetURL = `${req.protocol}://${req.get(
-      'host'
-    )}/api/auth/resetPassword/${resetToken}`;
+    const resetURL = `${process.env.FRONTEND_URL}/${resetToken}`;
     await new Email(requser, resetURL).sendPasswordReset();
 
     res.status(200).json({
@@ -243,22 +242,109 @@ export const forgotpassword = asynchandler(async (req, res, next) => {
     requser.passwordResetToken = undefined;
     requser.passwordResetExpires = undefined;
     await requser.save({ validateBeforeSave: false });
-    console.log(err);
     return next(
       new ApiError('There was an error sending the email. Try again later!'),
       500
     );
   }
 });
-export const resetpassword = asynchandler(async (req, res, next) => {});
-export const updatepassword = asynchandler(async (req, res, next) => {});
-export const logout = asynchandler(async (req, res, next) => {
-  // const options = {
-  //   httpOnly: true,
-  //   secure: false,
-  //   sameSite: 'Lax',
-  // };
+export const resetpassword = asynchandler(async (req, res, next) => {
+  const { resetToken, password, confirmpassword } = req.body;
 
+  if (!resetToken || !password || !confirmpassword) {
+    return next(new ApiError('Please fill all required field', 400));
+  }
+
+  const hashedToken = crypto
+    .createHash('sha256')
+    .update(resetToken)
+    .digest('hex');
+
+  const requser = await User.findOne({
+    passwordResetToken: hashedToken,
+    passwordResetExpires: { $gte: Date.now() },
+  });
+
+  if (!requser) {
+    return next(new ApiError('Token is invalid or expired', 401));
+  }
+
+  requser.password = password;
+  requser.confirmpassword = confirmpassword;
+  requser.passwordResetToken = undefined;
+  requser.passwordResetExpires = undefined;
+  await requser.save();
+  const [acesstoken, refreshtoken] = createacessandrefreshtoken(requser._id);
+
+  //check the acess and refreshtoken is generated or not
+  if (!refreshtoken || !acesstoken) {
+    return next(new ApiError('token cannot generated', 400));
+  }
+
+  //send the cookie
+  const options = {
+    httpOnly: true,
+    secure: false,
+    sameSite: 'Lax',
+  };
+
+  res
+    .cookie('acesstoken', acesstoken, options)
+    .cookie('refreshtoken', refreshtoken, options);
+  //return success message
+  res.status(201).json({
+    message: 'Password reset Succesfully',
+    data: {
+      acesstoken,
+      refreshtoken,
+      user: requser,
+    },
+  });
+});
+export const updatepassword = asynchandler(async (req, res, next) => {
+  const requser = await User.findById(req.user._id).select('+password');
+
+  const { current_password, new_password, confirmpassword } = req.body;
+
+  if (!new_password || !confirmpassword || !current_password) {
+    return next(new ApiError('All field are required', 400));
+  }
+  if (!(await requser.comparedbpassword(current_password))) {
+    return next(new ApiError('Current Password is incorrect', 400));
+  }
+
+  requser.password = new_password;
+  requser.confirmpassword = confirmpassword;
+  await requser.save();
+
+  const [acesstoken, refreshtoken] = createacessandrefreshtoken(requser._id);
+
+  //check the acess and refreshtoken is generated or not
+  if (!refreshtoken || !acesstoken) {
+    return next(new ApiError('token cannot generated', 400));
+  }
+
+  //send the cookie
+  const options = {
+    httpOnly: true,
+    secure: false,
+    sameSite: 'Lax',
+  };
+
+  res
+    .cookie('acesstoken', acesstoken, options)
+    .cookie('refreshtoken', refreshtoken, options);
+  //return success message
+  res.status(201).json({
+    message: 'Password updated Successfully',
+    data: {
+      acesstoken,
+      refreshtoken,
+      user: requser,
+    },
+  });
+});
+export const logout = asynchandler(async (req, res, next) => {
   res.clearCookie('acesstoken').clearCookie('refreshtoken');
   res.status(200).json({ status: 'success' });
 });

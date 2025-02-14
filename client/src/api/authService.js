@@ -44,7 +44,32 @@ class AuthService {
   }
 
   // forgot password call
-  //userForgotPassword= async () =>{}
+  userForgotPassword= async (data) =>{//email
+    try {
+      const response = await this.api.post('/forgotpassword',data,{
+        timeout: 60000,
+      });
+
+      console.log(response);
+      return response.status===200;
+    } catch (error) {
+      console.error('Error authService: userForgotPassword: ', error);
+      throw error;
+    }
+  }
+
+  // reset password call
+  userResetPassword= async (data) =>{// resetToken, password, confirmpassword
+    try {
+      const response = await this.api.post('/resetpassword',data);
+
+      console.log(response);
+      return response.data?.data?.user;
+    } catch (error) {
+      console.error('Error authService: userResetPassword: ', error);
+      throw error;
+    }
+  }
 
   //Logout the user
   userLogout=async ()=>{

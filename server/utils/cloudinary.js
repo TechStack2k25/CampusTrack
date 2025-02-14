@@ -1,10 +1,10 @@
 import { v2 as cloudinary } from 'cloudinary';
 import dotenv from 'dotenv';
 import fs from 'fs';
+import ApiError from './apierror.js';
 
 dotenv.config({ path: './variable.env' });
 
-// console.log(process.env.CLOUDINARY_API_KEY);
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
   api_key: process.env.CLOUDINARY_API_KEY,
@@ -25,7 +25,7 @@ export const uploadOnCloudinary = async (localFilePath) => {
 
     return uploadResult;
   } catch (error) {
-    console.error('Upload failed:', error);
+    return next(new ApiError('Error in uploading file', 422));
     fs.unlinkSync(localFilePath);
     return null;
   }
@@ -40,7 +40,7 @@ export const deleteOnCloudinary = async (fileUrl) => {
     });
     return deleteResult;
   } catch (error) {
-    console.log(error);
+    // return next(new ApiError('Error in deleting previous file', 422));
     return null;
   }
 };

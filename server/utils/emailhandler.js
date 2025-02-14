@@ -35,8 +35,6 @@ export default class Email {
   // Password reset email method
   async sendPasswordReset() {
     const subject = 'Your password reset token (valid for only 10 minutes)';
-    console.log(subject);
-    console.log(process.env.EMAIL_FROM);
     await this.send(subject);
   }
 }

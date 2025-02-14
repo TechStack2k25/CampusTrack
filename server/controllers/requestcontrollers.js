@@ -37,12 +37,9 @@ export const create_request = asynchandler(async (req, res, next) => {
       request_role: req.user.role,
       request_dep: req.user.department,
     });
-    console.log(existed_request);
     if (existed_request) {
       return next(new ApiError('You are already request for it', 411));
     }
-
-    console.log(existed_request);
     //create the request
     const newrequest = await Request.create({
       requestType,
@@ -179,7 +176,6 @@ export const getall_request = asynchandler(async (req, res, next) => {
     const reqdepartment = await Department.findOne({ hod: req.user._id });
     if (reqdepartment) {
       //find all faculty request
-      // console.log(reqdepartment);
       const faculty_request = await Request.find({
         request_dep: reqdepartment._id,
         request_role: 'faculty',
@@ -194,7 +190,6 @@ export const getall_request = asynchandler(async (req, res, next) => {
   if (req.user.role === 'faculty') {
     const reqcourse = await Course.find({ teacher: req.user._id });
     const courseIds = reqcourse.map((course) => course._id);
-    console.log(courseIds);
     const student_request = await Request.find({
       requestType: 'Add Course',
       request_course: { $in: courseIds },
@@ -219,7 +214,6 @@ export const getall_request = asynchandler(async (req, res, next) => {
 export const updaterequest = asynchandler(async (req, res, next) => {
   //get the updated status from body
   const { new_status } = req.body;
-  console.log(new_status);
   //get theid from params
   const request_id = req.params.id;
 
