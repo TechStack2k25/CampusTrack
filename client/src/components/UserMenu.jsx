@@ -61,7 +61,7 @@ const UserMenu = () => {
 
       {/* Dropdown Menu */}
       {isOpen && (
-        <div className="absolute right-0 mt-2 w-40 bg-white border border-gray-200 rounded shadow-lg px-1">
+        <div className="absolute right-0 mt-2 w-40 bg-white dark:bg-gray-950 dark:border-gray-800 border border-gray-200 rounded shadow-lg px-1">
           <ul className="py-1">
             <li>
                 <Link to="/dashboard">
@@ -69,7 +69,7 @@ const UserMenu = () => {
                       <div className="h-8 aspect-square bg-blue-500 rounded-full flex items-center justify-center text-white font-bold">
                       {user?.name?.toUpperCase()[0] || user?.email.toUpperCase()[0]}
                       </div>
-                      <span className="text-black font-semibold truncate">{user?.name || user?.email.split('@')[0]}</span>
+                      <span className="text-black dark:text-white font-semibold truncate">{user?.name || user?.email.split('@')[0]}</span>
                     </div>
                 </Link>
             </li>
@@ -78,8 +78,8 @@ const UserMenu = () => {
                 to="/profile" 
                   className={({ isActive }) => 
                     isActive
-                      ? 'bg-blue-400 text-white  rounded hover:bg-white hover:text-blue-500 block w-full text-left px-4 py-2 text-bold'
-                      : 'block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100'
+                      ? 'bg-blue-400 dark:bg-blue-800 text-white  rounded hover:bg-white hover:text-blue-500 dark:hover:text-blue-800 block w-full text-left px-4 py-2 text-bold'
+                      : 'block w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-900'
                   }
                 >
                 Profile
@@ -90,8 +90,8 @@ const UserMenu = () => {
                 to="/request" 
                   className={({ isActive }) => 
                     isActive
-                      ? 'bg-blue-400 text-white  rounded hover:bg-white hover:text-blue-500 block w-full text-left px-4 py-2 text-bold'
-                      : 'block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100'
+                      ? 'bg-blue-400 dark:bg-blue-800 text-white  rounded hover:bg-white hover:text-blue-500 dark:hover:text-blue-800 block w-full text-left px-4 py-2 text-bold'
+                      : 'block w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-900'
                   }
                 >
                 Request
@@ -100,7 +100,7 @@ const UserMenu = () => {
             <li>
               <button
                 onClick={() => logoutUser()}
-                className="rounded block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                className="rounded block w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-900"
               >
                 Logout
               </button>

@@ -18,7 +18,7 @@ const AllAttendance = () => {
     }, []);
 
     return (
-        <div className="py-6 px-1 rounded-lg shadow mb-4 border border-gray-200 dark:border-gray-700 bg-black bg-opacity-10">
+        <div className="py-6 px-1 rounded-lg shadow mb-4 border border-gray-200 dark:border-gray-700 dark:bg-gradient-to-br dark:from-gray-900 dark:to-gray-800">
             <h2 className="text-2xl font-bold mb-6 text-center text-blue-700">Academic Records</h2>
             
             {courses.length > 0 ? (

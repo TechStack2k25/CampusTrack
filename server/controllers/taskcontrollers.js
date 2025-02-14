@@ -126,7 +126,7 @@ export const getall_submission = asynchandler(async (req, res, next) => {
     return next(new ApiError('Course not found', 422));
   }
   let alltasks = await Task.find({ _id: { $in: reqcourse.task } });
-  console.log(alltasks);
+  // console.log(alltasks);
   
   const userIdsSet = new Set();
 
@@ -156,11 +156,12 @@ alltasks.forEach((task) => {
         return {...userData, file };
       }
     });
-    return { ...task.toObject, task_users };
+    return { task,task_users };
   });
+  
  
   res.status(201).json({
-    message: 'All task fetch succesfullly',
+    message: 'All task fetch successfully',
     data: {
       data: {alltasks,reqcourse},
     },

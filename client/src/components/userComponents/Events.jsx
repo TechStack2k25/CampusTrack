@@ -86,7 +86,7 @@ const Events = () => {
           ))}
         </div>
       ) : (
-        <p className="text-gray-600 text-center">No events to display.</p>
+        <p className="text-gray-600 text-center dark:text-gray-400 text-lg font-semibold">No events to display.</p>
       )}
     </div>
     {!openForm && <div onClick={()=>setOpenForm(true)} className="animate-bounce cursor-pointer fixed bottom-8 right-8 text-white  font-bold text-4xl bg-blue-500 hover:bg-blue-700 h-12 text-center aspect-square rounded-xl">

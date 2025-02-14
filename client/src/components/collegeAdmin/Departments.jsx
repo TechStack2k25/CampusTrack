@@ -42,12 +42,12 @@ const Departments = () => {
   };
 
   return (
-    <div className="flex-1 p-6 bg-gray-100 min-h-screen">
+    <div className="flex-1 p-6 min-h-screen">
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold text-gray-700">Departments</h1>
+        <h1 className="text-2xl font-bold text-gray-700 dark:text-gray-300">Departments</h1>
         <button
           onClick={() => setIsModalOpen(true)}
-          className="transition duration-300 transform text-blue-600 px-3 py-1 rounded shadow-md hover:bg-blue-700 hover:text-white font-black text-xl hover:rounded-full"
+          className="transition duration-300 transform text-blue-600 px-3 py-1 dark:bg-gray-800 rounded shadow-md hover:bg-blue-700 hover:text-white font-black text-xl hover:rounded-full"
         >
           + 
         </button>
@@ -59,10 +59,10 @@ const Departments = () => {
           {departments?.map((dept) => 
           <div
           key={dept._id}
-          className="bg-gradient-to-br from-blue-50 to-white p-6 rounded-2xl shadow-md hover:shadow-xl transition duration-300 transform hover:-translate-y-1 border border-gray-200"
+          className="bg-gradient-to-br from-blue-50 to-white p-6 rounded-2xl shadow-md hover:shadow-xl transition duration-300 transform hover:-translate-y-1 border border-gray-200 dark:border-gray-800 dark:from-blue-900 dark:to-black"
         >
           <h2 className="text-xl font-bold text-blue-600">{dept.name}</h2>
-          <p className="text-sm font-bold text-gray-600 mt-1 bg-gray-100 px-2 py-1 rounded-md inline-block">
+          <p className="text-sm font-bold text-gray-600 dark:text-gray-400 mt-1 bg-gray-100 dark:bg-gray-950 px-2 py-1 rounded-md inline-block">
             {dept?.code}
           </p>
         </div>
@@ -78,14 +78,14 @@ const Departments = () => {
       {/* Modal for Adding Department */}
       {isModalOpen && (
         <div className="fixed z-30 inset-0 bg-black bg-opacity-50 flex justify-center items-center">
-          <div className="bg-white w-96 p-6 rounded shadow-lg relative">
+          <div className="bg-white dark:bg-gray-950 dark:border dark:border-gray-700 w-96 p-6 rounded shadow-lg relative">
             <button
               onClick={() => setIsModalOpen(false)}
               className="absolute top-2 right-2 text-gray-500 hover:text-gray-800"
             >
               ✖
             </button>
-            <h2 className="text-xl font-bold text-gray-700 mb-4">
+            <h2 className="text-xl font-bold text-gray-700 dark:text-gray-300 mb-4">
               Add Department
             </h2>
             <form onSubmit={handleSubmit(addDepartment)}>
@@ -93,7 +93,7 @@ const Departments = () => {
               <div className="mb-4">
                 <label
                   htmlFor="name"
-                  className="block text-sm font-medium text-gray-600"
+                  className="block text-sm font-medium text-gray-600 dark:text-gray-400 tracking-tight"
                 >
                   Department Name
                 </label>
@@ -114,7 +114,7 @@ const Departments = () => {
               <div className="mb-4">
                 <label
                   htmlFor="code"
-                  className="block text-sm font-medium text-gray-600"
+                  className="block text-sm font-medium text-gray-600 dark:text-gray-400 tracking-tight"
                 >
                   Department Code
                 </label>
@@ -135,7 +135,7 @@ const Departments = () => {
               <div className="text-right">
                 <button
                   type="submit"
-                  className="bg-blue-600 text-white px-4 py-2 rounded shadow hover:bg-blue-700"
+                  className="bg-indigo-600 text-white px-4 py-2 rounded shadow hover:bg-indigo-700 dark:hover:bg-indigo-800"
                 >
                   Add
                 </button>

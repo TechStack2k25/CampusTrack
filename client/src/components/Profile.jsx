@@ -36,23 +36,23 @@ const Profile = () => {
 
   return (
     <div className="flex-1 p-6">
-        <div className="max-w-md mx-auto mt-10 p-6 bg-white shadow-lg rounded-lg">
-            <h2 className="text-xl font-bold text-center mb-4">Profile</h2>
+        <div className="max-w-md mx-auto mt-10 p-6 border dark:border-gray-800 shadow-lg rounded-lg">
+            <h2 className="text-xl font-bold text-center mb-4 dark:text-white">Profile</h2>
             {/* Edit Profile Form */}
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
 
             <div>
-                <label className="block text-sm font-medium text-gray-600">Email</label>
+                <label className="block text-sm font-medium text-gray-600 tracking-tight dark:text-gray-400">Email</label>
                 <input
                 type="text"
                 value={user?.email}
                 disabled={true}
-                className="w-full p-2 border border-gray-300 rounded mt-1"
+                className="w-full dark:bg-gray-600 dark:text-white p-2 border border-gray-300 rounded mt-1"
                 />
             </div>
 
             <div>
-                <label className="block text-sm font-medium text-gray-600"><strong>Name:</strong></label>
+                <label className="block text-sm font-medium text-gray-600 tracking-tight dark:text-gray-400"><strong>Name:</strong></label>
                 <input
                 type="text"
                 {...register("name", { required: "Name is required" })}
@@ -62,7 +62,7 @@ const Profile = () => {
             </div>
 
             <div>
-                <label className="block text-sm font-medium text-gray-600"><strong>Surname:</strong></label>
+                <label className="block text-sm font-medium text-gray-600 tracking-tight dark:text-gray-400"><strong>Surname:</strong></label>
                 <input
                 type="text"
                 {...register("surname")}
@@ -72,7 +72,7 @@ const Profile = () => {
             </div>
 
             {user?.currentdegree && <div>
-                <label className="block text-sm font-medium text-gray-600">Degree:</label>
+                <label className="block text-sm font-medium text-gray-600 tracking-tight dark:text-gray-400">Degree:</label>
                 <input
                 type="text"
                 value={user?.currentdegree}
@@ -82,7 +82,7 @@ const Profile = () => {
             </div>}
 
             {/* {user?.role!=="User" && user?.college && <div>
-                <label className="block text-sm font-medium text-gray-600">College:</label>
+                <label className="block text-sm font-medium text-gray-600 tracking-tight dark:text-gray-400">College:</label>
                 <input
                 type="text"
                 value={user?.college}
@@ -92,7 +92,7 @@ const Profile = () => {
             </div>} */}
 
             {user?.year && <div>
-                <label className="block text-sm font-medium text-gray-600">Batch:</label>
+                <label className="block text-sm font-medium text-gray-600 tracking-tight dark:text-gray-400">Batch:</label>
                 <input
                 type="number"
                 value={user?.year}
@@ -102,7 +102,7 @@ const Profile = () => {
             </div>}
 
             {user?.sem && <div>
-                <label className="block text-sm font-medium text-gray-600">Semester:</label>
+                <label className="block text-sm font-medium text-gray-600 tracking-tight dark:text-gray-400">Semester:</label>
                 <input
                 type="number"
                 value={user?.sem}

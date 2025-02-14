@@ -53,9 +53,9 @@ const AssignmentCard = ({ assignment, onSubmit }) => {
 
 
   return (
-    <div className="bg-white shadow-md rounded-lg p-4 mb-4">
+    <div className="bg-white dark:bg-gray-900 dark:border dark:border-gray-700 shadow-md rounded-lg p-4 mb-4">
       <div className="flex items-center justify-between">
-        <h2 className="text-xl font-bold text-gray-800">{assignment.title}</h2>
+        <h2 className="text-xl font-bold text-gray-800 dark:text-gray-200">{assignment.title}</h2>
 
         {assignment?.status && <span
           className={`inline-block px-3 py-1 rounded-full text-sm font-semibold text-nowrap ${statusColors[assignment.status]
@@ -65,18 +65,19 @@ const AssignmentCard = ({ assignment, onSubmit }) => {
         </span>}
 
       </div>
-      <p className="text-gray-600">
+      <p className="text-gray-600 dark:text-gray-400">
         <strong>Course:</strong> {assignment?.coursename}
       </p>
       {assignment?.deadline && <p>
-        <strong className="text-gray-600">Due Date:</strong><span className={`font-semibold ${isPastDeadline ? "text-red-600" : "text-green-600"}`}> {date?.toLocaleDateString()}</span>
+        <strong className="text-gray-600 dark:text-gray-400">Due Date:</strong><span className={`font-semibold ${isPastDeadline ? "text-red-600" : "text-green-600"}`}> {date?.toLocaleDateString()}</span>
       </p>}
-
+        
+      <div className="my-2 flex flex-col md:flex-row gap-2 justify-center md:justify-start items-center">
       {assignment?.file && assignment.file.length>0 && <a
           href={assignment.file}
           target="_blank"
           rel="noopener noreferrer"
-          className="px-4 py-2 mx-2 rounded-lg font-semibold transition duration-300 
+          className="px-4 py-2 rounded-lg font-semibold transition duration-300 
                     bg-blue-500 text-white shadow-md hover:bg-blue-600 
                     dark:bg-gray-800 dark:text-gray-200 dark:hover:bg-gray-700"
         >
@@ -86,17 +87,18 @@ const AssignmentCard = ({ assignment, onSubmit }) => {
       {/* Submit Button for Students*/}
       {role === 'Student' && date>=today && <button
         onClick={() => setIsModalOpen(true)}
-        className="mt-4 bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition"
+        className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition"
       >
         {assignment?.file ? "Update Assignment":"Submit Assignment"}
       </button>
       }
+      </div>
 
 
       {/* File Upload Modal */}
       {isModalOpen && (
         <div className="fixed z-20 inset-0 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-sm transition-opacity">
-          <div className="bg-white p-6 rounded-2xl shadow-2xl w-96 transform transition-all scale-100">
+          <div className="bg-white dark:bg-gray-950 dark:border dark:border-gray-700 p-6 rounded-2xl shadow-2xl w-96 transform transition-all scale-100">
             {/* Close Button */}
             <button
               onClick={() => setIsModalOpen(false)}
@@ -106,10 +108,10 @@ const AssignmentCard = ({ assignment, onSubmit }) => {
             </button>
 
             {/* Assignment Title */}
-            <h2 className="text-xl font-bold text-gray-800 mb-2 text-center">
+            <h2 className="text-xl font-bold text-gray-800 dark:text-gray-200 mb-2 text-center">
               Submit Assignment
             </h2>
-            <p className="text-center text-gray-600 text-sm mb-4">
+            <p className="text-center dark:text-gray-400 text-gray-600 text-sm mb-4">
               <strong>Title:</strong> {assignment?.title}
             </p>
 

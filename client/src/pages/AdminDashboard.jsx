@@ -5,7 +5,7 @@ import { adminMenu } from '../data/scholarMenu.js'
 
 function AdminDashboard() {
   return (
-    <div className="relative flex flex-1 min-h-screen bg-gray-100">
+    <div className="relative flex flex-1 min-h-scree">
         <Sidebar menuItems={adminMenu} />
         <Outlet />
     </div>

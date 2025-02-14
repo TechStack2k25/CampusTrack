@@ -67,8 +67,8 @@ const Request = () => {
 
   return (
     <div className=" flex items-center justify-center flex-1 p-6">
-      <div className="bg-white p-8 rounded-lg shadow-lg max-w-md w-full">
-        <h2 className="text-2xl font-semibold text-gray-800 text-center mb-6">
+      <div className="bg-white dark:bg-black dark:bg-opacity-20 border dark:border-gray-800 p-8 rounded-lg shadow-lg max-w-md w-full">
+        <h2 className="text-2xl font-semibold text-gray-800 dark:text-gray-200 text-center mb-6">
           Request Here
         </h2>
 
@@ -79,7 +79,7 @@ const Request = () => {
             <>
               {/* Designation Input */}
               <div className="flex flex-col">
-                <label htmlFor="CollegeId" className="text-sm font-medium text-gray-600">
+                <label htmlFor="CollegeId" className="text-sm font-medium text-gray-600 dark:text-gray-400 tracking-tight">
                   College Id:
                 </label>
                 <input
@@ -91,7 +91,7 @@ const Request = () => {
                     }
                   })}
                   type="text"
-                  className={`mt-2 p-3 border rounded-lg focus:outline-none focus:ring-2 ${errors.designation ? "border-red-500" : "border-gray-300"} focus:ring-blue-500`}
+                  className={`mt-2 p-3 border rounded-lg focus:outline-none focus:ring-2 ${errors.designation ? "border-red-500" : "border-gray-300"} focus:ring-blue-600 dark:focus:ring-blue-900`}
                 />
                 {errors.college && (
                   <p className="text-xs text-red-500 mt-1">{errors.college.message}</p>
@@ -99,7 +99,7 @@ const Request = () => {
               </div>
 
               <div className="flex flex-col">
-                <label htmlFor="department" className="text-sm font-medium text-gray-600">
+                <label htmlFor="department" className="text-sm font-medium text-gray-600 dark:text-gray-400 tracking-tight">
                   Department:
                 </label>
                 <select
@@ -124,7 +124,7 @@ const Request = () => {
 
             {/* role */}
             <div className="flex flex-col">
-              <label htmlFor="role" className="text-sm font-medium text-gray-600">
+              <label htmlFor="role" className="text-sm font-medium text-gray-600 dark:text-gray-400 tracking-tight">
                 Select Role:
               </label>
               <select
@@ -146,7 +146,7 @@ const Request = () => {
             </>}
 
             {user && ["Student","faculty"].includes(user?.role) && <div className="flex flex-col">
-              <label htmlFor="course" className="text-sm font-medium text-gray-600">
+              <label htmlFor="course" className="text-sm font-medium text-gray-600 dark:text-gray-400 tracking-tight">
                 Course:
               </label>
               <select

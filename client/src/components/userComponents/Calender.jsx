@@ -119,8 +119,8 @@ const Calender = () => {
   // }
 
   return (
-    <div className="p-6 bg-gray-50">
-      <div className="sm:max-w-6xl sm:mx-auto bg-white shadow-lg rounded-lg p-4">
+    <div className="p-6">
+      <div className="sm:max-w-6xl sm:mx-auto dark:text-white dark:bg-gray-900 shadow-lg rounded-lg p-4">
         <FullCalendar
           plugins={[dayGridPlugin, interactionPlugin, listPlugin]}
           initialView="dayGridMonth"
@@ -138,16 +138,18 @@ const Calender = () => {
           datesSet={handleDatesSet}
           height="auto"
           dateClick={(info) => handleDateClick(info)}
+          dayHeaderClassNames={() => "font-black dark:bg-gray-800 dark:text-white bg-gray-200 text-black"}
+          dayCellClassNames={() => "font-semibold text-lg dark:bg-gray-900 dark:text-white dark:border-gray-700 dark:hover:text-black bg-white text-black border-gray-300"}
         />
         {isCalendarModalOpen && (
         <CalendarModal onClose={() => setIsCalendarModalOpen(false)}>
           {selectedInfo && selectedInfo?.type === "date" ? (
             <div className="text-center">
-              <h2 className="text-2xl font-semibold mb-4">
-                Date Selected: {selectedInfo.date}
+              <h2 className="text-2xl font-semibold mb-4 dark:text-white">
+                Date Selected: {new Date(selectedInfo.date).toLocaleDateString()}
               </h2>
               <button
-                className="bg-blue-500 text-white px-4 py-2 rounded-lg"
+                className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
                 onClick={()=>navigate('/events')}
               >
                 Create Event
@@ -155,10 +157,10 @@ const Calender = () => {
             </div>
           ) : (
             <div className="text-center">
-              <h2 className="text-2xl font-semibold mb-2">
+              <h2 className="text-2xl font-semibold mb-2 dark:text-white">
                 Event: {selectedInfo.title}
               </h2>
-              <p className="text-gray-600 mb-4">
+              <p className="text-gray-600 mb-4 dark:text-gray-400">
                 On: {new Date(selectedInfo.start).toLocaleDateString()} 
               </p>
               {/* <button

@@ -107,7 +107,7 @@ const Signup = () => {
                   message: "Password must be at least 6 characters",
                 },
                 validate: (value) =>
-                  value === password || "Passwords do not match!",
+                  value === password || "Password do not match!",
               })}
               className={`w-full px-4 py-2 mt-1 border ${
                 errors.confirmpassword ? "border-red-500" : "border-gray-300"

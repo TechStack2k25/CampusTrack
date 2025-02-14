@@ -62,8 +62,8 @@ const Sidebar = ({menuItems}) => {
                     {menuItems.map((item) => (
                         <NavLink key={item.name+item.link} to={item.link} className={({ isActive }) =>
                             isActive
-                            ? ' text-blue-400'
-                            : ' hover:text-blue-400'
+                            ? ' text-blue-400 dark:text-blue-600'
+                            : ' hover:text-blue-400 dark:hover:text-blue-600'
                         } >
                             <li key={item.name} className="py-2 px-4 rounded-full hover:bg-gray-700">
                                     <span>

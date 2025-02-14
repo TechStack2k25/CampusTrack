@@ -29,7 +29,7 @@ const Routers = () => {
             <Route path="attendance" element={<Attendance />} />
             <Route path="submissions" element={<AssignmentsSubmissions />} />
             <Route path="approvals" element={<Approvals />} />
-            <Route path="notifications" element={<Notification />} />
+            {/* <Route path="notifications" element={<Notification />} /> */}
             <Route path="request" element={<Request/>} />
             <Route path='*' element={<Notfound/>} />
             </Route>
@@ -45,7 +45,7 @@ const Routers = () => {
             <Route path="schedule" element={<Schedule />} />
             <Route path="attendance" element={<Attendance />} />
             <Route path="approvals" element={<Approvals />} />
-            <Route path="notifications" element={<Notification />} />
+            {/* <Route path="notifications" element={<Notification />} /> */}
             <Route path='*' element={<Notfound/>} />
             </Route>
           </>
@@ -61,7 +61,7 @@ const Routers = () => {
             <Route path="events" element={<Events />} />
             <Route path="schedule" element={<Schedule />} />
             <Route path="approvals" element={<Approvals />} />
-            <Route path="notifications" element={<Notification />} />
+            {/* <Route path="notifications" element={<Notification />} /> */}
             <Route path='*' element={<Notfound/>} />
             </Route>
           </>
@@ -89,6 +89,7 @@ const Routers = () => {
             <Route path="events" element={<Events />} />
             <Route path="schedule" element={<Schedule />} />
             {/* <Route path="lectures" element={<Lectures />} /> */}
+            {/* <Route path="notifications" element={<Notification />} /> */}
             <Route path="request" element={<Request/>} />
             <Route path="leaderboard" element={<Leaderboard />} />
             <Route path='*' element={<Notfound/>} />

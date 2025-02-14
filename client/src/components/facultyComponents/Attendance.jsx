@@ -69,20 +69,20 @@ const Attendance = () => {
   }
 
   return (
-    <div className="flex-1 p-6 bg-gray-100 min-h-screen">
-      <h1 className="text-2xl font-bold text-center mb-6">Attendance</h1>
+    <div className="flex-1 p-6 min-h-screen">
+      <h1 className="text-2xl font-bold text-center mb-6 dark:text-white">Attendance</h1>
 
       {/* Course Input Form */}
 
       <form
         onSubmit={handleSubmit(onSubmit)}
-        className="bg-white p-6 shadow rounded mb-6 max-w-md mx-auto"
+        className="bg-white dark:bg-gray-900 border dark:border-gray-700 p-6 shadow rounded mb-6 max-w-md mx-auto"
       >
         <div className="mb-4">
-          <label className="block font-medium mb-1">Course:</label>
+          <label className="block font-medium mb-1 dark:text-gray-400 tracking-tight">Course:</label>
           <select
             {...register("course", { required: "Course is required" })}
-            className="w-full px-3 py-2 border rounded"
+            className="w-full px-3 py-2 border rounded dark:bg-gray-200 dark:text-gray-700"
             onChange={(e) => {
               const selectedCourse = allCourses.find(
                 (item) => item._id === e.target.value
@@ -117,7 +117,7 @@ const Attendance = () => {
           </div> */}
         <button
           type="submit"
-          className="w-full bg-blue-500 text-white px-4 py-2 rounded"
+          className="w-full bg-blue-500 hover:bg-blue-700 transition text-white px-4 py-2 rounded"
         >
           Load Students
         </button>
@@ -125,11 +125,11 @@ const Attendance = () => {
 
       {/* Attendance Marking */}
       {studentsData.length > 0 && (
-        <div className="bg-white p-6 shadow rounded">
+        <div className="bg-white dark:bg-gray-900 dark:border-gray-800 border p-6 shadow rounded">
           <div className="flex justify-between items-center mb-6">
-            <h2 className="text-xl font-bold">Course: {courseDetails?.name}</h2>
+            <h2 className="text-xl font-bold dark:text-gray-400">Course: {courseDetails?.name}</h2>
               {/* <h3 className="text-lg mb-4">Semester: {courseDetails.semester}</h3> */}
-              <h4 className="text-md font-semibold">Total Classes: {courseDetails?.total_classes}</h4>
+              <h4 className="text-md font-semibold dark:text-gray-400">Total Classes: {courseDetails?.total_classes}</h4>
           </div>
 
           {studentsData.length > 0 ?
@@ -143,7 +143,7 @@ const Attendance = () => {
                   key={student._id}
                   className="grid grid-cols-3 space-x-2 mb-4"
                 >
-                  <p className="font-medium">{student?.name || student?.email?.split('@')[0]}</p>
+                  <p className="font-medium dark:text-white">{student?.name || student?.email?.split('@')[0]}</p>
                   <div className="flex items-center space-x-4">
                     <label className="flex items-center cursor-pointer">
                       <input
@@ -187,7 +187,7 @@ const Attendance = () => {
                 </div>)})}
               <button
                 type="button"
-                className="w-full bg-blue-500 text-white px-4 py-2 rounded"
+                className="w-full bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-700 transition"
                 onClick={submitAttendance}
               >
                 Marked Attendance!

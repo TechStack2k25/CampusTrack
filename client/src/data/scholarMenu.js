@@ -6,6 +6,7 @@ export const scholarMenu = [
     { name: 'Schedule', link: '/schedule',roles:["User","Student"]  },
     // { name: 'Lectures', link: '/lectures',roles:["Student"]  },
     { name: 'Leaderboard', link: '/leaderboard',roles:["Student"]  },
+    // { name: 'Notifications', link: '/notifications',roles:["Student"]  },
     // { name: 'Challenges', link: '/challenges' },
   ];
 
@@ -18,7 +19,7 @@ export const facultyMenu = [
   { name: 'Attendance', link: '/attendance',roles:["faculty"]  },
   { name: 'Submissions', link: '/submissions',roles:["faculty"]  },
   { name: 'Approvals', link: '/approvals',roles:["HOD","faculty"]  },
-  { name: 'Notifications', link: '/notifications',roles:["faculty","HOD"]  },
+  // { name: 'Notifications', link: '/notifications',roles:["faculty","HOD"]  },
 ];
 
 
@@ -30,5 +31,5 @@ export const adminMenu = [
   { name: 'Events', link: '/events' },
   { name: 'Schedule', link: '/schedule' },
   { name: 'Approvals', link: '/approvals' },
-  { name: 'Notifications', link: '/notifications' },
+  // { name: 'Notifications', link: '/notifications' },
 ];

@@ -51,14 +51,14 @@ function Approvals() {
   return (
       <>
       {isLoading ?
-      <div className="flex-1 bg-gray-100 min-h-screen">
+      <div className="flex-1 min-h-screen">
           <Loading />
         </div>
       :
-      <div className="flex-1 p-6 bg-gray-100 min-h-screen">
-      <h1 className="text-3xl font-bold text-gray-800 mb-8 text-center">Approval Requests</h1>
+      <div className="flex-1 p-6 min-h-screen">
+      <h1 className="text-3xl font-bold text-gray-800 dark:text-gray-200 mb-8 text-center">Approval Requests</h1>
       {requests && requests?.length === 0 ? (
-        <p className="text-center text-gray-600 mt-12 text-lg">
+        <p className="text-center text-gray-600 dark:text-gray-400 mt-12 text-lg">
           No pending requests.
         </p>
       )

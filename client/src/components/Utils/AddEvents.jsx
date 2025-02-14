@@ -16,21 +16,21 @@ const AddEvent = ({ addEvent, openForm, setOpenForm }) => {
   };
 
   return (
-    <div className="relative max-w-md mx-auto bg-white p-6 rounded-md shadow-md">
-      <h2 className="text-2xl font-bold text-center text-gray-800 mb-4">
+    <div className="relative max-w-md mx-auto border dark:border-gray-700 p-6 rounded-md shadow-md">
+      <h2 className="text-2xl font-bold text-center text-gray-800 mb-4 dark:text-white">
         New Event
       </h2>
-      {openForm && <div onClick={()=>setOpenForm(false)} className="absolute cursor-pointer top-6 right-8 hover:text-gray-900 text-white bg-blue-500 font-medium text-2xl hover:bg-gray-100 h-8 text-center aspect-square rounded-lg">
+      {openForm && <div onClick={()=>setOpenForm(false)} className="absolute cursor-pointer top-6 right-8 hover:text-gray-900 text-white bg-blue-500 font-medium text-2xl hover:bg-blue-700 h-8 text-center aspect-square rounded-lg">
         X
       </div>}
 
       {/* Form */}
       <form onSubmit={handleSubmit(onSubmit)}>
         <div className="mb-4">
-          <label className="block text-gray-700">Event Title</label>
+          <label className="block text-gray-700 dark:text-gray-300 tracking-tight">Event Title</label>
           <input
             type="text"
-            className="w-full mt-1 p-2 border rounded-md"
+            className="w-full mt-1 p-2 border rounded-md "
             placeholder="Enter event title"
             {...register("title", { required: "Event title is required" })}
           />
@@ -40,7 +40,7 @@ const AddEvent = ({ addEvent, openForm, setOpenForm }) => {
         </div>
 
         <div className="mb-4">
-          <label className="block text-gray-700">Event Date</label>
+          <label className="block text-gray-700 dark:text-gray-300 tracking-tight">Event Date</label>
           <input
             type="date"
             className="w-full mt-1 p-2 border rounded-md"
@@ -52,7 +52,7 @@ const AddEvent = ({ addEvent, openForm, setOpenForm }) => {
         </div>
 
         <div className="mb-4">
-          <label className="block text-gray-700">Event Description</label>
+          <label className="block text-gray-700 dark:text-gray-300 tracking-tight">Event Description</label>
           <textarea
             className="w-full mt-1 p-2 border rounded-md"
             placeholder="Enter event description"

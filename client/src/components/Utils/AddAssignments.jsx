@@ -20,18 +20,18 @@ const AddAssignment = ({ addTask, openForm, setOpenForm }) => {
   const { data: allCourses } = useCourses();
 
   return (
-    <div className="relative max-w-md mx-auto bg-white p-6 rounded-md shadow-md">
-      {openForm && <div onClick={()=>setOpenForm(false)} className="absolute cursor-pointer top-6 right-8 hover:text-gray-900 text-white bg-blue-500 font-medium text-2xl hover:bg-gray-100 h-8 text-center aspect-square rounded-lg">
+    <div className="relative max-w-md mx-auto bg-white dark:bg-gray-900 p-6 rounded-md shadow-md">
+      {openForm && <div onClick={()=>setOpenForm(false)} className="absolute cursor-pointer top-6 right-8 hover:bg-blue-600 text-white bg-blue-500 dark:text-gray-150 font-medium text-2xl h-8 text-center aspect-square rounded-lg">
         X
       </div>}
 
       {/* Form */}
       <form
         onSubmit={handleSubmit(onSubmit)}
-        className="bg-white p-4 shadow rounded mb-4"
+        className="p-4 shadow rounded mb-4 flex flex-col gap-1"
       >
         <div className="mb-2">
-          <label className="block font-medium mb-1">Title:</label>
+          <label className="block font-medium mb-1 dark:text-gray-400 tracking-tight">Title:</label>
           <input
             type="text"
             {...register("title", { required: "Title is required" })}
@@ -43,7 +43,7 @@ const AddAssignment = ({ addTask, openForm, setOpenForm }) => {
         </div>
 
         <div className="mb-2">
-          <label className="block font-medium mb-1">Deadline</label>
+          <label className="block font-medium mb-1 dark:text-gray-400 tracking-tight">Deadline</label>
           <input
             type="date"
             {...register("deadline", { required: "Deadline is required!" })}
@@ -55,7 +55,7 @@ const AddAssignment = ({ addTask, openForm, setOpenForm }) => {
         </div>
 
         <div className="flex flex-col">
-              <label htmlFor="course" className="text-sm font-medium text-gray-600">
+              <label htmlFor="course" className="font-medium text-gray-600 dark:text-gray-400 tracking-tight">
                 Course:
               </label>
               <select
@@ -73,7 +73,7 @@ const AddAssignment = ({ addTask, openForm, setOpenForm }) => {
             </div>
         
         <div className="mb-2">
-          <label className="block font-medium mb-1">Sem:</label>
+          <label className="block font-medium mb-1 dark:text-gray-400 tracking-tight">Sem:</label>
           <input
             type="number"
             {...register("sem")}
@@ -81,8 +81,8 @@ const AddAssignment = ({ addTask, openForm, setOpenForm }) => {
           />
         </div>
 
-        <div className="mb-4">
-          <label className="block text-sm font-medium mb-1">Description:</label>
+        <div className="mb-2">
+          <label className="block font-medium mb-1 dark:text-gray-400 tracking-tight">Description:</label>
           <textarea
             {...register("description")}
             className="w-full px-3 py-2 border rounded"
@@ -91,7 +91,7 @@ const AddAssignment = ({ addTask, openForm, setOpenForm }) => {
         </div>
 
         <div className="mb-2">
-          <label className="block font-medium mb-1">Reward Points:</label>
+          <label className="block font-medium mb-1 dark:text-gray-400 tracking-tight">Reward Points:</label>
           <input
             type="number"
             {...register("reward_point",{required:"Rewards required!"})}
@@ -104,7 +104,7 @@ const AddAssignment = ({ addTask, openForm, setOpenForm }) => {
 
         <button
           type="submit"
-          className="mx-auto block bg-blue-500 text-white px-4 py-2 rounded"
+          className="mx-auto block bg-blue-500 hover:bg-blue-700 transition duration-75 text-white px-4 py-2 rounded mt-2"
         >
           Add Assignment
         </button>

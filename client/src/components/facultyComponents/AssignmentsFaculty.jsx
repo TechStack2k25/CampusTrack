@@ -50,28 +50,28 @@ const AssignmentsFaculty = () => {
 
 
   return (
-    <div className="flex-1 p-6 bg-gray-100 min-h-screen">
-      <h1 className="text-2xl text-center font-bold mb-4">Assignments</h1>
+    <div className="flex-1 p-6 min-h-screen">
+      <h1 className="text-2xl dark:text-white text-center font-bold mb-4">Assignments</h1>
 
       {/* Assignment Form */}
       {openForm ?
       <AddAssignment addTask={addAssignment} openForm={openForm} setOpenForm={setOpenForm} />
       :
       <div>
-        <div onClick={()=>setOpenForm(true)} className="animate-bounce cursor-pointer fixed bottom-8 right-8 text-white  font-bold text-4xl bg-blue-500 hover:bg-blue-700 h-12 text-center aspect-square rounded-xl">
+        <div onClick={()=>setOpenForm(true)} className="animate-bounce cursor-pointer fixed bottom-8 right-8 text-white  font-bold text-4xl bg-blue-500 hover:bg-indigo-700 transition-all duration-250 h-12 text-center aspect-square rounded-xl">
         +
       </div>
 
     {
-      <div className="flex gap-2 items-center">
+      <div className="p-6 shadow-lg rounded mb-6 max-w-md mx-auto border dark:border-gray-700">
       <label
         htmlFor='course'
-        className="block text-sm font-medium text-gray-700"
+        className="block font-medium mb-1 dark:text-gray-400"
       >
         Course:
       </label>
         <select
-          className="px-4 py-2 border rounded shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="w-full px-4 py-2 border rounded shadow-sm focus:outline-none focus:ring-1 focus:ring-blue-500 dark:focus:ring-blue-700 dark:bg-gray-200 dark:text-gray-600"
           value={course}
           onChange={(e) => setCourse(e.target.value)}
         >
@@ -87,7 +87,7 @@ const AssignmentsFaculty = () => {
       {/* Assignment List */}
         {coursesHavingAssignments && coursesHavingAssignments?.length>0 && 
       <>
-      <h1 className="text-2xl font-bold text-center mb-6">All Assignments</h1>
+      <h1 className="text-2xl font-bold text-center mb-6 dark:text-gray-400 tracking-tight">All Assignments</h1>
       <div className="flex justify-center mb-6 space-x-4 flex-wrap">
         <button
           className={`px-4 py-2 rounded ${filter === "upcoming"
