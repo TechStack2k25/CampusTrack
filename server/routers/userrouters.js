@@ -1,6 +1,12 @@
 import express from 'express';
 
-import { getall, deluser, updateuser } from '../controllers/usercontrollers.js';
+import {
+  getall,
+  deluser,
+  updateuser,
+  getprofile,
+  get_dashboard,
+} from '../controllers/usercontrollers.js';
 import { updatepassword } from '../controllers/authcontrollers.js';
 
 const router = express.Router();
@@ -12,5 +18,6 @@ router.get('/all', getall);
 router.delete('/del', deluser);
 //update
 router.patch('/update', updateuser);
-
+router.get('/me', getprofile);
+router.get('/dashboard', get_dashboard);
 export default router;

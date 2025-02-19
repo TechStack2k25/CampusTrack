@@ -14,9 +14,6 @@ const taskSchema = new mongoose.Schema(
       enum: ['Assignment', 'Project', 'Event'],
       default: 'Assignment',
     },
-    reward_point: {
-      type: Number,
-    },
     deadline: {
       type: Date,
     },

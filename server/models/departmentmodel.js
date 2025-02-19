@@ -35,18 +35,11 @@ const deparmentSchema = mongoose.Schema({
   },
 });
 
-const Department = new mongoose.model('Department', deparmentSchema);
-
-export default Department;
-
 deparmentSchema.pre(
-  'remove',
+  'deleteMany',
   asynchandler(async function (next) {
     //delete all the course of department
     const courseIds = this.courses;
-
-    //change the role of hod to  user
-    await User.findByIdAndUpdate(this.hod, { role: 'User' });
 
     //store the total number of course
     const num_course = courseIds.length;
@@ -62,3 +55,27 @@ deparmentSchema.pre(
     next();
   })
 );
+
+deparmentSchema.pre(
+  'findOneAndDelete',
+  asynchandler(async function (next) {
+    //delete all the course of department
+    const courseIds = this.courses;
+
+    //store the total number of course
+    const num_course = courseIds.length;
+
+    //filter the courses and delete
+    const result = await Course.deleteMany({ _id: { $in: courseIds } });
+
+    //check all courses delete successfully
+    if (result.deletedCount !== num_course) {
+      return next(new ApiError('error in deleted course of department ', 422));
+    }
+
+    next();
+  })
+);
+const Department = new mongoose.model('Department', deparmentSchema);
+
+export default Department;

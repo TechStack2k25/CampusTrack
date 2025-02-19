@@ -10,7 +10,7 @@ class Apiquery {
 
   filter() {
     let queryobj = { ...this.queryobj };
-    const excludedFields = ['page', 'limit'];
+    const excludedFields = ['page', 'limit', 'sort'];
     excludedFields.forEach((el) => delete queryobj[el]);
 
     this.models = this.models.find(queryobj); // Don't await here
@@ -23,6 +23,14 @@ class Apiquery {
     const skip = (page - 1) * limit;
 
     this.models = this.models.skip(skip).limit(limit); // Works on a query object
+    return this;
+  }
+
+  sort() {
+    if (this.queryobj.sort) {
+      const sortby = this.queryobj.sort;
+      this.models = this.models.sort(sortby);
+    }
     return this;
   }
 }

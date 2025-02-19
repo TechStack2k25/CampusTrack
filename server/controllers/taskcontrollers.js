@@ -3,8 +3,6 @@ import Course from '../models/coursemodel.js';
 import Task from '../models/taskmodel.js';
 import User from '../models/usermodel.js';
 import ApiError from '../utils/apierror.js';
-import Reward from '../models/rewardmodel.js';
-import { create_request } from './requestcontrollers.js';
 import { isvaliduser } from './authcontrollers.js';
 import mongoose from 'mongoose';
 import { deleteOnCloudinary, uploadOnCloudinary } from '../utils/cloudinary.js';
@@ -70,50 +68,50 @@ export const getall = asynchandler(async (req, res, next) => {
 
     //get all courses
     reqcourses = await reqcourses.populate('task');
-    if(req.user.role==='Student'){
+    if (req.user.role === 'Student') {
       alltask = reqcourses?.task?.map((tsk) => {
         const file = tsk.submitted_by?.get(req.user._id.toString()) || null;
         const taskstatus = file ? 'Submitted' : 'Pending';
-  
+
         // Remove submitted_by from the final object
         const { submitted_by, ...taskWithoutSubmittedBy } = tsk.toObject
           ? tsk.toObject()
           : tsk;
-  
+
         return { ...taskWithoutSubmittedBy, taskstatus, file };
       });
+    } else {
+      alltask = reqcourses.task;
     }
-    else {
-      alltask=reqcourses.task
-    }
-  }
-  else{
-  const courseIds = req.user.course;
-  //  get all the course of all ids
-  reqcourses = await Course.find({ _id: { $in: courseIds } }).populate('task');
+  } else {
+    const courseIds = req.user.course;
+    //  get all the course of all ids
+    reqcourses = await Course.find({ _id: { $in: courseIds } }).populate(
+      'task'
+    );
 
-  reqcourses.forEach((course) => {
-    course.alltask = course.task.map((tsk) => {
-      // Ensure tsk is a plain object
-      const taskObject = tsk.toObject ? tsk.toObject() : tsk;
+    reqcourses.forEach((course) => {
+      course.alltask = course.task.map((tsk) => {
+        // Ensure tsk is a plain object
+        const taskObject = tsk.toObject ? tsk.toObject() : tsk;
 
-      // Extract file from submitted_by
-      const file =
-        taskObject.submitted_by?.get(req.user._id?.toString()) || null;
-      const taskstatus = file ? 'Submitted' : 'Pending';
+        // Extract file from submitted_by
+        const file =
+          taskObject.submitted_by?.get(req.user._id?.toString()) || null;
+        const taskstatus = file ? 'Submitted' : 'Pending';
 
-      // Remove submitted_by field
-      const { submitted_by, ...taskWithoutSubmittedBy } = taskObject;
-      return {
-        ...taskWithoutSubmittedBy,
-        taskstatus,
-        file,
-        coursename: course?.name,
-      };
+        // Remove submitted_by field
+        const { submitted_by, ...taskWithoutSubmittedBy } = taskObject;
+        return {
+          ...taskWithoutSubmittedBy,
+          taskstatus,
+          file,
+          coursename: course?.name,
+        };
+      });
+      alltask = [...alltask, ...course?.alltask];
     });
-    alltask = [...alltask, ...course?.alltask];
-  });
-}
+  }
   res.status(201).json({
     message: 'tasks fetch suceesfully',
     data: {
@@ -163,7 +161,7 @@ export const getall_submission = asynchandler(async (req, res, next) => {
         return { ...userData, file };
       }
     });
-    return { task,task_users };
+    return { task, task_users };
   });
   res.status(201).json({
     message: 'All task fetch successfully',
@@ -273,10 +271,35 @@ export const submittask = asynchandler(async (req, res, next) => {
 
   const submitted_file = reqtask.submitted_by.get(req.user._id.toString());
 
+  const userreward = await User.findById(req.user._id);
+  if (!submitted_file) {
+    let fixedpoint, varpoint;
+    if (reqtask.tasktype === 'Assignment') {
+      fixedpoint = 70.0;
+      varpoint = 1.0;
+    } else if (tasktype === 'Project') {
+      fixedpoint = 150.0;
+      varpoint = 1.5;
+    }
+    //to adjust the global time to indian time
+    const istOffset = 5.5 * 60 * 60 * 1000;
+    const newdeadline = new Date(reqtask.deadline - istOffset).getTime();
+    const newDate = new Date(Date.now()).getTime();
+    const variable = (newdeadline - newDate) / (1000 * 3600);
+    //add the point to the user total point on thne basis of time he submit
+    let temp = fixedpoint + varpoint * variable;
+    temp = temp > 1.75 * fixedpoint ? 1.75 * fixedpoint : temp;
+    temp > fixedpoint / 2
+      ? (userreward.reward = Math.ceil(userreward.reward + temp))
+      : (userreward.reward = Math.ceil(fixedreward / 2));
+  }
   if (submitted_file) {
+    temp = temp > fixedpoint / 2 ? temp : fixedpoint / 2;
+    userreward.reward = userreward.reward - 1.75 * fixedpoint + temp;
     await deleteOnCloudinary(submitted_file);
   }
-
+  //now save the user reward
+  userreward.save();
   reqtask.submitted_by.set(req.user._id, uploadedfile.url);
   reqtask.save();
 
@@ -284,71 +307,3 @@ export const submittask = asynchandler(async (req, res, next) => {
     message: 'Assignment Submitted successfully',
   });
 });
-
-// //check the previous status task is alredy submit or submit now
-// const prevstatus = reqtask.status;
-// //to check previous task is set as goal or ot
-// const prevgoal = reqtask.setgoal;
-//take the id of user from req
-//    const id = req.user._id;
-//    //find thre user by it id
-//    const addrewarduser = await User.findById(id);
-//    //get the id of model of reward of user
-//    const reward_id = addrewarduser.reward;
-//    //find the id of reward model
-//    let userreward = await Reward.findById(reward_id);
-//    //check the reward is exist or not
-//    let reward_model;
-//    if (!userreward) {
-//      //if not exist create the reward
-//      userreward = await Reward.create();
-//    }
-//    //take two variable for submission and another for how early or late he submitted
-//    let fixedpoint, varpoint;
-//    if (updatedTask.tasktype === 'Assignment') {
-//      fixedpoint = 70.0;
-//      varpoint = 1.0;
-//    } else if (tasktype === 'Project') {
-//      fixedpoint = 150.0;
-//      varpoint = 1.5;
-//    } else {
-//      fixedpoint = 50.0;
-//      varpoint = 1.0;
-//    }
-//    //to adjust the global time to indian time
-//    const istOffset = 5.5 * 60 * 60 * 1000;
-//    const newdeadline = new Date(updatedTask.deadline - istOffset).getTime();
-//    const newDate = new Date(Date.now()).getTime();
-//    const variable = (newdeadline - newDate) / (1000 * 3600);
-//    //add the point to the user total point on thne basis of time he submit
-//    fixedpoint + varpoint * variable > fixedpoint / 2
-//      ? (userreward.total_point = Math.ceil(
-//          userreward.total_point + fixedpoint + varpoint * variable
-//        ))
-//      : (userreward.total_point = Math.ceil(fixedpoint / 2));
-//    //now save the user reward
-//    userreward.save();
-//  }
-//  //check the user completed your goal
-//  if (setgoal && !prevgoal) {
-//    //take the id of user from req
-//    const id = req.user._id;
-//    //find thre user by it id
-//    const addrewarduser = await User.findById(id);
-//    //get the id of model of reward of user
-//    const reward_id = addrewarduser.reward;
-//    //find the id of reward model
-//    let userreward = await Reward.findById(reward_id);
-//    //check the reward is exist or not
-//    let reward_model;
-//    if (!userreward) {
-//      //if not exist create the reward
-//      userreward = await Reward.create();
-//    }
-//    let point = 0;
-//    if (goaltype === 'Daily') point = 60;
-//    else point = 20;
-//    userreward.total_point = userreward.total_point + point;
-//    //now save the user reward
-//    userreward.save();
-//  }

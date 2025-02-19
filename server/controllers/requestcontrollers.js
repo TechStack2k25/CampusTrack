@@ -253,9 +253,11 @@ export const updaterequest = asynchandler(async (req, res, next) => {
       reqcourse.teacher = require_request.request_by;
     }
     //add the user in course and save it
-    requser.course.push(require_request.request_course);
-    requser.save({ validateBeforeSave: false });
-    reqcourse.users.push(require_request.request_by);
+    if (requser.role === 'Student') {
+      requser.course.push(require_request.request_course);
+      requser.save({ validateBeforeSave: false });
+      reqcourse.users.push(require_request.request_by);
+    }
     reqcourse.save();
     //get the request to deleted
     const deleted_request = await Request.findByIdAndDelete(request_id);

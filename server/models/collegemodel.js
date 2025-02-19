@@ -31,12 +31,8 @@ const collegeSchema = mongoose.Schema({
   },
 });
 
-const College = mongoose.model('College', collegeSchema);
-
-export default College;
-
 collegeSchema.pre(
-  'remove',
+  'findOneAndDelete',
   asynchandler(async function (next) {
     //delete all department college
     const depIds = this.department;
@@ -45,7 +41,10 @@ collegeSchema.pre(
     const userId = this.users;
 
     //now change the role of it
-    await User.updateMany({ _id: userId }, { $set: { role: 'User' } });
+    await User.updateMany(
+      { _id: { $in: userId } },
+      { $set: { role: 'User' }, department: null, college: null }
+    );
 
     //store the total number of course
     const num_course = depIds.length;
@@ -59,3 +58,7 @@ collegeSchema.pre(
     }
   })
 );
+
+const College = mongoose.model('College', collegeSchema);
+
+export default College;

@@ -43,18 +43,15 @@ const courseSchema = new mongoose.Schema({
   },
 });
 
-const Course = mongoose.model('Course', courseSchema);
-
 courseSchema.pre(
-  'remove',
+  'findOneAndDelete',
   asynchandler(async function (next) {
-    //remove the user from faculty
-    const userId = this.teacher;
-
-    //now change the role of it
-    await User.updateOne({ _id: userId }, { $set: { role: 'User' } });
+    await User.updateMany(
+      { courses: this._id }, // Find users who have this course in their array
+      { $pull: { courses: this._id } } // Remove course ID from their array
+    );
     //delete all task of course
-    const taskIds = this.task;
+    const taskIds = this.task || [];
 
     //store the number of task
     const total_task = taskIds.length;
@@ -69,4 +66,30 @@ courseSchema.pre(
     next();
   })
 );
+
+courseSchema.pre(
+  'deleteMany',
+  asynchandler(async function (next) {
+    await User.updateMany(
+      { courses: this._id }, // Find users who have this course in their array
+      { $pull: { courses: this._id } } // Remove course ID from their array
+    );
+    //delete all task of course
+    const taskIds = this.task || [];
+
+    //store the number of task
+    const total_task = taskIds.length;
+
+    //here filter the  task and delete
+    const result = await Task.deleteMany({ _id: { $in: taskIds } });
+
+    //check the all task all deleted properly
+    if (total_task !== result.deletedCount) {
+      return next(new ApiError('Error in deleteding the task', 422));
+    }
+    next();
+  })
+);
+
+const Course = mongoose.model('Course', courseSchema);
 export default Course;
