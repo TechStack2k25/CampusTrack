@@ -72,14 +72,14 @@ const AddAssignment = ({ addTask, openForm, setOpenForm }) => {
               )}
             </div>
         
-        <div className="mb-2">
+        {/* <div className="mb-2">
           <label className="block font-medium mb-1 dark:text-gray-400 tracking-tight">Sem:</label>
           <input
             type="number"
             {...register("sem")}
             className="w-full px-3 py-2 border rounded"
           />
-        </div>
+        </div> */}
 
         <div className="mb-2">
           <label className="block font-medium mb-1 dark:text-gray-400 tracking-tight">Description:</label>
@@ -88,18 +88,6 @@ const AddAssignment = ({ addTask, openForm, setOpenForm }) => {
             className="w-full px-3 py-2 border rounded"
             placeholder="Write your notification..."
           ></textarea>
-        </div>
-
-        <div className="mb-2">
-          <label className="block font-medium mb-1 dark:text-gray-400 tracking-tight">Reward Points:</label>
-          <input
-            type="number"
-            {...register("reward_point",{required:"Rewards required!"})}
-            className="w-full px-3 py-2 border rounded"
-          />
-          {errors?.reward_point && (
-            <p className="text-red-500 text-sm">{errors.reward_point.message}</p>
-          )}
         </div>
 
         <button

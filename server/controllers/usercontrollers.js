@@ -7,6 +7,7 @@ import Course from '../models/coursemodel.js';
 import Request from '../models/requestmodel.js';
 import Department from '../models/departmentmodel.js';
 import College from '../models/collegemodel.js';
+import Task from '../models/taskmodel.js';
 
 export const getall = asynchandler(async (req, res, next) => {
   const queryobj = req.query;
@@ -132,12 +133,12 @@ export const get_dashboard = asynchandler(async (req, res, next) => {
   // Count students and faculty in department
   const total_student_dep = await User.countDocuments({
     role: 'Student',
-    department: reqdepartment?._id || ' ',
+    department: reqdepartment?._id,
   });
 
   const total_faculty_dep = await User.countDocuments({
     role: 'faculty',
-    department: reqdepartment?._id || ' ',
+    department: reqdepartment?._id,
   });
 
   // Get the college where the user is admin
@@ -146,12 +147,12 @@ export const get_dashboard = asynchandler(async (req, res, next) => {
   // Count students and faculty in college
   const total_student_college = await User.countDocuments({
     role: 'Student',
-    college: reqcollege?._id || ' ',
+    college: reqcollege?._id,
   });
 
   const total_faculty_college = await User.countDocuments({
     role: 'faculty',
-    college: reqcollege?._id || ' ',
+    college: reqcollege?._id,
   });
 
   // Return JSON response
@@ -161,6 +162,8 @@ export const get_dashboard = asynchandler(async (req, res, next) => {
     total_course_dep,
     total_student_dep,
     total_faculty_dep,
+    taught_courses,
+    enrolled_courses,
     //total department
     //task of today
     total_student_college,

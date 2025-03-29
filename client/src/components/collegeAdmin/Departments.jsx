@@ -5,13 +5,16 @@ import { setError, setSuccess } from "../../store/slices/userSlice";
 import { departmentService } from "../../api/departmentService";
 import { useDepartments } from "../../data/departments.js";
 import { useDispatch } from "react-redux";
+import { ConfirmModal } from "../Utils";
+import { FiEdit, FiTrash2 } from "react-icons/fi";
 
 const Departments = () => {
   const { data:departments }=useDepartments("all");
   console.log(departments)
   const dispatch=useDispatch();
   const queryClient=useQueryClient();
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [dept, setDept] = useState(null);
+  const [deptTodelete, setDeptToDelete] = useState(null);
 
   const {
     register,
@@ -35,10 +38,46 @@ const Departments = () => {
     }
   });
 
-  const addDepartment =async(newdepartment) => {
-    mutationTocreateDepartment.mutate(newdepartment);
+  const mutationToupdateDepartment = useMutation({
+    mutationFn: departmentService.updateDepartment,
+    onSuccess: (data) => {
+      console.log('department created successfully:', data);
+      dispatch(setSuccess('Department updated successfully!'));
+      //invalidate alldepartment queries to refetch data
+      queryClient.invalidateQueries(['alldepartments']); 
+    },
+    onError: (error) => {
+      dispatch(setError(error?.response?.data?.message))
+      console.error('Error updating department', error);
+    }
+  });
+
+  const addDepartment =async(department) => {
+    department?._id ? mutationToupdateDepartment.mutate(department):mutationTocreateDepartment.mutate(department);
+    setDept(null); // Close modal
     reset(); // Reset form fields
-    setIsModalOpen(false); // Close modal
+  };
+
+  const handleDelete = (deptId) => {
+    setDeptToDelete(deptId); // Store the department ID
+  };
+
+  // Hide the delete modal without performing any action
+  const handleCancelDelete = () => {
+    setDeptToDelete(null); // Clear the selected department ID
+  };
+
+  // Confirm deletion and perform the delete action
+  const handleConfirmDelete = async() => {
+    try {
+      const res=await departmentService.deleteDepartment({_id:deptTodelete});
+      if(res){
+        setDeptToDelete(null);
+        dispatch(setSuccess('Deleted Successfully!'));
+      }
+    } catch (error) {
+      dispatch(setError("Try again later!"));
+    }
   };
 
   return (
@@ -46,7 +85,10 @@ const Departments = () => {
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold text-gray-700 dark:text-gray-300">Departments</h1>
         <button
-          onClick={() => setIsModalOpen(true)}
+          onClick={() => {
+            setDept({code:"",name:""});
+            reset({code:"",name:""})
+          }}
           className="transition duration-300 transform text-blue-600 px-3 py-1 dark:bg-gray-800 rounded shadow-md hover:bg-blue-700 hover:text-white font-black text-xl hover:rounded-full"
         >
           + 
@@ -58,20 +100,39 @@ const Departments = () => {
          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
          {departments?.map((dept) => (
            <div
-             key={dept._id}
-             className="bg-gradient-to-br from-blue-50 to-white p-6 rounded-2xl shadow-md hover:shadow-xl transition duration-300 transform hover:-translate-y-1 border border-gray-200 dark:border-gray-800 dark:from-blue-900 dark:to-black"
-           >
-            
-            <div className="flex justify-between">
-             <h2 className="text-xl font-bold text-blue-600">{dept.name}</h2>
-             <p className="text-sm font-bold text-gray-600 dark:text-gray-50 mt-1 bg-gray-100 dark:bg-blue-950  px-2 py-1 rounded-md inline-block">
+           key={dept._id}
+           className="bg-gradient-to-br from-blue-50 to-white p-6 rounded-2xl shadow-lg hover:shadow-xl transition duration-300 transform hover:-translate-y-1 border border-gray-200 dark:border-gray-800 dark:from-blue-900 dark:to-black"
+         >
+           <div className="flex justify-between items-center">
+             <h2 className="text-2xl font-semibold text-blue-600">{dept.name}</h2>
+             <p className="text-sm font-bold text-gray-600 dark:text-gray-50 mt-1 bg-gray-100 dark:bg-blue-950 px-3 py-1 rounded-lg shadow-md inline-block">
                {dept?.code}
              </p>
-             </div>
-             {dept?.hod && <p className="text-sm font-bold text-gray-600 dark:text-gray-400 mt-1 bg-gray-100 dark:bg-gray-950 px-2 py-1 rounded-md inline-block">
-               <span className="font-semibold tracking-tighter">Head : </span> {dept?.hod?.name || dept?.hod?.email?.split('@')[0] || "N/A"}
-             </p>}
            </div>
+           {dept?.hod && (
+             <p className="text-sm font-medium text-gray-600 dark:text-gray-400 mt-2 bg-gray-100 dark:bg-gray-950 px-3 py-1 rounded-lg inline-block">
+               <span className="font-semibold">Head : </span>
+               {dept?.hod?.name || dept?.hod?.email?.split('@')[0] || "N/A"}
+             </p>
+           )}
+           <div className="mt-4 flex justify-end space-x-3">
+             <button
+               onClick={() => {
+                setDept(dept);
+                reset(dept);
+               }} // Edit functionality
+               className="text-white bg-blue-600 hover:bg-blue-700 py-2 px-4 rounded-md transition duration-300 transform hover:scale-105"
+             >
+               <FiEdit />
+             </button>
+             <button
+               onClick={() => handleDelete(dept._id)} // Delete functionality
+               className="text-white bg-red-600 hover:bg-red-700 py-2 px-4 rounded-md transition duration-300 transform hover:scale-105"
+             >
+               <FiTrash2/>
+             </button>
+           </div>
+         </div>
          ))}
        </div>
        
@@ -82,18 +143,32 @@ const Departments = () => {
             </p>
         }
 
+      {/* confirmation to delete */}
+      {
+        deptTodelete && 
+        <ConfirmModal 
+          text={'This action cannot be undone. Do you want to delete this department?'}
+          done={handleConfirmDelete}
+          cancel={handleCancelDelete}
+          danger={true}
+        />
+      }
+
       {/* Modal for Adding Department */}
-      {isModalOpen && (
+      {dept && (
         <div className="fixed z-30 inset-0 bg-black bg-opacity-50 flex justify-center items-center">
           <div className="bg-white dark:bg-gray-950 dark:border dark:border-gray-700 w-96 p-6 rounded shadow-lg relative">
             <button
-              onClick={() => setIsModalOpen(false)}
+              onClick={() => {
+                setDept(null);
+                reset();
+              }}
               className="absolute top-2 right-2 text-gray-500 hover:text-gray-800"
             >
               ✖
             </button>
             <h2 className="text-xl font-bold text-gray-700 dark:text-gray-300 mb-4">
-              Add Department
+              {dept?._id?'Update':'Add'} Department
             </h2>
             <form onSubmit={handleSubmit(addDepartment)}>
               {/* Department Name */}
@@ -144,7 +219,7 @@ const Departments = () => {
                   type="submit"
                   className="bg-indigo-600 text-white px-4 py-2 rounded shadow hover:bg-indigo-700 dark:hover:bg-indigo-800"
                 >
-                  Add
+                  {dept?._id?'Update':'Add'}
                 </button>
               </div>
             </form>

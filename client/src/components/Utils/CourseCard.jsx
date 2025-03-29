@@ -1,12 +1,30 @@
-import React from "react";
+import React, { useState } from "react";
 import { FaEdit, FaTrashAlt } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
+import ConfirmModal from "./ConfirmModal";
 
 
 const CourseCard = ({ course ,deletefn ,updatefn }) => {
   const { role } =useSelector((state)=>state.user.user);
   const navigate=useNavigate();
+  const [courseId, setCourseId] = useState(null);
+
+  const handleDelete = (id) => {
+      setCourseId(id); // Store the course ID
+    };
+  
+    // Hide the delete modal without performing any action
+    const handleCancelDelete = () => {
+      setCourseId(null); // Clear the selected course ID
+    };
+  
+    // Confirm deletion and perform the delete action
+    const handleConfirmDelete = async() => {
+      deletefn(courseId);
+      setCourseId(null);
+      return null;
+    };
 
   return (
     <div className="bg-white shadow-md rounded-lg p-6 mb-4 border-gray-200 dark:bg-gray-900 dark:border-gray-700 border">
@@ -19,20 +37,26 @@ const CourseCard = ({ course ,deletefn ,updatefn }) => {
         <p className="text-gray-600 dark:text-gray-400"><strong>Credits:</strong> {course.credit}</p>
       </div>
         {role && role==='HOD' && <div className="flex justify-end space-x-4">
-          <button
+          {updatefn && <button
             onClick={() => updatefn({...course,coursecode:course.coursecode?.toUpperCase()})}
             className="bg-yellow-500 text-white px-4 py-2 rounded-lg hover:bg-yellow-600 focus:outline-none focus:ring-2 focus:ring-yellow-400 transition-all"
           >
            <FaEdit />
-          </button>
+          </button>}
 
           <button
-            onClick={() => deletefn(course?._id)}
+            onClick={() => handleDelete(course?._id)}
             className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 transition-all"
           >
            <FaTrashAlt />
           </button>
         </div>}
+        {courseId && <ConfirmModal 
+          text={'This action cannot be undone. Do you want to delete this course?'}
+          done={handleConfirmDelete}
+          cancel={handleCancelDelete}
+          danger={true}
+        />}
     </div>
   );
 };

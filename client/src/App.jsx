@@ -4,7 +4,8 @@ import Header from "./components/Header";
 import Footer from "./components/Footer";
 import { toast, ToastContainer } from "react-toastify";
 import { useSelector, useDispatch } from "react-redux";
-import { clearError, clearSuccess } from "./store/slices/userSlice";
+import { clearError, clearSuccess, loginSuccess } from "./store/slices/userSlice";
+import { userService } from './api/userService.js'
 
 function App() {
   const dispatch = useDispatch();
@@ -12,6 +13,19 @@ function App() {
   const error = useSelector((state) => state.user.error);
   const loading  = useSelector((state) => state.user.loading );
   const isDarkMode = window.matchMedia("(prefers-color-scheme: dark)").matches;
+
+  const userStatus=useSelector((state)=>state.user.status);
+
+  const currentUser=async()=>{
+    const res=await userService.currentUser();
+    if(res){
+      dispatch(loginSuccess(res));
+    }
+  }
+
+  useEffect(()=>{
+    if(userStatus) currentUser();
+  },[]);
   
   
 
@@ -40,7 +54,7 @@ function App() {
   }, [error, dispatch]);
 
   return (
-    <div className="dark:bg-gradient-to-b dark:from-gray-800 dark:via-gray-900 dark:to-black bg-white">
+    <div className="dark:bg-gradient-to-b dark:from-gray-800 dark:via-gray-900 dark:to-black bg-gray-50">
       <ToastContainer />
       <Header />
         <main className="min-h-screen">

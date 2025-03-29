@@ -4,7 +4,7 @@ const EventCard = ({ event, isUpcoming }) => {
   return (
     <div
       className={`p-4 border rounded-lg shadow-md ${
-        isUpcoming ? "bg-green-50 border-green-300" : "bg-gray-100 border-gray-300"
+        isUpcoming ? "bg-green-50 border-green-300" : "bg-blue-100 border-blue-300 dark:bg-gray-100 dark:border-gray-300"
       }`}
     >
       <h2 className="text-xl font-bold text-gray-800">{event?.title}</h2>

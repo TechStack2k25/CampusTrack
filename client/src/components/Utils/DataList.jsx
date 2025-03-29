@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import Pagination from "./Pagination";
 import { nanoid } from "@reduxjs/toolkit";
+import { FaTrashAlt } from "react-icons/fa";
 
 const DataList = ({ title, data, filters, itemsPerPage = 5, options, query, setQuery }) => {
   const [currentPage, setCurrentPage] = useState(1);
@@ -76,26 +77,49 @@ const DataList = ({ title, data, filters, itemsPerPage = 5, options, query, setQ
 
       {/* Listing Section */}
       {data && data.length > 0 ? (
-        <div>
-          <h1 className="text-2xl font-bold text-gray-700 dark:text-gray-300 tracking-tight text-center my-6">{title}</h1>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {data.map((item) => (
-              <div
-                key={item._id}
-                className="bg-white dark:bg-black dark:bg-opacity-25 shadow-md hover:shadow-lg py-2 transition-shadow rounded-2xl w-80 flex justify-around items-center text-center border border-gray-200 dark:border-gray-800"
-              >
-                <h2 className="text-xl font-semibold text-gray-700 dark:text-gray-300">
-                  {item?.name || item?.email}
-                </h2>
-                {item?.department?.name && (
-                  <p className="text-xs bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 px-3 py-1 rounded-lg">
+        <div className="overflow-x-auto">
+        <h1 className="text-3xl font-bold text-gray-800 dark:text-gray-100 tracking-tight text-center my-6">
+          {title}
+        </h1>
+        <div className="bg-white space-y-1 dark:bg-black dark:bg-opacity-25 rounded-lg shadow-lg">
+        <div className="grid grid-cols-4 gap-4 p-4 bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 font-semibold text-sm rounded-t-lg">
+          {/* Table Headers */}
+          <div>Name</div>
+          <div>Email</div>
+          <div>Department</div>
+          <div>Actions</div>
+        </div>
+
+          {data.map((item) => (
+            <div
+              key={item._id}
+              className="bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition duration-200"
+            >
+        <div className="grid grid-cols-4 gap-4 p-4">
+              <div className="truncate">{item?.name || item?.email}</div>
+              <div className="truncate">{item?.email}</div>
+              <div className="truncate">
+                {item?.department?.name ? (
+                  <span className="text-xs bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 px-2 py-1 rounded-md">
                     {item?.department?.name}
-                  </p>
+                  </span>
+                ) : (
+                  'N/A'
                 )}
               </div>
-            ))}
-          </div>
+              <div>
+                <button
+                  onClick={() => handleRemove(item._id)}
+                  className="flex items-center justify-center text-white bg-red-500 hover:bg-red-600 py-2 px-4 rounded-md shadow-md hover:shadow-lg transition duration-200"
+                >
+                  <FaTrashAlt className="mr-2" />
+                </button>
+              </div>
+            </div>
         </div>
+          ))}
+      </div>
+      </div>
       ) : (
         <p className="text-center text-gray-600 dark:text-gray-400 font-semibold mt-12 text-lg">No results found!</p>
       )}

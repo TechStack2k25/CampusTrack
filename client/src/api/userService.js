@@ -62,6 +62,50 @@ class UserService {
       throw error;
     }
   }
+
+  //get current user
+  currentUser=async ()=> {
+    try {
+      const response = await this.api.get('/me');
+
+      console.log(response);
+      
+      return response.data?.data?.user;
+      //current user data
+    } catch (error) {
+      console.error('Error userService: currentUser: ', error);
+      throw error;
+    }
+  }
+
+  //dashboard data
+  userDashData=async ()=> {
+    try {
+      const response = await this.api.get('/dashboard');
+
+      console.log(response);
+      
+      return response.data;
+    } catch (error) {
+      console.error('Error userService: userDashData: ', error);
+      throw error;
+    }
+  }
+
+  // password update
+  passwordUpdate=async (data)=> {
+    //required: current_password, new_password, confirmpassword 
+    try {
+      const response = await this.api.post('/updatepassword',data);
+
+      console.log(response);
+      
+      return response.data?.data?.user;
+    } catch (error) {
+      console.error('Error userService: passwordUpdate: ', error);
+      throw error;
+    }
+  }
 }
 
 export const userService = new UserService();

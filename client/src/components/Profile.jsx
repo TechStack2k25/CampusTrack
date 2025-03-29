@@ -2,10 +2,15 @@ import { useForm } from "react-hook-form";
 import { useSelector, useDispatch } from "react-redux";
 import { setError, clearError, loginSuccess, setSuccess } from "../store/slices/userSlice";
 import { userService } from "../api/userService";
+import Input from "./Utils/Input";
+import { useState } from "react";
 
 const Profile = () => {
   const user = useSelector((state)=>state.user?.user);
   const dispatch=useDispatch();
+  const [password,setPassword]=useState({
+    current_password:"", new_password:"", confirmpassword:"",
+  });
 
   const {
     register,
@@ -18,9 +23,34 @@ const Profile = () => {
 
   // updating user data
   const onSubmit = async(data) => {
-    console.log("Updated Profile Data:", data);
+    // console.log("Updated Profile Data:", data);
     dispatch(clearError());
     try {
+        if(password?.new_password?.length>0 || password?.confirmpassword?.length>0 || password?.current_password?.length>0){
+            if(password?.new_password.length<6){
+                dispatch(setError("Min length is 6!"));
+                return;
+            }
+            if(password?.confirmpassword?.length==0 || password?.new_password!==password?.confirmpassword){
+                dispatch(setError("Confirm your password!"));
+                return;
+            }
+            if(password?.current_password?.length==0){
+                dispatch(setError("Your current password!"));
+                return;
+            }
+            const res=await userService.passwordUpdate(password);
+            // console.log(res);
+            if(!res){
+                dispatch(setError("Password updated successfully!"));
+            }
+            else{
+                setPassword({
+                    current_password:"", new_password:"", confirmpassword:"",
+                  });
+            }
+            
+        }
         const newuser=await userService.updateUser(data);
         if(newuser){
             dispatch(loginSuccess(newuser));
@@ -71,7 +101,7 @@ const Profile = () => {
                 {errors?.surname && <p className="text-red-500 text-sm">{errors.surname.message}</p>}
             </div>
 
-            {user?.currentdegree && <div>
+            {/* {user?.currentdegree && <div>
                 <label className="block text-sm font-medium text-gray-600 tracking-tight dark:text-gray-400">Degree:</label>
                 <input
                 type="text"
@@ -79,7 +109,7 @@ const Profile = () => {
                 disabled={true}
                 className="w-full p-2 border border-gray-300 rounded mt-1"
                 />
-            </div>}
+            </div>} */}
 
             {/* {user?.role!=="User" && user?.college && <div>
                 <label className="block text-sm font-medium text-gray-600 tracking-tight dark:text-gray-400">College:</label>
@@ -91,7 +121,7 @@ const Profile = () => {
                 />
             </div>} */}
 
-            {user?.year && <div>
+            {user.role==='Student' && <div>
                 <label className="block text-sm font-medium text-gray-600 tracking-tight dark:text-gray-400">Batch:</label>
                 <input
                 type="number"
@@ -101,7 +131,7 @@ const Profile = () => {
                 />
             </div>}
 
-            {user?.sem && <div>
+            {user.role==='Student' && <div>
                 <label className="block text-sm font-medium text-gray-600 tracking-tight dark:text-gray-400">Semester:</label>
                 <input
                 type="number"
@@ -110,6 +140,39 @@ const Profile = () => {
                 className="w-full p-2 border border-gray-300 rounded mt-1"
                 />
             </div>}
+
+            <Input
+
+                type={"password"}
+                value={password?.current_password}
+                label={"Current Password"}
+                placeholder={"current password here"}
+                onChange={(e)=>setPassword((prev)=>({...prev,current_password:e.target.value?.trim()}))}
+
+             />
+            
+            <Input
+
+                type={"password"}
+                value={password?.new_password}
+                label={"New Password"}
+                placeholder={"New password here"}
+                onChange={(e)=>setPassword((prev)=>({...prev,new_password:e.target.value?.trim()}))}
+
+             />
+
+            
+            <Input
+
+                type={"password"}
+                value={password?.confirmpassword}
+                label={"Confirm Password"}
+                placeholder={"Confirm your password "}
+                onChange={(e)=>setPassword((prev)=>({...prev,confirmpassword:e.target.value?.trim()}))}
+
+             />
+
+            
 
             {/* qualifications later on */}
 

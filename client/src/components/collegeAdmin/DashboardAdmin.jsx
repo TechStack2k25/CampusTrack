@@ -1,6 +1,61 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
+import { userService } from '../../api/userService';
+import Table from '../Utils/Table';
+
+
+const activityColumns = [{
+  name:"Activity",
+  id:"title",
+}, {
+  name:"Date",
+  id:"date",
+  type:"date",
+}, {
+  name:"Status",
+  id:"status",
+}];
+
+const eventColumns = [{
+  name:"Activity",
+  id:"title",
+}, {
+  name:"Date",
+  id:"deadline",
+  type:"date",
+}, {
+  name:"Description",
+  id:"description",
+}];
+const activityData = [
+  { title: "Approved Faculty Registration", date: "2025-01-16", status: "Completed" },
+  { title: "Added New Department", date: "2025-01-15", status: "Completed" },
+  { title: "Pending Student Approval", date: "2025-01-14", status: "Pending" },
+];
+
+const colorScheme = {
+  status: {
+    Completed:"text-green-600",
+    Pending: "text-yellow-600",
+  },
+};
 
 function DashboardAdmin() {
+  const [userDashboard,setUserDashboard]=useState({});
+
+  const fetchData=async()=>{
+    try {
+      const res=await userService.userDashData();
+      setUserDashboard(res);
+    } catch (error) {
+      console.log(error?.response?.data?.message);
+    }
+  }
+
+  useEffect(()=>{
+    fetchData();
+  },[]);
+  console.log(userDashboard);
+  
   return (
       <main className="flex-1 p-6 min-h-screen">
     
@@ -12,11 +67,11 @@ function DashboardAdmin() {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <div className="bg-white dark:bg-black dark:bg-opacity-30 dark:border dark:border-gray-700 p-4 shadow rounded-lg">
           <h2 className="text-lg font-bold text-gray-700 dark:text-gray-300">Total Students</h2>
-          <p className="text-4xl font-semibold text-blue-500">1,250</p>
+          <p className="text-4xl font-semibold text-blue-500">{userDashboard?.total_student_college|| "No data to show!"}</p>
         </div>
         <div className="bg-white dark:bg-black dark:bg-opacity-30 dark:border dark:border-gray-700 p-4 shadow rounded-lg">
           <h2 className="text-lg font-bold text-gray-700 dark:text-gray-300">Total Faculty</h2>
-          <p className="text-4xl font-semibold text-green-500">85</p>
+          <p className="text-4xl font-semibold text-green-500">{userDashboard?.total_faculty_college || "No Data to show!"}</p>
         </div>
         <div className="bg-white dark:bg-black dark:bg-opacity-30 dark:border dark:border-gray-700 p-4 shadow rounded-lg">
           <h2 className="text-lg font-bold text-gray-700 dark:text-gray-300">Total Departments</h2>
@@ -24,38 +79,14 @@ function DashboardAdmin() {
         </div>
       </div>
 
+      {userDashboard?.recent_event?.length>0 && <div className='mt-8'>
+        <Table title={"Recents Events"} data={userDashboard?.recent_event} columns={eventColumns} link={'/events'}/>
+      </div>}
+
       {/* Recent Activity Section (mapping will done later) */}
-      <div className="mt-8">
-        <h2 className="text-xl font-bold text-gray-700 dark:text-gray-400 tracking-tight mb-4">Recent Activities</h2>
-        <div className="bg-white dark:bg-black dark:bg-opacity-30 dark:border dark:border-gray-700 shadow rounded-lg">
-          <table className="min-w-full text-left">
-            <thead>
-              <tr>
-                <th className="px-4 py-2 border-b dark:text-white">Activity</th>
-                <th className="px-4 py-2 border-b dark:text-white">Date</th>
-                <th className="px-4 py-2 border-b dark:text-white">Status</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td className="px-4 py-2 border-b dark:text-gray-400">Approved Faculty Registration</td>
-                <td className="px-4 py-2 border-b dark:text-gray-400">2025-01-16</td>
-                <td className="px-4 py-2 border-b text-green-600">Completed</td>
-              </tr>
-              <tr>
-                <td className="px-4 py-2 border-b dark:text-gray-400">Added New Department</td>
-                <td className="px-4 py-2 border-b dark:text-gray-400">2025-01-15</td>
-                <td className="px-4 py-2 border-b text-green-600">Completed</td>
-              </tr>
-              <tr>
-                <td className="px-4 py-2 border-b dark:text-gray-400">Pending Student Approval</td>
-                <td className="px-4 py-2 border-b dark:text-gray-400">2025-01-14</td>
-                <td className="px-4 py-2 border-b text-yellow-600">Pending</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
+      {activityData?.length>0 && <div className='mt-8'>
+        <Table title={"Recent Activities"} data={activityData} columns={activityColumns} colorScheme={colorScheme} />
+      </div>}
     </section>
   </main>
   )

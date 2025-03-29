@@ -7,6 +7,9 @@ import { userService } from '../api/userService';
 import { useMutation } from '@tanstack/react-query';
 import { setError, setSuccess } from '../store/slices/userSlice';
 import { useDispatch } from 'react-redux';
+import { useApprovals } from "../data/approvals.js"
+
+
 
 const Sidebar = ({menuItems}) => {
     const [open,setOpen]=useState(false);
@@ -47,32 +50,41 @@ const Sidebar = ({menuItems}) => {
     const makeHOD=()=>mutationToHODRequest.mutate({...user,role:"HOD"});
     
 
+    const enabled = user?.role && !['Student', 'User'].includes(user.role);
+
+    const approvals = useApprovals( enabled ); 
+
+    const quantities={
+      Approvals:approvals?.data?.length || 0,
+    }
     
   return (
     <>
-        <aside className={`absolute z-20 sm:rounded-none rounded top-16 left-0 sm:static  text-white ${open ? 'block' : 'hidden'} sm:block`}>
-            <div ref={ref} className='bg-gray-800  sm:w-56 mx-1 sm:pl-4 px-2 sm:py-4 py-1 sm:my-1 rounded-md border-2 dark:border-gray-700 border-gray-200'>
+        <aside className={`absolute z-20 sm:rounded-none rounded top-16 left-0 sm:static text-black  dark:text-white ${open ? 'block' : 'hidden'} sm:block`}>
+            <div ref={ref} className='dark:bg-gray-800  sm:w-56 mx-1 sm:pl-4 px-2 sm:py-4 py-1 sm:my-1 rounded-md border-2 dark:border-gray-700 border-gray-200'>
                 <div className='flex my-2 px-2 space-x-4 items-center'>
                             <div onClick={()=>navigate('/dashboard')} className="cursor-pointer h-8 sm:h-12 text-xl aspect-square bg-blue-500 rounded-full flex items-center justify-center text-white font-bold">
                                 {user?.name?.toUpperCase()[0] || user?.email.toUpperCase()[0]}
                             </div>
-                            <span className="text-white text-xl font-semibold truncate">{user?.name || user?.email.split('@')[0]}</span>
+                            <span className="dark:text-white text-xl font-semibold truncate">{user?.name || user?.email.split('@')[0]}</span>
                     </div>
                 <ul>
                     {menuItems.map((item) => (
                         <NavLink key={item.name+item.link} to={item.link} className={({ isActive }) =>
                             isActive
-                            ? ' text-blue-400 dark:text-blue-600'
+                            ? ' text-blue-500 dark:text-blue-600'
                             : ' hover:text-blue-400 dark:hover:text-blue-600'
                         } >
-                            <li key={item.name} className="py-2 px-4 rounded-full hover:bg-gray-700">
-                                    <span>
-                                        <span>{item.name}</span>
-                                    </span>
+                            <li key={item.name} className="py-2 px-4 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 flex items-center justify-between">
+                              <span className="text-base">{item.name}</span>
+
+                              {quantities?.[item.name] > 0 && (
+                                <span className="w-2 h-2 bg-green-500 rounded-full"></span>
+                              )}
                             </li>
                         </NavLink>
                     ))}
-                    {user?.role==="faculty" && <li onClick={makeHOD} className="cursor-pointer py-2 px-4 rounded-full hover:bg-gray-700">
+                    {user?.role==="faculty" && <li onClick={makeHOD} className="cursor-pointer py-2 px-4 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700">
                                     <span>
                                         <span>Request for HOD</span>
                                     </span>

@@ -23,5 +23,5 @@ mongoose
     console.log('Created database succesfully');
   })
   .catch((error) => {
-    console.log(`DB Cconnection failed due to ${error}`);
+    console.log(`DB Connection failed due to ${error}`);
   });
