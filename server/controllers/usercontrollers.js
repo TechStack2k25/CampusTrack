@@ -68,8 +68,6 @@ export const updateuser = asynchandler(async (req, res, next) => {
   if (role && requser.role != role) {
     req.body.requestType = 'Add user';
     return await create_request(req, res, next); // This will call next(error) if an error occurs
-
-    // if (!result) return;
   }
   //update the user by id
   const updateduser = await User.findByIdAndUpdate(
@@ -165,5 +163,134 @@ export const get_dashboard = asynchandler(async (req, res, next) => {
     //task of today
     total_student_college,
     total_faculty_college,
+  });
+});
+
+const updatetheuser = asynchandler(async (updated_user, sem, year) => {
+  const reqcollege = updated_user.college;
+  if (updated_user.sem === updated_user.currentdegree.totalSemesters) {
+    if (updated_user.course.length === 0) {
+      const dep_id = updated_user.department;
+      updated_user.pastcolleges.push(reqcollege._id);
+      updated_user.pastdegree.push(updated_user.degree._id);
+      updated_user.sem = NaN;
+      updated_user.year = NaN;
+      updated_user.department = null;
+      updated_user.collection = null;
+      updated_user.currentdegree = null;
+      updated_user.course = [];
+      updated_user.role = 'User';
+      await updated_user.save({ validateBeforeSave: false });
+
+      await College.findByIdAndUpdate(reqcollege._id, {
+        $pull: { users: updated_user._id },
+      });
+
+      await College.findByIdAndUpdate(dep_id, {
+        $pull: { user: updated_user._id },
+      });
+    }
+  } else if (year === true && sem === true) {
+    updated_user = await User.findByIdAndUpdate(
+      updated_user._id,
+      {
+        sem: updated_user.sem + 1,
+        year: updated_user.year + 1,
+      },
+      { new: true }
+    );
+  } else if (sem) {
+    updated_user = await User.findByIdAndUpdate(
+      updated_user._id,
+      {
+        sem: updated_user.sem + 1,
+      },
+      { new: true }
+    );
+  } else {
+    throw new ApiError('Please Enter All Required Fields', 422);
+  }
+  return updated_user;
+});
+
+export const update_sem = asynchandler(async (req, res, next) => {
+  const { message, sem, year, student_id } = req.body;
+
+  const reqcollege = await College.findOne({ admin: req.user._id });
+  let updated_users, updated_departments, updated_colleges, updated_course;
+
+  if (!reqcollege) {
+    return next(new ApiError('You Cannot Perform that Action', 422));
+  }
+
+  if (message === 'Individual') {
+    updated_users = await User.findOne({
+      college: reqcollege._id,
+      _id: student_id,
+    }).populate('currentdegree');
+
+    if (!updated_users) {
+      return next(new ApiError('User Not Found', 404));
+    }
+
+    if (
+      updated_users.sem === updated_users.currentdegree.totalSemesters &&
+      updated_users.course.length !== 0
+    ) {
+      return next(new ApiError('Cannot Update the Student', 422));
+    }
+
+    updated_users = await updatetheuser(updated_users, sem, year);
+  } else if (message === 'remove_student') {
+    updated_users = await User.findOne({
+      college: reqcollege._id,
+      _id: student_id,
+    });
+
+    if (!updated_users) {
+      return next(new ApiError('User Not Found', 404));
+    }
+
+    const allcourse = updated_users.course;
+    const dep_id = updated_users.department;
+
+    updated_users.sem = NaN;
+    updated_users.year = NaN;
+    updated_users.department = null;
+    updated_users.collection = null;
+    updated_users.currentdegree = null;
+    updated_users.course = [];
+    updated_users.role = 'User';
+    await updated_users.save({ validateBeforeSave: false });
+
+    await College.findByIdAndUpdate(reqcollege._id, {
+      $pull: { users: updated_users._id },
+    });
+
+    await College.findByIdAndUpdate(dep_id, {
+      $pull: { user: updated_users._id },
+    });
+
+    await Course.updateMany(
+      { _id: { $in: allcourse } },
+      { $pull: { users: student_id } }
+    );
+  } else {
+    updated_users = await User.find({
+      college: reqcollege._id,
+    }).populate('currentdegree');
+
+    updated_users = await Promise.all(
+      updated_users.map((user) => updatetheuser(user, sem, year))
+    );
+  }
+
+  res.status(201).json({
+    message: 'Sem Updated Successfully',
+    data: {
+      updated_users,
+      updated_colleges,
+      updated_course,
+    },
   });
 });

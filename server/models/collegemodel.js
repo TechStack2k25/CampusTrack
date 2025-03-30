@@ -1,6 +1,7 @@
 import asynchandler from '../utils/asynchandler.js';
 import mongoose from 'mongoose';
 import Department from './departmentmodel.js';
+import Course from './coursemodel.js';
 
 const collegeSchema = mongoose.Schema({
   name: {
@@ -43,17 +44,22 @@ collegeSchema.pre(
     //now change the role of it
     await User.updateMany(
       { _id: { $in: userId } },
-      { $set: { role: 'User' }, department: null, college: null }
+      {
+        $set: { role: 'User' },
+        department: null,
+        college: null,
+        currentdegree: null,
+        sem: NaN,
+        year: NaN,
+        course: [],
+      }
     );
-
-    //store the total number of course
-    const num_course = depIds.length;
 
     //filter the courses and delete
     const result = await Department.deleteMany({ _id: { $in: depIds } });
 
     //check all courses delete successfully
-    if (result.deletedCount !== num_course) {
+    if (result.deletedCount !== 0) {
       return next(new ApiError('error in deleted course of department ', 422));
     }
   })

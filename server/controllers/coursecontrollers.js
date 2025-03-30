@@ -216,3 +216,62 @@ export const add_course_by_student = asynchandler(async (req, res, next) => {
   // const result =
   return await create_request(req, res, next); // This will call next(error) if an error occurs
 });
+
+export const remove_student = asynchandler(async (req, res, next) => {
+  //take course id from the params
+  const course_id = req.params.id;
+
+  //take the data
+  const { message, student_id } = req.body;
+
+  if (message === 'Individual' && !student_id) {
+    return next(new ApiError('Give The Student Details'));
+  }
+
+  //check the course is exist or not
+  const reqcourse = await Course.findById(course_id);
+
+  if (!reqcourse) {
+    return next(new ApiError('Course Not Found'));
+  }
+  let updatedcourse;
+  //check that remove the individual student
+  if (message === 'Individual') {
+    //remove student from course
+    updatedcourse = Course.findByIdAndUpdate(course_id, {
+      $pull: { users: student_id },
+    });
+
+    //from student remove course
+    const updated_student = await User.findById(student_id, {
+      $pull: { course: course_id },
+    });
+  } else {
+    //delete courses from students
+    const updated_students = await User.updateMany(
+      {
+        _id: { $in: reqcourse.users },
+      },
+      {
+        $pull: { course: course_id },
+        $push: { pastcourse: course_id },
+      }
+    );
+
+    //remove all student from course
+    updatecourse = await Course.findByIdAndUpdate(course_id, {
+      users: [],
+    });
+  }
+
+  if (!updatecourse) {
+    return next(new ApiError('Error in updated Course'));
+  }
+
+  res.status(201).json({
+    message: 'Course Updated Successfully',
+    data: {
+      updatecourse,
+    },
+  });
+});

@@ -9,7 +9,7 @@ export default class Email {
     this.url = url;
     this.from = process.env.SENDGRID_EMAIL_FROM;
     // Set the SendGrid API key once in the constructor
-    console.log(process.env.SENDGRID_APIKEY)
+    console.log(process.env.SENDGRID_APIKEY);
     sgMail.setApiKey(process.env.SENDGRID_APIKEY);
   }
   // Create transporter
@@ -41,7 +41,7 @@ export default class Email {
       await sgMail.send(mailOptions);
       console.log('✅ Email sent successfully');
     } catch (error) {
-      return next(new ApiError("Error in sending mail Try again",409))
+      return next(new ApiError('Error in sending mail Try again', 409));
     }
   }
 

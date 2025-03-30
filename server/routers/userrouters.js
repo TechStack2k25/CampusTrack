@@ -6,8 +6,9 @@ import {
   updateuser,
   getprofile,
   get_dashboard,
+  update_sem,
 } from '../controllers/usercontrollers.js';
-import { updatepassword } from '../controllers/authcontrollers.js';
+import { restrict_to, updatepassword } from '../controllers/authcontrollers.js';
 
 const router = express.Router();
 
@@ -20,4 +21,6 @@ router.delete('/del', deluser);
 router.patch('/update', updateuser);
 router.get('/me', getprofile);
 router.get('/dashboard', get_dashboard);
+
+router.post('/update_sem', restrict_to('Admin'), update_sem);
 export default router;

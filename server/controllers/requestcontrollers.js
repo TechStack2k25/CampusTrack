@@ -10,7 +10,8 @@ import { isvaliduser } from './authcontrollers.js';
 
 export const create_request = asynchandler(async (req, res, next) => {
   // extract data from req.body
-  const { requestType, course, college, dep_id, role, year } = req.body;
+  const { requestType, course, college, dep_id, role, year, degree, sem } =
+    req.body;
 
   //get the data of user from req.user
   const requser = req.user;
@@ -80,6 +81,8 @@ export const create_request = asynchandler(async (req, res, next) => {
         request_role: role,
         request_dep: reqdepartment._id,
         request_year: year,
+        request_degree: degree,
+        request_sem: sem,
       });
 
       if (existed_request) {
@@ -158,7 +161,8 @@ export const getall_request = asynchandler(async (req, res, next) => {
       request_college: reqcollege._id,
     })
       .populate('request_by')
-      .populate('request_dep');
+      .populate('request_dep')
+      .populate('request_degree');
 
     const hod_request = await Request.find({
       request_role: 'HOD',
@@ -300,6 +304,7 @@ export const updaterequest = asynchandler(async (req, res, next) => {
       reqcollege.users.push(require_request.request_by);
       requser.department = require_request.request_dep;
       requser.role = require_request.request_role;
+      requser.currentdegree = require_request.request_degree;
       requser.college = reqcollege._id;
       requser.year = require_request.request_year;
       requser.save({ validateBeforeSave: false });

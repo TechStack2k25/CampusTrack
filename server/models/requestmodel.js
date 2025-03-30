@@ -29,6 +29,10 @@ const requestSchema = mongoose.Schema({
     type: mongoose.Types.ObjectId,
     ref: 'User',
   },
+  request_degree: {
+    type: mongoose.Types.ObjectId,
+    ref: 'Degree',
+  },
   status: {
     type: String,
     enum: ['pending', 'approved', 'rejected'],
@@ -36,6 +40,9 @@ const requestSchema = mongoose.Schema({
   },
   request_file: {},
   request_year: {
+    type: Number,
+  },
+  request_sem: {
     type: Number,
   },
 });

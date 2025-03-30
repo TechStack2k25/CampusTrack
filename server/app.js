@@ -12,6 +12,7 @@ import requestroutes from './routers/requestroutes.js';
 import { restrict_to, protect } from './controllers/authcontrollers.js';
 import cookieParser from 'cookie-parser';
 import attendanceroutes from './routers/attendanceroutes.js';
+import degreeroutes from './routers/degreerouters.js';
 
 const app = express();
 
@@ -30,6 +31,7 @@ app.use(protect);
 app.use('/api/user', userroutes);
 //to accept and get all request
 app.use('/api/request', requestroutes);
+app.use('/api/degree', degreeroutes);
 //all event routes
 app.use('/api/event', eventroutes);
 //all task routes and only faculty can make change in task

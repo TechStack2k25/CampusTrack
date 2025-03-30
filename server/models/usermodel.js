@@ -49,16 +49,23 @@ const userSchema = new mongoose.Schema({
     type: mongoose.Types.ObjectId,
     Ref: 'College',
   },
-  currentdegree: String,
+  currentdegree: {
+    type: mongoose.Types.ObjectId,
+    ref: 'Degree',
+  },
   course: [
     {
       type: mongoose.Types.ObjectId,
       ref: 'Course',
     },
   ],
-  pastdegree: [String],
+  pastdegree: [
+    {
+      type: mongoose.Types.ObjectId,
+      ref: 'Degree',
+    },
+  ],
   pastcolleges: [{ type: mongoose.Schema.ObjectId, ref: 'College' }],
-  qualification: [String],
   pastcourse: [{ type: mongoose.Schema.ObjectId, ref: 'Course' }],
   role: {
     type: String,
