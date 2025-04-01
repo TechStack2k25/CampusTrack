@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { socketService } from './socketService';
 
 class AuthService {
   constructor() {
@@ -78,6 +79,7 @@ class AuthService {
 
       console.log(response);
       //may use response.status to verify success 201
+      if(response.status===200) socketService.disconnect();
       return response.status===200;
       //getting tokens with user in response.data.data
     } catch (error) {

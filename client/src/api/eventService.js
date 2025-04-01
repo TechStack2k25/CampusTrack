@@ -1,6 +1,7 @@
 import axios from "axios";
 import store from '../store/store.js';
 import { logout } from '../store/slices/userSlice.js';
+import { socketService } from "./socketService.js";
 
 class EventService {
     constructor() {
@@ -19,6 +20,7 @@ class EventService {
       (error) => {
         if (error.response && error.response.status === 401) {
           console.warn('Unauthorized! Logging out user...');
+          socketService.disconnect();
           store.dispatch(logout()); // Dispatch logout action
         }
         return Promise.reject(error); // Reject error for further handling

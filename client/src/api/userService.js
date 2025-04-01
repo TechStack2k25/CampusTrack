@@ -1,6 +1,7 @@
 import axios from 'axios';
 import store  from '../store/store.js';
 import { logout } from '../store/slices/userSlice.js';
+import { socketService } from './socketService.js';
 
 class UserService {
   constructor() {
@@ -19,6 +20,7 @@ class UserService {
       (error) => {
         if (error.response && error.response.status === 401) {
           console.warn('Unauthorized! Logging out user...');
+          socketService.disconnect();
           store.dispatch(logout()); // Dispatch logout action
         }
         return Promise.reject(error); // Reject error for further handling
@@ -74,6 +76,21 @@ class UserService {
       //current user data
     } catch (error) {
       console.error('Error userService: currentUser: ', error);
+      throw error;
+    }
+  }
+
+  //get current user populated
+  currentUserData=async ()=> {
+    try {
+      const response = await this.api.get('/mydata');
+
+      console.log(response);
+      
+      return response.data?.data?.user;
+      //current user data
+    } catch (error) {
+      console.error('Error userService: currentUserData: ', error);
       throw error;
     }
   }

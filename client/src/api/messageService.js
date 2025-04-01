@@ -3,10 +3,10 @@ import store from '../store/store.js';
 import { logout } from '../store/slices/userSlice.js';
 import { socketService } from './socketService.js';
 
-class AttendanceService {
+class MessageService {
   constructor() {
     this.api = axios.create({
-      baseURL: '/api/attendance', // Vite Proxy will handle this or will allow cors policies
+      baseURL: '/api/message', // Vite Proxy will handle this or will allow cors policies
       timeout: 5000,
       withCredentials: true, // Ensuring cookies are sent
       headers: {
@@ -29,40 +29,53 @@ class AttendanceService {
 }
 
   
-  // marking students attendance
-  markAttendance= async (data)=> {//data required: courseId, presentStudentIds
+  getAllSenders= async ()=> {
     try {
-      const response = await this.api.post(`/mark`,data);
+      const response = await this.api.get(`/dashboard_message`);
 
       console.log(response);
       
-      return response.data?.message;
-      //getting status with message
+      return response.data?.data?.allmessages;
+      //messages array
     } catch (error) {
-      console.error('Error AttendanceService: markAttendance: ', error);
+      console.error('Error messageService: getAllSenders: ', error);
+      throw error;
+    }
+  }
+  
+  getUserMessages= async (data)=> {//data required: _id
+    try {
+      const response = await this.api.get(`/getmessage/${data?._id}`);
+
+      console.log(response);
+      
+      return response.data?.data?.allmessages;
+      //messages array
+    } catch (error) {
+      console.error('Error messageService: getUserMessages: ', error);
       throw error;
     }
   }
 
   
   // all courses student
-  studentCoursesAttendance=async ()=> {//cookies required
+  sendMessage=async (data)=> {//_id, text
     try {
       
-      const response = await this.api.get(`/get_student`);
+      const response = await this.api.post(`/send/${data?._id}`,data);
 
       console.log(response);
       
-      return response.data?.data;
-      //getting all courses student attendance
+      return response.data?.data?.newmessage;
+      //new message
     } catch (error) {
-      console.error('Error AttendanceService: studentCoursesAttendance: ', error);
+      console.error('Error messageService: sendMessage: ', error);
       throw error;
     }
   }
   
 }
 
-export const attendanceService = new AttendanceService();
+export const messageService = new MessageService();
 
-// export default AttendanceService;
+// export default MessageService;

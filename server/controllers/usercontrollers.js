@@ -105,6 +105,20 @@ export const getprofile = asynchandler(async (req, res, next) => {
   });
 });
 
+export const getUserData = asynchandler(async (req, res, next) => {
+  const requser = await User.findById(req.user._id)
+  .populate('college department course');
+  console.log(requser);
+  
+  if(!requser) return next(new ApiError('User not found', 404));
+  res.status(201).json({
+    message: 'Get User Data sucessfully',
+    data: {
+      user: requser,
+    },
+  });
+});
+
 export const get_dashboard = asynchandler(async (req, res, next) => {
   const user_id = req.user._id;
 
@@ -150,7 +164,7 @@ export const get_dashboard = asynchandler(async (req, res, next) => {
   });
 
   const total_department = await Department.countDocuments({
-    college: reqcollege._id,
+    college: reqcollege?._id,
   });
   const total_faculty_college = await User.countDocuments({
     role: 'faculty',
