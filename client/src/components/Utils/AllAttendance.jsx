@@ -17,6 +17,8 @@ const AllAttendance = () => {
         fetchData();
     }, []);
 
+    if(courses.length===0) return;
+
     return (
         <div className="py-6 px-1 rounded-lg shadow mb-4 border border-gray-200 dark:border-gray-700 dark:bg-gradient-to-br dark:from-gray-900 dark:to-gray-800">
             <h2 className="text-2xl font-bold mb-6 text-center text-blue-700">Academic Records</h2>
@@ -45,9 +47,9 @@ const AllAttendance = () => {
                                     ></div>
                                 </div>
 
-                                <p className={`text-sm font-medium mt-2 ${attendanceRate > 75 ? "text-green-600" : "text-red-500"}`}>
+                                {course?.total_classes>0 && <p className={`text-sm font-medium mt-2 ${attendanceRate > 75 ? "text-green-600" : "text-red-500"}`}>
                                     {attendanceRate > 75 ? "Good Attendance!" : "!Needs Improvement"}
-                                </p>
+                                </p>}
                             </div>
                         );
                     })}

@@ -93,6 +93,12 @@ const Login = () => {
                 </p>
               )}
             </div>
+            {/* conditional loading and google Oauth */}
+            {error?.length>0 && (
+                <p className="mt-1 text-sm text-red-500">
+                  {error}
+                </p>
+              )}
             <div className="flex items-center justify-end mb-4">
               <Link to={'/forgot-password'} className="text-sm text-indigo-600 hover:underline">
                 Forgot password?
@@ -104,12 +110,6 @@ const Login = () => {
             >
               Login
             </button>
-            {/* conditional loading and google Oauth */}
-            {error?.length>0 && (
-                <p className="mt-1 text-sm text-red-500">
-                  {error}
-                </p>
-              )}
           </form>
           <p className="mt-6 text-center text-sm dark:text-gray-500 text-gray-600">
             Don't have an account?{' '}

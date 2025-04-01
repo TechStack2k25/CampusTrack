@@ -10,6 +10,7 @@ import Pagination from "./Pagination";
 import DataList from "./DataList";
 import AllAttendance from "./AllAttendance";
 import AddAssignment from "./AddAssignments";
+import ConfirmModal from "./ConfirmModal";
 
 export {
     CourseCard,
@@ -24,5 +25,5 @@ export {
     Pagination,
     AllAttendance,
     AddAssignment,
-    
+    ConfirmModal,
 }

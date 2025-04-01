@@ -24,7 +24,7 @@ const Scholars = () => {
 
   // Defining Filters
   const ScholarsFilters = [
-    { key: "college", label: "College", value: "NIT_UP", enable: false },
+    { key: "college", label: "College", value: college?.id || "NIT_UP", enable: false },
     { key: "department", label: "Department", placeholder: "Search by department", options: departments, enable: true },
     { key: "course", label: "Course", placeholder: "Search by course", parent: "department", options: allCourses, enable: true },
   ];
