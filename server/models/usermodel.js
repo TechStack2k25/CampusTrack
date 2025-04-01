@@ -82,6 +82,10 @@ const userSchema = new mongoose.Schema({
   passwordchangedat: Date,
   passwordResetToken: String,
   passwordResetExpires: Date,
+  active: {
+    type: Boolean,
+    default: false,
+  },
 });
 
 //bcrypt hash the password not encrypt

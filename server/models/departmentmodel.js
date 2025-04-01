@@ -40,15 +40,20 @@ deparmentSchema.pre(
   asynchandler(async function (next) {
     //delete all the course of department
     const courseIds = this.courses;
+    const userId = this.user;
 
-    //store the total number of course
-    const num_course = courseIds.length;
-
+    await User.updateMany(
+      { _id: { $in: userId } },
+      {
+        department: null,
+        course: [],
+      }
+    );
     //filter the courses and delete
     const result = await Course.deleteMany({ _id: { $in: courseIds } });
 
     //check all courses delete successfully
-    if (result.deletedCount !== num_course) {
+    if (result.acknowledged) {
       return next(new ApiError('error in deleted course of department ', 422));
     }
 
@@ -61,15 +66,21 @@ deparmentSchema.pre(
   asynchandler(async function (next) {
     //delete all the course of department
     const courseIds = this.courses;
-
-    //store the total number of course
-    const num_course = courseIds.length;
-
     //filter the courses and delete
     const result = await Course.deleteMany({ _id: { $in: courseIds } });
 
+    const userId = this.user;
+
+    await User.updateMany(
+      { _id: { $in: userId } },
+      {
+        department: null,
+        course: [],
+      }
+    );
+
     //check all courses delete successfully
-    if (result.deletedCount !== num_course) {
+    if (result.acknowledged) {
       return next(new ApiError('error in deleted course of department ', 422));
     }
 

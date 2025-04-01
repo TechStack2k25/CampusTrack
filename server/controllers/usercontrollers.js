@@ -7,6 +7,7 @@ import Course from '../models/coursemodel.js';
 import Request from '../models/requestmodel.js';
 import Department from '../models/departmentmodel.js';
 import College from '../models/collegemodel.js';
+import Message from '../models/messagemodel.js';
 
 export const getall = asynchandler(async (req, res, next) => {
   const queryobj = req.query;
@@ -147,6 +148,9 @@ export const get_dashboard = asynchandler(async (req, res, next) => {
     college: reqcollege?._id || ' ',
   });
 
+  const total_department = await Department.countDocuments({
+    college: reqcollege._id,
+  });
   const total_faculty_college = await User.countDocuments({
     role: 'faculty',
     college: reqcollege?._id || ' ',
@@ -159,7 +163,7 @@ export const get_dashboard = asynchandler(async (req, res, next) => {
     total_course_dep,
     total_student_dep,
     total_faculty_dep,
-    //total department
+    total_department,
     //task of today
     total_student_college,
     total_faculty_college,
@@ -186,7 +190,7 @@ const updatetheuser = asynchandler(async (updated_user, sem, year) => {
         $pull: { users: updated_user._id },
       });
 
-      await College.findByIdAndUpdate(dep_id, {
+      await Department.findByIdAndUpdate(dep_id, {
         $pull: { user: updated_user._id },
       });
     }
@@ -267,13 +271,16 @@ export const update_sem = asynchandler(async (req, res, next) => {
       $pull: { users: updated_users._id },
     });
 
-    await College.findByIdAndUpdate(dep_id, {
+    await Department.findByIdAndUpdate(dep_id, {
       $pull: { user: updated_users._id },
     });
 
     await Course.updateMany(
       { _id: { $in: allcourse } },
-      { $pull: { users: student_id } }
+      {
+        $pull: { users: student_id },
+        $unset: { [`attendance.${student_id}`]: '' },
+      }
     );
   } else {
     updated_users = await User.find({

@@ -19,12 +19,15 @@ const extractPublicId = (fileUrl) => {
   return fileName;
 };
 
-export const uploadOnCloudinary = async (localFilePath) => {
+export const uploadOnCloudinary = async (
+  localFilePath,
+  resourceType = 'auto'
+) => {
   try {
     if (!localFilePath) return null;
 
     const uploadResult = await cloudinary.uploader.upload(localFilePath, {
-      resource_type: 'raw',
+      resource_type: resourceType,
     });
 
     if (uploadResult?.secure_url) {
@@ -39,12 +42,12 @@ export const uploadOnCloudinary = async (localFilePath) => {
   }
 };
 
-export const deleteOnCloudinary = async (fileUrl) => {
+export const deleteOnCloudinary = async (fileUrl, resourceType = 'auto') => {
   try {
     if (!fileUrl) return null;
     const public_id = extractPublicId(fileUrl);
     const deleteResult = await cloudinary.uploader.destroy(fileUrl, {
-      resource_type: 'raw',
+      resource_type: resourceType,
       invalidate: true,
     });
     return deleteResult;

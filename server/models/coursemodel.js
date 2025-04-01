@@ -77,14 +77,11 @@ courseSchema.pre(
     //delete all task of course
     const taskIds = this.task || [];
 
-    //store the number of task
-    const total_task = taskIds.length;
-
     //here filter the  task and delete
     const result = await Task.deleteMany({ _id: { $in: taskIds } });
 
     //check the all task all deleted properly
-    if (total_task !== result.deletedCount) {
+    if (result.acknowledged) {
       return next(new ApiError('Error in deleteding the task', 422));
     }
     next();

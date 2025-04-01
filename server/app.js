@@ -13,8 +13,9 @@ import { restrict_to, protect } from './controllers/authcontrollers.js';
 import cookieParser from 'cookie-parser';
 import attendanceroutes from './routers/attendanceroutes.js';
 import degreeroutes from './routers/degreerouters.js';
-
-const app = express();
+import { app } from './utils/socket.js';
+import messageroutes from './routers/messageroutes.js';
+import storeroutes from './routers/storeroutes.js';
 
 // extract json payload from request body and make available in req.body;
 app.use(express.json());
@@ -31,6 +32,8 @@ app.use(protect);
 app.use('/api/user', userroutes);
 //to accept and get all request
 app.use('/api/request', requestroutes);
+app.use('/api/message', messageroutes);
+app.use('/api/store', storeroutes);
 app.use('/api/degree', degreeroutes);
 //all event routes
 app.use('/api/event', eventroutes);

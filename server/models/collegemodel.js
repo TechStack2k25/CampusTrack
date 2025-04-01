@@ -59,7 +59,7 @@ collegeSchema.pre(
     const result = await Department.deleteMany({ _id: { $in: depIds } });
 
     //check all courses delete successfully
-    if (result.deletedCount !== 0) {
+    if (result.acknowledged) {
       return next(new ApiError('error in deleted course of department ', 422));
     }
   })

@@ -2,7 +2,7 @@ import app from './app.js';
 // to use the environment variable
 import dotenv from 'dotenv';
 dotenv.config({ path: './variable.env' });
-
+import { server } from './utils/socket.js';
 import mongoose from 'mongoose';
 
 //register the route
@@ -12,7 +12,7 @@ app.get('/', (req, res) => {
 
 //server start listening
 const port = process.env.PORT;
-app.listen(port, () => {
+server.listen(port, () => {
   console.log(`Server is created succesfully and run on the port ${port}`);
 });
 
