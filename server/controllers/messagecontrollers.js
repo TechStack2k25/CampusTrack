@@ -4,14 +4,14 @@ import Department from '../models/departmentmodel.js';
 import Message from '../models/messagemodel.js';
 import ApiError from '../utils/apierror.js';
 import asynchandler from '../utils/asynchandler.js';
-import { getroomSocketId } from '../utils/socket.js';
+import { getroomSocketId, io } from '../utils/socket.js';
 
 export const getmessages = asynchandler(async (req, res, next) => {
   const id2 = req.params.id;
 
   const allmessages = await Message.find({
     groupId: id2,
-  });
+  }).sort({'createdAt':-1});//DESC
 
   const update_messages = await Message.updateMany(
     { groupId: id2 },
@@ -29,12 +29,12 @@ export const getmessages = asynchandler(async (req, res, next) => {
 
 export const dashboardmessages = asynchandler(async (req, res, next) => {
   const reqcourses = await Course.find({ teacher: req.user._id });
-  const allcourse = reqcourses.length > 0 ? reqcourses : req.user.course;
+  const allcourse = reqcourses.length > 0 ? reqcourses.map((course)=>course?._id) : req.user.course;
   const allmessages = await Message.aggregate([
     {
       $match: {
         groupId: {
-          $in: [req.user.college._id, req.user.department._id, ...allcourse],
+          $in: [req.user.college, req.user.department, ...allcourse],
         },
       },
     },

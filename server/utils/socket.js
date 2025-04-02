@@ -5,11 +5,21 @@ import { Server } from 'socket.io';
 const app = express();
 
 const server = http.createServer(app);
-const io = new Server(server);
+const io = new Server(server, {
+  cors: {
+    origin: 'http://localhost:5173',  // Vite dev server URL
+    methods: ['GET', 'POST'],
+    allowedHeaders: ['Content-Type'],
+    credentials: true,
+  },
+});
+
 
 const groupRoomMap = {};
 
 io.on('connection', (socket) => {
+  console.log('connected');
+  
   socket.on('joinRooms', (rooms) => {
     rooms.forEach((groupId) => {
       let roomId;

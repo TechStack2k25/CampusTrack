@@ -42,26 +42,26 @@ const userSchema = new mongoose.Schema({
     type: Number,
   },
   department: {
-    type: mongoose.Types.ObjectId,
+    type: mongoose.Schema.Types.ObjectId,
     ref: 'Department',
   },
   college: {
-    type: mongoose.Types.ObjectId,
+    type: mongoose.Schema.Types.ObjectId,
     ref: 'College',
   },
   currentdegree: {
-    type: mongoose.Types.ObjectId,
+    type: mongoose.Schema.Types.ObjectId,
     ref: 'Degree',
   },
   course: [
     {
-      type: mongoose.Types.ObjectId,
+      type: mongoose.Schema.Types.ObjectId,
       ref: 'Course',
     },
   ],
   pastdegree: [
     {
-      type: mongoose.Types.ObjectId,
+      type: mongoose.Schema.Types.ObjectId,
       ref: 'Degree',
     },
   ],
@@ -74,7 +74,7 @@ const userSchema = new mongoose.Schema({
   },
   events: [
     {
-      type: mongoose.Types.ObjectId,
+      type: mongoose.Schema.Types.ObjectId,
       ref: 'Task',
     },
   ],

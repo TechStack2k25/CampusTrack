@@ -23,7 +23,7 @@ const taskSchema = new mongoose.Schema(
       default: {},
     },
     course: {
-      type: mongoose.Types.ObjectId,
+      type: mongoose.Schema.Types.ObjectId,
       ref: 'Course',
     },
   },

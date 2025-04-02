@@ -4,6 +4,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { logout, setError, clearError } from '../store/slices/userSlice';
 import { authService } from '../api/authService';
 import { Link } from 'react-router-dom';
+import { Notifications } from './userComponents';
 
 
 const UserMenu = () => {
@@ -49,6 +50,8 @@ const UserMenu = () => {
 
   return (
     <div className="relative" ref={menuRef}>
+      <div className="flex items-center space-x-2 sm:space-x-4">
+      <Notifications />
       {/* User Icon */}
       <button
         onClick={toggleMenu}
@@ -58,6 +61,7 @@ const UserMenu = () => {
           {user?.name?.toUpperCase()[0] || user?.email.toUpperCase()[0]}
         </div>
       </button>
+      </div>
 
       {/* Dropdown Menu */}
       {isOpen && (

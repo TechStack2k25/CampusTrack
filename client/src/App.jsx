@@ -5,7 +5,8 @@ import Footer from "./components/Footer";
 import { toast, ToastContainer } from "react-toastify";
 import { useSelector, useDispatch } from "react-redux";
 import { clearError, clearSuccess, loginSuccess } from "./store/slices/userSlice";
-import { userService } from './api/userService.js'
+import { userService } from './api/userService.js';
+import { socketService } from "./api/socketService.js";
 
 function App() {
   const dispatch = useDispatch();
@@ -14,7 +15,7 @@ function App() {
   const loading  = useSelector((state) => state.user.loading );
   const isDarkMode = window.matchMedia("(prefers-color-scheme: dark)").matches;
 
-  const userStatus=useSelector((state)=>state.user.status);
+  const { status:userStatus, user }=useSelector((state)=>state.user);
 
   const currentUser=async()=>{
     const res=await userService.currentUser();
@@ -24,7 +25,19 @@ function App() {
   }
 
   useEffect(()=>{
-    if(userStatus) currentUser();
+    if(userStatus) {
+      currentUser();
+      if(user?.role!=='User'){
+        socketService.connect();
+        const rooms=[...user?.course];
+        rooms.push(user?.college);
+        rooms.push(user?.department);
+        socketService.joinRooms(rooms);
+      }
+    }
+    return () => {
+      socketService.disconnect();
+    };
   },[]);
   
   

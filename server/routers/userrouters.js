@@ -9,6 +9,7 @@ import {
   update_sem,
   verifyuser,
   sendEmail,
+  getUserData,
 } from '../controllers/usercontrollers.js';
 import {
   activeuser,
@@ -28,6 +29,7 @@ router.delete('/del', activeuser, deluser);
 //update
 router.patch('/update', activeuser, updateuser);
 
+router.get('/mydata', getUserData);
 router.get('/dashboard', get_dashboard);
 
 router.post('/update_sem', restrict_to('Admin'), update_sem);
