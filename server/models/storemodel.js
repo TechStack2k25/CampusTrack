@@ -1,4 +1,4 @@
-import mongoose from 'mongoose';
+import mongoose, { Schema } from 'mongoose';
 const courseStoreSchema = new Schema({
   course: {
     type: mongoose.Schema.Types.ObjectId,

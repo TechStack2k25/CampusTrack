@@ -95,7 +95,9 @@ export const login = asynchandler(async (req, res, next) => {
   }
 
   //find the user who are requested
-  const requser = await User.findOne({ email }).select('+password');
+  const requser = await User.findOne({ email })
+    .select('+password')
+    .populate('college');
 
   //check the user is found or not
   if (!requser) {
@@ -231,7 +233,7 @@ export const forgotpassword = asynchandler(async (req, res, next) => {
   await requser.save({ validateBeforeSave: false });
 
   try {
-    const resetURL = `${process.env.FRONTEND_URL}/${resetToken}`;
+    const resetURL = `${process.env.FRONTEND_URL}/resetpassword/${resetToken}`;
     await new Email(requser, resetURL).sendPasswordReset();
 
     res.status(200).json({
@@ -348,3 +350,10 @@ export const logout = asynchandler(async (req, res, next) => {
   res.clearCookie('acesstoken').clearCookie('refreshtoken');
   res.status(200).json({ status: 'success' });
 });
+
+export const activeuser = (req, res, next) => {
+  if (req.user.acive === false) {
+    return next(new ApiError('User Email Not Verified', 401));
+  }
+  next();
+};

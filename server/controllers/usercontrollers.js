@@ -9,6 +9,7 @@ import Department from '../models/departmentmodel.js';
 import College from '../models/collegemodel.js';
 import Message from '../models/messagemodel.js';
 import Task from '../models/taskmodel.js';
+import Email from '../utils/emailhandler.js';
 
 export const getall = asynchandler(async (req, res, next) => {
   const queryobj = req.query;
@@ -32,7 +33,11 @@ export const getall = asynchandler(async (req, res, next) => {
     });
   } else {
     const requiremodel = new Apiquery(User, queryobj);
-    requsers = await requiremodel.filter().paginate().sort().models;
+    requsers = await requiremodel
+      .filter()
+      .paginate()
+      .sort()
+      .models.populate('department');
   }
   res.status(201).json({
     message: 'User fetch sucessfully',
@@ -302,5 +307,58 @@ export const update_sem = asynchandler(async (req, res, next) => {
       updated_colleges,
       updated_course,
     },
+  });
+});
+
+export const sendEmail = asynchandler(async (req, res, next) => {
+  const id = req.user._id;
+  const requser = await User.findById(id);
+  const emailToken = requser.createEmailtoken();
+
+  try {
+    const emailURL = `${process.env.FRONTEND_URL}/verifyemail/${emailToken}`;
+    await new Email(requser, emailURL).sendEmailToken();
+    res.status(200).json({
+      status: 'success',
+      message: 'Token sent to email!',
+    });
+  } catch (error) {
+    requser.emailToken = undefined;
+    requser.emailExpires = undefined;
+    await requser.save({ validateBeforeSave: false });
+    return next(
+      new ApiError('There was an error sending the email. Try again later!'),
+      500
+    );
+  }
+});
+
+export const verifyuser = asynchandler(async (req, res, next) => {
+  const { emailToken } = req.body;
+
+  if (!emailToken) return next(new ApiError('Email Token Is required', 401));
+
+  const hashedToken = crypto
+    .createHash('sha256')
+    .update(emailToken)
+    .digest('hex');
+
+  const requser = await User.findOne({
+    emailToken: hashedToken,
+    emailExpires: { $gte: Date.now() },
+  });
+
+  if (!requser) {
+    return next(new ApiError('Token is invalid or expired', 401));
+  }
+
+  requser.active = true;
+
+  requser.emailToken = undefined;
+  requser.emailExpires = undefined;
+  await requser.save({ validateBeforeSave: false });
+
+  res.status(201).json({
+    message: 'Email Verify successfully',
   });
 });

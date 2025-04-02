@@ -33,6 +33,10 @@ class Apiquery {
     }
     return this;
   }
+
+  // populate(){
+
+  // }
 }
 
 export default Apiquery;

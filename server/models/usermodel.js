@@ -43,11 +43,11 @@ const userSchema = new mongoose.Schema({
   },
   department: {
     type: mongoose.Types.ObjectId,
-    Ref: 'Department',
+    ref: 'Department',
   },
   college: {
     type: mongoose.Types.ObjectId,
-    Ref: 'College',
+    ref: 'College',
   },
   currentdegree: {
     type: mongoose.Types.ObjectId,
@@ -82,6 +82,8 @@ const userSchema = new mongoose.Schema({
   passwordchangedat: Date,
   passwordResetToken: String,
   passwordResetExpires: Date,
+  emailToken: String,
+  emailExpires: Date,
   active: {
     type: Boolean,
     default: false,
@@ -95,6 +97,7 @@ userSchema.pre('save', async function (next) {
   this.password = await bcrypt.hash(this.password, 12);
   this.confirmpassword = undefined;
   this.passwordchangedat = Date.now();
+
   next();
 });
 
@@ -124,6 +127,16 @@ userSchema.methods.createResettoken = function () {
   return resetToken;
 };
 
+userSchema.methods.createEmailtoken = function () {
+  const emailToken = crypto.randomBytes(32).toString('hex');
+  this.emailToken = crypto
+    .createHash('sha256')
+    .update(emailToken)
+    .digest('hex');
+  this.emailExpires = Date.now() + 10 * 60 * 1000;
+
+  return emailToken;
+};
 const User = mongoose.model('User', userSchema);
 
 export default User;

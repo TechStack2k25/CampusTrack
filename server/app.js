@@ -9,7 +9,11 @@ import taskroutes from './routers/taskroutes.js';
 import eventroutes from './routers/eventrouter.js';
 import userroutes from './routers/userrouters.js';
 import requestroutes from './routers/requestroutes.js';
-import { restrict_to, protect } from './controllers/authcontrollers.js';
+import {
+  restrict_to,
+  protect,
+  activeuser,
+} from './controllers/authcontrollers.js';
 import cookieParser from 'cookie-parser';
 import attendanceroutes from './routers/attendanceroutes.js';
 import degreeroutes from './routers/degreerouters.js';
@@ -28,17 +32,21 @@ app.use(morgan('dev'));
 app.use('/api/auth', authroutes);
 //to protect all routes login to acess any task
 app.use(protect);
+
+//all task routes
+app.use('/api/task', taskroutes);
 //all user routes
 app.use('/api/user', userroutes);
 //to accept and get all request
+app.use(activeuser);
+
 app.use('/api/request', requestroutes);
 app.use('/api/message', messageroutes);
 app.use('/api/store', storeroutes);
 app.use('/api/degree', degreeroutes);
 //all event routes
 app.use('/api/event', eventroutes);
-//all task routes and only faculty can make change in task
-app.use('/api/task', taskroutes);
+
 //mark attendace of student
 app.use('/api/attendance', attendanceroutes);
 //all course routes and only hod can make change in courses

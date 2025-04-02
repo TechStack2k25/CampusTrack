@@ -1,5 +1,8 @@
+import College from '../models/collegemodel.js';
 import Course from '../models/coursemodel.js';
+import Department from '../models/departmentmodel.js';
 import Message from '../models/messagemodel.js';
+import ApiError from '../utils/apierror.js';
 import asynchandler from '../utils/asynchandler.js';
 import { getroomSocketId } from '../utils/socket.js';
 
@@ -61,8 +64,28 @@ export const dashboardmessages = asynchandler(async (req, res, next) => {
 });
 
 export const sendmessage = asynchandler(async (req, res, next) => {
-  const { text } = req.body;
+  const { text, state } = req.body;
   const id = req.params.id;
+
+  const reqcollege = await College.findById(id);
+  if (reqcollege) {
+    if (req.user.role !== 'Admin') {
+      return next(new ApiError('You Cannot Send the messages', 404));
+    }
+  }
+
+  const reqdepartment = await Department.findById(id);
+  if (reqdepartment) {
+    if (req.user.role !== 'HOD') {
+      return next(new ApiError('You Cannot Send the messages', 404));
+    }
+  }
+
+  if (state === false) {
+    if (req.user.role !== 'faculty') {
+      return next(new ApiError('You Cannot Send the messages', 404));
+    }
+  }
 
   const newmessage = await Message.create({
     senderId: req.user._id,
