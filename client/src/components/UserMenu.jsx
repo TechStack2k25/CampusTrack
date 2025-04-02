@@ -1,10 +1,12 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
-import { logout, setError, clearError } from '../store/slices/userSlice';
+import { logout, setError, clearError, setSuccess } from '../store/slices/userSlice';
 import { authService } from '../api/authService';
 import { Link } from 'react-router-dom';
 import { Notifications } from './userComponents';
+import { FaSpinner } from 'react-icons/fa';
+import { userService } from '../api/userService';
 
 
 const UserMenu = () => {
@@ -13,6 +15,7 @@ const UserMenu = () => {
   const navigate=useNavigate();
   const {user}=useSelector((state)=>state.user);
   const dispatch=useDispatch();
+  const [isVerifying,setIsVerifying]=useState(false);
 
 
 
@@ -41,6 +44,21 @@ const UserMenu = () => {
 
   }
 
+  const sendVerificationMail=async()=>{
+    try {
+      setIsVerifying(true);      
+      const res=await userService.callToVerify();
+      if(res){
+        dispatch(setSuccess('Verification mail sent to your email!'));
+      }
+    } catch (error) {
+      dispatch(setError(error?.response?.data?.message))
+    }
+    finally{
+      setIsVerifying(false);
+    }
+  }
+
   useEffect(() => {
     document.addEventListener('mousedown', handleClickOutside);
     return () => {
@@ -51,7 +69,7 @@ const UserMenu = () => {
   return (
     <div className="relative" ref={menuRef}>
       <div className="flex items-center space-x-2 sm:space-x-4">
-      <Notifications />
+      {user?.role!=='User' && <Notifications />}
       {/* User Icon */}
       <button
         onClick={toggleMenu}
@@ -89,7 +107,17 @@ const UserMenu = () => {
                 Profile
               </NavLink>
             </li>
-            {!["Admin","HOD"].includes(user?.role) && <li>
+            {!user?.active && <li
+                  className={
+                      isVerifying
+                      ? 'bg-blue-400 dark:bg-blue-800 text-white  rounded hover:bg-white hover:text-blue-500 dark:hover:text-blue-800 block w-full text-left px-4 py-2 text-bold'
+                      : 'block w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-900'
+                  }
+                  onClick={!isVerifying && sendVerificationMail}
+                >
+                {isVerifying ? <FaSpinner className="animate-spin w-6 h-6 text-gray-600 dark:text-white text-left" /> :"Verify Email"}
+              </li>}
+            {!["Admin","HOD"].includes(user?.role) && user?.active && <li>
             <NavLink 
                 to="/request" 
                   className={({ isActive }) => 

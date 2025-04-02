@@ -20,7 +20,7 @@ import {
 const router = express.Router();
 router.get('/me', getprofile);
 router.get('/sendmail', sendEmail);
-router.get('/verifyemail', verifyuser);
+router.post('/verifyemail', verifyuser);
 router.post('/updatepassword', activeuser, updatepassword);
 //get all user
 router.get('/all', activeuser, getall);

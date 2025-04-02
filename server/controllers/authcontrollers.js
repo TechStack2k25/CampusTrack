@@ -96,8 +96,7 @@ export const login = asynchandler(async (req, res, next) => {
 
   //find the user who are requested
   const requser = await User.findOne({ email })
-    .select('+password')
-    .populate('college');
+    .select('+password');
 
   //check the user is found or not
   if (!requser) {

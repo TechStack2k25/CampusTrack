@@ -19,6 +19,7 @@ export const getall = asynchandler(async (req, res, next) => {
     message: 'All Resource fetched',
     data: {
       allresources,
+      course:reqcourse,
     },
   });
 });

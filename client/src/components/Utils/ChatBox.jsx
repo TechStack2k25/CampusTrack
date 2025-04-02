@@ -6,7 +6,7 @@ import { useSelector } from 'react-redux';
 import { dateFormat } from '../../utils/dateFormat';
 import { socketService } from '../../api/socketService';
 
-export default function ChatBox({ user, setUser }) {
+export default function ChatBox({ user, setUser, sendEnable=false }) {
   const messageRef = useRef(null);
   const [messages, setMessages] = useState([]);
   const me = useSelector((state) => state.user.user._id);
@@ -60,7 +60,7 @@ export default function ChatBox({ user, setUser }) {
     fetchMessages();
     socketService.onMessageReceived(handleNewMessage);
     return () => {
-      socketService.socket.off('newMessage', handleNewMessage);
+      if(socketService?.socket) socketService.socket.off('newMessage', handleNewMessage);
     };
   }, []);
   return (
@@ -80,13 +80,13 @@ export default function ChatBox({ user, setUser }) {
             {messages.map((message, index) => (
               <div
                 key={index}
-                className={`flex ${message.senderId === me ? 'justify-end' : 'justify-start'} mb-2 relative`}
+                className={`flex ${message.senderId === me ? 'justify-end' : 'justify-start'} mb-2`}
               >
                 <div
-                  className={`max-w-xs p-2 rounded-lg text-white ${message.senderId === me ? 'bg-blue-500' : 'bg-gray-500'}`}
+                  className={` flex flex-col max-w-xs p-2 rounded-lg text-white ${message.senderId === me ? 'bg-blue-500' : 'bg-gray-500'}`}
                 >
                   <p>{message.text}</p>
-                  <p className={`absolute -bottom-4 ${message.senderId !== me ?"-left-2":"-right-2"} text-[10px] text-gray-300 mt-1 text-right`}>
+                  <p className={`${message.senderId !== me ?"self-start":"self-end"} text-[10px] text-gray-300 mt-1`}>
                     {dateFormat(message?.createdAt)}
                   </p>
                 </div>
@@ -96,7 +96,7 @@ export default function ChatBox({ user, setUser }) {
         }
       </div>
 
-      <div className="border-t p-2 flex items-center">
+      {sendEnable && <div className="border-t p-2 flex items-center">
         <input
           type="text"
           placeholder="Type a message..."
@@ -110,7 +110,7 @@ export default function ChatBox({ user, setUser }) {
         >
           {isSending ? <FaSpinner className="animate-spin w-6 h-6 text-gray-600 dark:text-white" /> : <FiSend className="w-6 h-6 text-gray-600 dark:text-white" />}
         </button>
-      </div>
+      </div>}
     </div>
   );
 }

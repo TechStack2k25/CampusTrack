@@ -123,6 +123,32 @@ class UserService {
       throw error;
     }
   }
+  
+  callToVerify=async ()=> {
+    try {
+      const response = await this.api.get('/sendmail');
+
+      console.log(response);
+      
+      return response.status===200;
+    } catch (error) {
+      console.error('Error userService: callToVerify: ', error);
+      throw error;
+    }
+  }
+
+  verifyUser=async (data)=> {// emailToken
+    try {
+      const response = await this.api.post('/verifyemail',data);
+
+      console.log(response);
+      
+      return response.status===201;
+    } catch (error) {
+      console.error('Error userService: verifyUser: ', error);
+      throw error;
+    }
+  }
 }
 
 export const userService = new UserService();
