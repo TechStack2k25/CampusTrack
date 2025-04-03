@@ -7,7 +7,6 @@ import {
   getprofile,
   get_dashboard,
   update_sem,
-  verifyuser,
   sendEmail,
   getUserData,
 } from '../controllers/usercontrollers.js';
@@ -20,7 +19,7 @@ import {
 const router = express.Router();
 router.get('/me', getprofile);
 router.get('/sendmail', sendEmail);
-router.get('/verifyemail', verifyuser);
+
 router.post('/updatepassword', activeuser, updatepassword);
 //get all user
 router.get('/all', activeuser, getall);
