@@ -69,7 +69,7 @@ const userSchema = new mongoose.Schema({
   pastcourse: [{ type: mongoose.Schema.ObjectId, ref: 'Course' }],
   role: {
     type: String,
-    enum: ['User', 'Student', 'faculty', 'HOD', 'Admin'],
+    enum: ['User', 'Student', 'faculty', 'HOD', 'Admin', 'Owner'],
     default: 'User',
   },
   events: [
@@ -133,7 +133,7 @@ userSchema.methods.createEmailtoken = function () {
     .createHash('sha256')
     .update(emailToken)
     .digest('hex');
-  this.emailExpires = Date.now() + 10 * 60 * 1000;
+  this.emailExpires = Date.now() + 10 * 6000 * 1000;
 
   return emailToken;
 };

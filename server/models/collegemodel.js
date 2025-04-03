@@ -1,8 +1,7 @@
 import asynchandler from '../utils/asynchandler.js';
 import mongoose from 'mongoose';
 import Department from './departmentmodel.js';
-import Course from './coursemodel.js';
-
+import * as crypto from 'crypto';
 const collegeSchema = mongoose.Schema({
   name: {
     type: String,
@@ -13,7 +12,6 @@ const collegeSchema = mongoose.Schema({
     required: true,
     unique: true,
   },
-  degree: [String],
   department: [
     {
       type: mongoose.Schema.Types.ObjectId,
@@ -30,6 +28,8 @@ const collegeSchema = mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
   },
+  deletecollegetoken: String,
+  deleteTokenExpires: Date,
 });
 
 collegeSchema.pre(
@@ -65,6 +65,18 @@ collegeSchema.pre(
   })
 );
 
+collegeSchema.methods.createdeletetoken = function () {
+  const deleteToken = crypto.randomBytes(32).toString('hex');
+
+  this.deletecollegetoken = crypto
+    .createHash('sha256')
+    .update(deleteToken)
+    .digest('hex');
+
+  this.deleteTokenExpires = Date.now() + 10 * 60 * 1000;
+
+  return deleteToken;
+};
 const College = mongoose.model('College', collegeSchema);
 
 export default College;

@@ -11,7 +11,7 @@ export const getmessages = asynchandler(async (req, res, next) => {
 
   const allmessages = await Message.find({
     groupId: id2,
-  }).sort({'createdAt':-1});//DESC
+  }).sort({ createdAt: -1 }); //DESC
 
   const update_messages = await Message.updateMany(
     { groupId: id2 },
@@ -29,7 +29,10 @@ export const getmessages = asynchandler(async (req, res, next) => {
 
 export const dashboardmessages = asynchandler(async (req, res, next) => {
   const reqcourses = await Course.find({ teacher: req.user._id });
-  const allcourse = reqcourses.length > 0 ? reqcourses.map((course)=>course?._id) : req.user.course;
+  const allcourse =
+    reqcourses.length > 0
+      ? reqcourses.map((course) => course?._id)
+      : req.user.course;
   const allmessages = await Message.aggregate([
     {
       $match: {
@@ -48,7 +51,7 @@ export const dashboardmessages = asynchandler(async (req, res, next) => {
         lastMessageTime: { $first: '$createdAt' },
         unseen: {
           $sum: {
-            $cond: [{ $not: { $in: [req.user._id, '$seen'] } }, 1, 0],
+            $cond: [{ $not: [{ $in: [req.user._id, '$seenBy'] }] }, 1, 0],
           },
         },
       },
@@ -64,25 +67,28 @@ export const dashboardmessages = asynchandler(async (req, res, next) => {
 });
 
 export const sendmessage = asynchandler(async (req, res, next) => {
-  const { text, state } = req.body;
+  const { text } = req.body;
   const id = req.params.id;
-
-  const reqcollege = await College.findById(id);
-  if (reqcollege) {
-    if (req.user.role !== 'Admin') {
+  if (req.user.role === 'Student') {
+    return next(new ApiError('You Cannot Send the messages', 404));
+  }
+  if (req.user.role !== 'Admin') {
+    const reqcollege = await College.findById(id);
+    if (reqcollege) {
       return next(new ApiError('You Cannot Send the messages', 404));
     }
   }
 
-  const reqdepartment = await Department.findById(id);
-  if (reqdepartment) {
-    if (req.user.role !== 'HOD') {
+  if (req.user.role !== 'HOD') {
+    const reqdepartment = await Department.findById(id);
+    if (reqdepartment) {
       return next(new ApiError('You Cannot Send the messages', 404));
     }
   }
 
-  if (state === false) {
-    if (req.user.role !== 'faculty') {
+  if (req.user.role !== 'faculty') {
+    const reqcourse = await Course.findOne({ teacher: req.user._id });
+    if (reqcourse) {
       return next(new ApiError('You Cannot Send the messages', 404));
     }
   }

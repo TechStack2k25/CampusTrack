@@ -19,6 +19,36 @@ const createacessandrefreshtoken = (id) => {
 
   return [acesstoken, refreshtoken];
 };
+
+export const googleauthcallback = async (
+  accessToken,
+  refreshToken,
+  profile,
+  done
+) => {
+  try {
+    console.log(profile.email);
+    const requser = await User.findOne({ email: profile.email });
+    console.log(requser);
+    if (requser) {
+      return done(null, requser);
+    }
+
+    const newuser = await User.create({ email: profile.email });
+
+    const error = new ApiError('Error in creating user');
+
+    if (!newuser) {
+      return done(error, null);
+    }
+
+    return done(null, requser);
+  } catch (error) {
+    console.log(error);
+    return done(error, null);
+  }
+};
+
 //add username for signup later
 export const signup = asynchandler(async (req, res, next) => {
   //take the value from request
@@ -137,6 +167,9 @@ export const login = asynchandler(async (req, res, next) => {
 });
 
 export const protect = asynchandler(async (req, res, next) => {
+  if (req.user) {
+    return next();
+  }
   //test token store header
   const test_token = req.headers.authorization;
 

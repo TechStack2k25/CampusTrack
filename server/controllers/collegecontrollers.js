@@ -1,31 +1,31 @@
 import College from '../models/collegemodel.js';
-import Department from '../models/departmentmodel.js';
+import User from '../models/usermodel.js';
 import ApiError from '../utils/apierror.js';
 import asynchandler from '../utils/asynchandler.js';
+import Email from '../utils/emailhandler.js';
 import { isvaliduser } from './authcontrollers.js';
+import dotenv from 'dotenv';
+dotenv.config({ path: './variable.env' });
 export const addcollege = asynchandler(async (req, res, next) => {
   //get the data from req to create new entity
-  let { name, id, degree } = req.body;
-  id = id.trim().toLowerCase();
-  //check get all the field
-  if (!name || !id) {
-    return next(new ApiError('Please enter all the field', 400));
+  const { email } = req.body;
+
+  const requser = await User.findOne({ email });
+
+  if (!requser) {
+    return next(new ApiError('User Not Found', 404));
   }
 
-  //check that the college is already exist or not
-  const existed_college = await College.findOne({ id });
+  const reqcollege = await College.findOne({ admin: requser._id });
 
-  //if exist give error message
-  if (existed_college) {
-    return next(new ApiError('College alredy exist', 402));
+  if (reqcollege) {
+    return next(
+      new ApiError('Please Use another email to create new College', 422)
+    );
   }
-
   //if not exist create the college
   const newcollege = await College.create({
-    name,
-    id,
-    degree,
-    admin: req.user._id,
+    admin: requser._id,
   });
 
   //if error in created in entity
@@ -33,6 +33,21 @@ export const addcollege = asynchandler(async (req, res, next) => {
     return next(new ApiError('College cannot added', 422));
   }
 
+  const updateduser = await User.findByIdAndUpdate(requser._id, {
+    college: newcollege._id,
+  });
+
+  try {
+    const url = `${process.env.FRONTEND_URL}/updatecollege`;
+    await new Email(requser, url).sendEmailonverification();
+
+    res.status(200).json({
+      status: 'success',
+      message: 'Email Sent',
+    });
+  } catch (error) {
+    return next(new ApiError('Error in send Email', 404));
+  }
   //return sucess message
   res.status(201).json({
     message: 'college added sucessfully',
@@ -60,12 +75,46 @@ export const getcollege = asynchandler(async (req, res, next) => {
     data: reqcollege,
   });
 });
+
+export const requestfordelete = asynchandler(async (req, res, next) => {
+  const user_id = req.user._id;
+
+  const reqcollege = await College.findOne({ admin: user_id });
+
+  if (!reqcollege) {
+    return next(new ApiError('College Not Found', 404));
+  }
+
+  const deleteToken = reqcollege.createdeletetoken();
+
+  if (!deleteToken) {
+    return next(new ApiError('Error in creating token Try Again', 404));
+  }
+
+  try {
+    const deleteurl = `${process.env.FRONTEND_URL}/deletecollege/${deleteToken}`;
+    await new Email(requser, deleteurl).sendEmailForDeleteCollege();
+
+    res.status(201).json({
+      message: 'Email Sent successfully',
+    });
+  } catch (error) {
+    reqcollege.deletecollegetoken = undefined;
+    reqcollege.deleteTokenExpires = undefined;
+    reqcollege.save();
+    return next('Error in sending mail try again', 402);
+  }
+});
+
 export const delcollege = asynchandler(async (req, res, next) => {
   //get the info of the college
-  const college_id = req.params.id;
+  const { token } = req.body;
 
   //check the college is find to delete
-  const reqcollege = await College.findById(college_id);
+  const reqcollege = await College.findOne({
+    deletecollegetoken: token,
+    deleteTokenExpires: { $gte: Date.now() },
+  });
 
   //if not found due to some error
   if (!reqcollege) {
@@ -73,25 +122,37 @@ export const delcollege = asynchandler(async (req, res, next) => {
   }
 
   //delete the college
-  const dele_or_not = await College.findByIdAndDelete(college_id);
+  const dele_or_not = await College.findByOneAndDelete({
+    deletecollegetoken: token,
+    deleteTokenExpires: { $gte: Date.now() },
+  });
 
   //if  error in deleted college  then return error
-  if (dele_or_not.deletedCount === 0) {
+  if (!dele_or_not?.acknowledged) {
     return next(new ApiError('Error in deleted the college', 422));
+  } else {
+    (reqcollege.deletecollegetoken = undefined),
+      (reqcollege.deleteTokenExpires = undefined),
+      reqcollege.save();
   }
+  try {
+    await new Email(requser, null).sendEmailonverification();
 
-  //return success message
-  res.status(201).json({
-    message: 'college deleted succesfuly',
-  });
+    res.status(200).json({
+      status: 'success',
+      message: 'Email Sent',
+    });
+  } catch (error) {
+    return next(new ApiError('Error in send Email', 404));
+  }
 });
 
 export const updatecollege = asynchandler(async (req, res, next) => {
   //get the college id to find the college
-  const college_id = req.params.id;
+  const admin = req.user._id;
 
   //check the college is exist or not
-  const reqcollege = await College.findById(college_id);
+  const reqcollege = await College.findOne({ admin });
 
   //if not exist give the error
   if (!reqcollege) {
@@ -102,12 +163,20 @@ export const updatecollege = asynchandler(async (req, res, next) => {
   isvaliduser(req.user._id, reqcollege.admin, next);
 
   //if exist get info and update the college
-  const { name, id, degree } = req.body;
+  const { name, id } = req.body;
 
+  if (!id && !reqcollege._id) {
+    return next(new ApiError('Please Provide the Id of College', 400));
+  }
+
+  if (!reqcollege._id) {
+    const existedcollege = await College.findOne({ id });
+    if (existedcollege) return next(new ApiError('College already exist', 404));
+  }
   //update the college
-  const updatedcollege = await College.findByIdAndUpdate(
-    college_id,
-    { name, id, degree },
+  const updatedcollege = await College.findByOneAndUpdate(
+    { admin },
+    { name, id },
     { new: true }
   );
 
@@ -119,3 +188,19 @@ export const updatecollege = asynchandler(async (req, res, next) => {
     },
   });
 });
+
+// export const sentemailforcollege = asynchandler(async (req, res, next) => {
+//   const user = req.user;
+
+//   try {
+//     const url = `${process.env.FRONTEND_URL}/createcollege/${user._id}`;
+//     await new Email(user, resetURL).sendCollegecCredentials();
+//     res.status(200).json({
+//       status: 'success',
+//       message: 'Email Sent Sucessfully',
+//     });
+//   } catch (error) {
+//     return next(new ApiError('Error in Sending email', 400));
+//   } finally {
+//   }
+// });

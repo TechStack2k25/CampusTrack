@@ -15,6 +15,7 @@ import ChatBox from "./ChatBox";
 import UserList from "./UserList";
 import ListElement from "./ListElement";
 import Input from "./Input";
+import GoogleAuthButton from './GoogleAuthButton';
 
 export {
     CourseCard,
@@ -34,5 +35,6 @@ export {
     UserList,
     ListElement,
     Input,
+    GoogleAuthButton,
 
 }

@@ -7,9 +7,9 @@ import {
   getprofile,
   get_dashboard,
   update_sem,
-  verifyuser,
   sendEmail,
   getUserData,
+  verifyuser,
 } from '../controllers/usercontrollers.js';
 import {
   activeuser,

@@ -20,12 +20,28 @@ import degreeroutes from './routers/degreerouters.js';
 import { app } from './utils/socket.js';
 import messageroutes from './routers/messageroutes.js';
 import storeroutes from './routers/storeroutes.js';
-
+import dotenv from 'dotenv';
+import './utils/passport.config.js';
+import session from 'express-session';
+import passport from 'passport';
 // extract json payload from request body and make available in req.body;
 app.use(express.json());
 
 // extract json payload from request cookie and make available in req.cookies;
 app.use(cookieParser());
+
+dotenv.config({ path: './variable.env' });
+console.log(process.env.SESSION_SECRET_STRING);
+app.use(
+  session({
+    secret: process.env.SESSION_SECRET_STRING,
+    resave: false,
+    saveUninitialized: true,
+  })
+);
+app.use(passport.initialize());
+app.use(passport.session());
+
 //to console the http request
 app.use(morgan('dev'));
 //all auth routes redirect to authroutes.js
