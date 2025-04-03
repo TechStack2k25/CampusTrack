@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { FaEdit, FaTrashAlt } from "react-icons/fa";
+import { FaBookOpen, FaEdit, FaTrashAlt } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import ConfirmModal from "./ConfirmModal";
@@ -35,6 +35,12 @@ const CourseCard = ({ course ,deletefn ,updatefn }) => {
       <div className="mt-2">
         <p className="text-gray-600 dark:text-gray-400"><strong>Instructor:</strong> {course?.teacher?.name || course?.teacher?.email?.split('@')[0] || "Not assigned!"}</p>
         <p className="text-gray-600 dark:text-gray-400"><strong>Credits:</strong> {course.credit}</p>
+        {['faculty','Student'].includes(role) && <p 
+            onClick={()=>navigate(`/study/${course?._id}`)}
+            className="flex items-center gap-2 text-blue-600 hover:text-blue-800 font-semibold transition-all duration-200 cursor-pointer"
+          >
+            <FaBookOpen className="text-lg" /> Study Materials
+          </p>}
       </div>
         {role && role==='HOD' && <div className="flex justify-end space-x-4">
           {updatefn && <button

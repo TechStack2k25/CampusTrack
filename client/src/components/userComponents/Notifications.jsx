@@ -5,16 +5,26 @@ import { ChatBox, UserList } from '../Utils';
 import { socketService } from '../../api/socketService';
 import { userService } from '../../api/userService';
 import { messageService } from '../../api/messageService';
+import { useSelector } from 'react-redux';
 
 function Notifications() {
     const [isOpen, setIsOpen] = useState(false);
     const [currentUser,setCurrentUser]=useState(null);
     const [data,setData]=useState(null);
     const [sendersData,setSendersData]=useState({});
+    const user=useSelector((state)=>state.user.user);
     
     
   const handleNewMessage=(data)=>{
     console.log(data);
+  }
+
+  const canSend=()=>{
+    return (user?.role==='HOD' && currentUser?._id===user?.department)
+     || 
+    (user?.role==='Admin' && currentUser?._id===user?.college)
+     || 
+    (user?.role==='faculty' && currentUser?.teacher===user?._id);
   }
 
   const fetchData=async()=>{
@@ -47,7 +57,9 @@ function Notifications() {
     socketService.onGetDashboard(handleNewMessage);
     fetchData();
     return () => {
-      socketService.socket.off('getdashboard', handleNewMessage);
+      if (socketService?.socket) {
+        socketService.socket.off('getdashboard', handleNewMessage);
+      }
     };
   },[]);
 
@@ -64,7 +76,7 @@ function Notifications() {
         ) :
         <div className="fixed bottom-4 right-4 z-50 flex flex-col items-end">
             { currentUser ?
-              <ChatBox user={currentUser} setUser={setCurrentUser} />
+              <ChatBox user={currentUser} setUser={setCurrentUser} sendEnable={canSend()} />
           :
           <div className="w-80 h-96 bg-white dark:bg-gray-800 border shadow-lg p-4 flex flex-col rounded-lg">
             <div className="flex justify-between rounded items-center border-b pb-2">

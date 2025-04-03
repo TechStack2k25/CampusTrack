@@ -7,6 +7,7 @@ import Events from './Events'
 import Calendar from './Calender'
 import Request from './Request'
 import Notifications from './Notifications'
+import StudyMaterial from './StudyMaterial'
 
 export {
     DashboardContent,
@@ -18,5 +19,6 @@ export {
     Calendar,
     Request,
     Notifications,
+    StudyMaterial,
 
 }
