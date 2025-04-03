@@ -97,6 +97,7 @@ export const create_request = asynchandler(async (req, res, next) => {
         request_role: role,
         request_dep: reqdepartment._id,
         request_year: year,
+        request_degree: degree,
       });
 
       ///check the request is created or not

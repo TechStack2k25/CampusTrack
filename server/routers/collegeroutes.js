@@ -4,6 +4,7 @@ import {
   addcollege,
   delcollege,
   updatecollege,
+  getcollege,
 } from '../controllers/collegecontrollers.js';
 
 const router = express.Router();
@@ -13,5 +14,7 @@ router.post('/create', addcollege);
 router.delete('/del/:id', delcollege);
 //update
 router.patch('/update/:id', updatecollege);
+
+router.get('/:id', getcollege);
 
 export default router;

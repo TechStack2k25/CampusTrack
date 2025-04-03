@@ -4,7 +4,7 @@ import { useSelector } from 'react-redux';
 import { AdminDashboard, Dashboard, DashboardFaculty, Schedule }from './pages/index.js';
 import { Assignments, Courses, Events, Leaderboard, Lectures, Request, StudyMaterial } from './components/userComponents/index.js';
 import {AssignmentsFaculty, AssignmentsSubmissions, Attendance, DashboardFacultyContent, Notification} from './components/facultyComponents/index.js';
-import { Approvals, DashboardAdmin, Departments, Faculty, Scholars } from './components/collegeAdmin/index.js';
+import { Approvals, DashboardAdmin, Degrees, Departments, Faculty, Scholars, Profile as AdminProfile } from './components/collegeAdmin/index.js';
 import { DashboardContent, Notfound, Profile } from './components/index.js';
 
 
@@ -55,8 +55,9 @@ const Routers = () => {
           <>
           <Route  element={<AdminDashboard/>}>
             <Route path="dashboard" element={<DashboardAdmin />} />
-            <Route path="profile" element={<Profile />} />
+            <Route path="profile" element={<AdminProfile />} />
             <Route path="departments" element={<Departments />} />
+            <Route path="degrees" element={<Degrees />} />
             <Route path="faculty" element={<Faculty />} />
             <Route path="scholars" element={<Scholars />} />
             <Route path="events" element={<Events />} />

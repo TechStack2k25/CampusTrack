@@ -62,7 +62,7 @@ function Verifying() {
                       <h2 className="text-xl font-bold text-gray-900 dark:text-white mt-4">Verified</h2>
                       <button 
                         className="mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600" 
-                        onClick={() => setShowModal(false)}
+                        onClick={() => navigate('/dashboard')}
                       >
                         Close
                       </button>

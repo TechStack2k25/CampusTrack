@@ -25,15 +25,15 @@ export const getall = asynchandler(async (req, res, next) => {
 });
 
 export const deleteresource = asynchandler(async (req, res, next) => {
-  const id = req.params._id;
+  const id = req.params.id;
 
   if (!id) {
     return next(new ApiError('Course Material Not Found Try again', 404));
   }
 
   const deletedstore = await Store.findByIdAndDelete(id);
-
-  if (!deletedstore.acknowledged) {
+  
+  if (!deletedstore) {
     return next(new ApiError('Error in Deleting And Try Again', 404));
   }
 
@@ -48,7 +48,7 @@ export const addresource = asynchandler(async (req, res, next) => {
   const reqcourse = await Course.findById(id);
 
   if (!reqcourse) {
-    return next(new ApiError('cousre not found', 404));
+    return next(new ApiError('course not found', 404));
   }
 
   const uploadedfile = await uploadOnCloudinary(req.file.path);

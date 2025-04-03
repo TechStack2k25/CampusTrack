@@ -8,6 +8,7 @@ import { collegeService } from "../../api/collegeService";
 import { useDepartments } from "../../data/departments";
 import { useAllCourses } from "../../data/allcourses";
 import { courseService } from "../../api/courseService";
+import { degreeService } from "../../api/degreeService";
 
 const Request = () => {
   // Using react-hook-form
@@ -20,18 +21,22 @@ const Request = () => {
   const watchRole = watch("role");
   const watchCollege = watch("college");
   const [debouncedCollege, setDebouncedCollege] = useState(watchCollege);
+  const [degrees, setDegrees] = useState([]);
   const dispatch = useDispatch();
 
+
   useEffect(() => {
+    if (watchCollege?.trim()?.length < 4) return;
     const handler = setTimeout(() => {
-      setDebouncedCollege(watchCollege);
-    }, 500); // Adjust debounce delay (e.g., 500ms)
+      setDebouncedCollege(watchCollege?.trim());
+    }, 500); // Adjust debounce delay (e.g., 500ms) to 
 
     return () => clearTimeout(handler); // Cleanup function
   }, [watchCollege]);
 
+
   const mutationTocreateRequest = useMutation({
-    mutationFn: ["Student","faculty"].includes(user?.role)? courseService.requestCourse : userService.updateUser,
+    mutationFn: ["Student", "faculty"].includes(user?.role) ? courseService.requestCourse : userService.updateUser,
     onSuccess: (data) => {
       console.log('Request created successfully:', data);
       dispatch(setSuccess('Sent Request!'));
@@ -44,9 +49,23 @@ const Request = () => {
   });
 
   const { data: departments } = useDepartments(debouncedCollege);
-  const { data: allCourses } = useAllCourses({_id:user?.department});
+  const { data: allCourses } = useAllCourses({ _id: user?.department });
 
+  const fetchDegrees = async () => {
+    try {
+      const res = await degreeService.getAll({ _id: departments[0]?.college });
+      if (res) {
+        setDegrees(res);
+        console.log(res);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }
 
+  useEffect(() => {
+    if (departments?.length > 0) fetchDegrees();
+  }, [departments]);
 
   // Submit handler
   const onSubmit = (newData) => {
@@ -61,7 +80,8 @@ const Request = () => {
       department: newData?.department || user?.department,
       requestType: newData?.requestType,
       dep_id: newData?.dep_id,
-      course_id:newData?.course_id,
+      course_id: newData?.course_id,
+      degree:newData?.degree_id,
     });
   };
 
@@ -122,50 +142,78 @@ const Request = () => {
                 )}
               </div>
 
-            {/* role */}
-            <div className="flex flex-col">
-              <label htmlFor="role" className="text-sm font-medium text-gray-600 dark:text-gray-400 tracking-tight">
-                Select Role:
-              </label>
-              <select
-                id="role"
-                {...register("role", { required: "Role selection is required!" })}
-                className={`cursor-pointer mt-2 p-3 border rounded-lg focus:outline-none focus:ring-2 ${errors.role ? "border-red-500" : "border-gray-300"} focus:ring-blue-500`}
-              >
-                <option value={user?.role}>Select a role...</option>
-                {user && user?.role === "User" && <>
-                  <option value="Student" className="cursor-pointer" >Student</option>
-                  <option value="faculty" className="cursor-pointer" >Faculty</option>
-                </>}
-                {user && user?.role === "faculty" && <option value="HOD" className="cursor-pointer" >HOD</option>}
-              </select>
-              {errors.role && (
-                <p className="text-xs text-red-500 mt-1">{errors.role.message}</p>
-              )}
-            </div>
+              {/* role */}
+              <div className="flex flex-col">
+                <label htmlFor="role" className="text-sm font-medium text-gray-600 dark:text-gray-400 tracking-tight">
+                  Select Role:
+                </label>
+                <select
+                  id="role"
+                  {...register("role", { required: "Role selection is required!" })}
+                  className={`cursor-pointer mt-2 p-3 border rounded-lg focus:outline-none focus:ring-2 ${errors.role ? "border-red-500" : "border-gray-300"} focus:ring-blue-500`}
+                >
+                  <option value={user?.role}>Select a role...</option>
+                  {user && user?.role === "User" && <>
+                    <option value="Student" className="cursor-pointer" >Student</option>
+                    <option value="faculty" className="cursor-pointer" >Faculty</option>
+                  </>}
+                  {user && user?.role === "faculty" && <option value="HOD" className="cursor-pointer" >HOD</option>}
+                </select>
+                {errors.role && (
+                  <p className="text-xs text-red-500 mt-1">{errors.role.message}</p>
+                )}
+              </div>
             </>}
 
-            {user && ["Student","faculty"].includes(user?.role) && <div className="flex flex-col">
-              <label htmlFor="course" className="text-sm font-medium text-gray-600 dark:text-gray-400 tracking-tight">
-                Course:
+          {user && ["Student", "faculty"].includes(user?.role) && <div className="flex flex-col">
+            <label htmlFor="course" className="text-sm font-medium text-gray-600 dark:text-gray-400 tracking-tight">
+              Course:
+            </label>
+            <select
+              id="course"
+              {...register("course_id", {
+                required: {
+                  value: ["Student", "faculty"].includes(user?.role),
+                  message: "Course selection is required!"
+                }
+              })}
+              className={`cursor-pointer mt-2 p-3 border rounded-lg focus:outline-none focus:ring-2 ${errors.course_id ? "border-red-500" : "border-gray-300"} focus:ring-blue-500`}
+            >
+              <option value="">Select a Course...</option>
+              {allCourses && allCourses?.map((course) => <option key={course?._id} value={course?._id}>{`${course?.name} (${course?.coursecode?.toUpperCase()})`}</option>)}
+
+            </select>
+            {errors.course_id && (
+              <p className="text-xs text-red-500 mt-1">{errors.course_id.message}</p>
+            )}
+          </div>
+          }
+
+          {user && user?.role === 'User' && watchRole === 'Student' &&
+            <div className="flex flex-col">
+              <label htmlFor="degree" className="text-sm font-medium text-gray-600 dark:text-gray-400 tracking-tight">
+                Degree:
               </label>
               <select
-                id="course"
-                {...register("course_id", { required: {
-                  value:["Student","faculty"].includes(user?.role),
-                  message:"Course selection is required!" 
-                }})}
-                className={`cursor-pointer mt-2 p-3 border rounded-lg focus:outline-none focus:ring-2 ${errors.course_id ? "border-red-500" : "border-gray-300"} focus:ring-blue-500`}
+                id="degree_id"
+                {...register("degree_id", {
+                  required: {
+                    value: watchRole === "Student",
+                    message: "Degree selection is required!"
+                  }
+                })}
+                className={`cursor-pointer mt-2 p-3 border rounded-lg focus:outline-none focus:ring-2 ${errors.degree_id ? "border-red-500" : "border-gray-300"} focus:ring-blue-500`}
               >
-                <option value="">Select a Course...</option>
-                {allCourses && allCourses?.map((course)=><option key={course?._id} value={course?._id}>{`${course?.name} (${course?.coursecode?.toUpperCase()})`}</option>)}
-                
+                <option value="">Select a degree...</option>
+                {
+                  degrees?.length > 0 && degrees.map((item) => <option className="cursor-pointer" key={item?._id} value={item?._id}>{item?.name}</option>)
+                }
               </select>
-              {errors.course_id && (
-                <p className="text-xs text-red-500 mt-1">{errors.course_id.message}</p>
+              {errors.degree_id && (
+                <p className="text-xs text-red-500 mt-1">{errors.degree_id.message}</p>
               )}
             </div>
-              }
+          }
 
 
           {/* Submit Button */}

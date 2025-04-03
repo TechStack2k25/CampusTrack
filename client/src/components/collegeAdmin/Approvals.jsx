@@ -8,22 +8,6 @@ import { setError, setSuccess } from "../../store/slices/userSlice.js";
 import Loading from "../Loading.jsx"
 
 function Approvals() {
-  // const [requests, setRequests] = useState([
-  //   {
-  //     id: 1,
-  //     name: "John Doe",
-  //     role: "Student",
-  //     department: "Computer Science",
-  //     email: "john.doe@example.com",
-  //   },
-  //   {
-  //     id: 2,
-  //     name: "Jane Smith",
-  //     role: "Faculty",
-  //     department: "Mathematics",
-  //     email: "jane.smith@example.com",
-  //   },
-  // ]);
   const { data: requests ,isLoading } = useApprovals();//may use isLoading and other error status
   const dispatch=useDispatch();
   console.log(requests)

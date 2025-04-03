@@ -18,6 +18,9 @@ function ApprovalCard({request, updatefn}) {
     {request?.requestType==="Add user" && <p className="text-gray-700 dark:text-gray-300 text-sm mb-2">
       <strong>Department:</strong> {request?.request_dep?.name}
     </p>}
+    {request?.requestType==="Add user" && request?.request_degree && <p className="text-gray-700 dark:text-gray-300 text-sm mb-2">
+      <strong>Degree:</strong> {request?.request_degree?.name}
+    </p>}
    {request?.requestType==="Add Course" &&  <p className="text-gray-700 dark:text-gray-300 text-sm mb-2">
       <strong>Course:</strong> {`${request?.request_course?.name} (${request?.request_course?.coursecode?.toUpperCase()})`}
     </p>}

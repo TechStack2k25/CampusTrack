@@ -3,10 +3,10 @@ import store  from '../store/store.js';
 import { logout } from '../store/slices/userSlice.js';
 import { socketService } from './socketService.js';
 
-class CollegeService {
+class DegreeService {
   constructor() {
     this.api = axios.create({
-      baseURL: '/api/college', // Vite Proxy will handle this or will allow cors policies
+      baseURL: '/api/degree', // Vite Proxy will handle this or will allow cors policies
       timeout: 5000,
       withCredentials: true, // Ensuring cookies are sent
       headers: {
@@ -28,37 +28,33 @@ class CollegeService {
   );
 }
 
-  // getting college
-  getCollege=async (data)=> {//data required: _id(college)
+  addDegree=async (data)=> {//data required: _id(college), name , totalYears, totalSemesters 
     try {
-      const response = await this.api.get(data?._id,data);
+      const response = await this.api.post(`/add/${data?._id}`,data);
 
       console.log(response);
-      return response.data?.data;
-      //gettingcollege data
+      return response.data?.data?.newdegree;
+      //getting new degree data
     } catch (error) {
-      console.error('Error collegeService: getCollege: ', error);
+      console.error('Error DegreeService: addDegree: ', error);
       throw error;
     }
   }
 
-  // creating college
-  createCollege=async (data)=> {//data required: name, id(college), degree
+  getAll=async (data)=> {//data required: _id(college)
     try {
-      const response = await this.api.post('/create',data);
+      const response = await this.api.get(`/all/${data?._id}`);
 
       console.log(response);
-      //may use response.status to verify success 201
-      return response.data?.data?.data;
-      //getting new college data
+      return response.data?.data?.alldegree;
     } catch (error) {
-      console.error('Error collegeService: createCollege: ', error);
+      console.error('Error DegreeService: getAll: ', error);
       throw error;
     }
   }
 
-  // deleting a college
-  deleteCollege=async (data)=> {//data required: _id,
+  // deleting a degree
+  deleteDegree=async (data)=> {//data required: _id,
     try {
       const response = await this.api.delete(`/del/${data?._id}`);
 
@@ -66,27 +62,27 @@ class CollegeService {
       
       return response.status===201;
     } catch (error) {
-      console.error('Error collegeService: deleteCollege: ', error);
+      console.error('Error DegreeService: deleteDegree: ', error);
       throw error;
     }
   }
 
-  // updating college
-  updateCollege=async (data)=> {//data required: _id, id, name, degree
+  // updating
+  updateDegree=async (data)=> {//data required: _id, name, totalYears, totalSemesters
     try {
       const response = await this.api.patch(`/update/${data?._id}`,data);
 
       console.log(response);
       
-      return response.data?.data;
-      //getting updated college
+      return response.data?.data?.updateddegree;
+      //getting updated degree
     } catch (error) {
-      console.error('Error collegeService: updateCollege: ', error);
+      console.error('Error DegreeService: updateDegree: ', error);
       throw error;
     }
   }
 }
 
-export const collegeService = new CollegeService();
+export const degreeService = new DegreeService();
 
-// export default CollegeService;
+// export default DegreeService;

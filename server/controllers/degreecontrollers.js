@@ -37,7 +37,7 @@ export const adddegree = asynchandler(async (req, res, next) => {
   }
 
   res.status(201).json({
-    messagge: 'Degree Created Sucessfully',
+    message: 'Degree Created Sucessfully',
     data: {
       newdegree,
     },
@@ -56,15 +56,15 @@ export const getall = asynchandler(async (req, res, next) => {
   }
 
   //fetch the alldegree
-  const alldegree = await Degree.find(reqcollege);
+  const alldegree = await Degree.find({college:reqcollege?._id});
 
   //if degree not found give error
   if (!alldegree) {
     return next(new ApiError("Can't find degree try again", 422));
   }
 
-  req.status(201).json({
-    messagge: 'All Degree Fetch Sucessfully',
+  res.status(201).json({
+    message: 'All Degree Fetch Sucessfully',
     data: {
       alldegree,
     },
@@ -103,7 +103,7 @@ export const updatedegree = asynchandler(async (req, res, next) => {
   }
 
   res.status(201).json({
-    messagge: 'Degree Updated Sucessfully',
+    message: 'Degree Updated Sucessfully',
     data: {
       updateddegree,
     },
@@ -126,6 +126,6 @@ export const deletedegree = asynchandler(async (req, res, next) => {
   }
 
   res.status(201).json({
-    messagge: 'Error in Deleting message',
+    message: 'Error in Deleting message',
   });
 });

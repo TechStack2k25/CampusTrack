@@ -67,15 +67,15 @@ function DashboardAdmin() {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <div className="bg-white dark:bg-black dark:bg-opacity-30 dark:border dark:border-gray-700 p-4 shadow rounded-lg">
           <h2 className="text-lg font-bold text-gray-700 dark:text-gray-300">Total Students</h2>
-          <p className="text-4xl font-semibold text-blue-500">{userDashboard?.total_student_college|| "No data to show!"}</p>
+          <p className="text-4xl font-semibold text-blue-500">{userDashboard?.total_student_college|| "-"}</p>
         </div>
         <div className="bg-white dark:bg-black dark:bg-opacity-30 dark:border dark:border-gray-700 p-4 shadow rounded-lg">
           <h2 className="text-lg font-bold text-gray-700 dark:text-gray-300">Total Faculty</h2>
-          <p className="text-4xl font-semibold text-green-500">{userDashboard?.total_faculty_college || "No Data to show!"}</p>
+          <p className="text-4xl font-semibold text-green-500">{userDashboard?.total_faculty_college || "-"}</p>
         </div>
         <div className="bg-white dark:bg-black dark:bg-opacity-30 dark:border dark:border-gray-700 p-4 shadow rounded-lg">
           <h2 className="text-lg font-bold text-gray-700 dark:text-gray-300">Total Departments</h2>
-          <p className="text-4xl font-semibold text-red-500">12</p>
+          <p className="text-4xl font-semibold text-red-500">{userDashboard?.total_department || '-'}</p>
         </div>
       </div>
 

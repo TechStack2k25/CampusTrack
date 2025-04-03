@@ -6,7 +6,7 @@ const degreeSchema = new mongoose.Schema({
   totalSemesters: { type: Number, required: true },
   college: {
     type: mongoose.Schema.Types.ObjectId,
-    Ref: 'College',
+    ref: 'College',
   },
   createdOn: { type: Date, default: Date.now },
 });

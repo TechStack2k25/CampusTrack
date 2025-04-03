@@ -12,14 +12,14 @@ const multerstorage = multer.diskStorage({
   },
 });
 
-const multerfilter = (req, file, cb) => {
-  if (file.mimetype.startsWith('application')) {
-    cb(null, true);
-  } else cb(new ApiError('File Type must be pdf'));
-};
+// const multerfilter = (req, file, cb) => {
+//   if (file.mimetype.startsWith('application')) {
+//     cb(null, true);
+//   } else cb(new ApiError('File Type must be pdf'));
+// };
 
 export const upload = multer({
   storage: multerstorage,
-  fileFilter: multerfilter,
+  // fileFilter: multerfilter,
   limits: { fileSize: 10 * 1024 * 1024 },
 });

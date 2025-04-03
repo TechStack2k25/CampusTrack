@@ -14,6 +14,7 @@ import ConfirmModal from "./ConfirmModal";
 import ChatBox from "./ChatBox";
 import UserList from "./UserList";
 import ListElement from "./ListElement";
+import Input from "./Input";
 
 export {
     CourseCard,
@@ -32,5 +33,6 @@ export {
     ChatBox,
     UserList,
     ListElement,
+    Input,
 
 }
