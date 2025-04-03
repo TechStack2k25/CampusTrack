@@ -95,6 +95,7 @@ export const create_request = asynchandler(async (req, res, next) => {
         request_college: reqcollege._id,
         request_by: requser._id,
         request_role: role,
+        request_degree: degree,
         request_dep: reqdepartment._id,
         request_year: year,
       });

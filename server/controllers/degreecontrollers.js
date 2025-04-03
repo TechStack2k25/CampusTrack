@@ -129,3 +129,14 @@ export const deletedegree = asynchandler(async (req, res, next) => {
     messagge: 'Error in Deleting message',
   });
 });
+
+export const getdegree = asynchandler(async (req, res, next) => {
+  const id = req.params.id;
+  const reqdegree = await Degree.findById(id);
+  res.status(201).json({
+    message: 'Degree Fetched',
+    data: {
+      reqdegree,
+    },
+  });
+});

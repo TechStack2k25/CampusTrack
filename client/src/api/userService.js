@@ -1,5 +1,5 @@
 import axios from 'axios';
-import store  from '../store/store.js';
+import store from '../store/store.js';
 import { logout } from '../store/slices/userSlice.js';
 import { socketService } from './socketService.js';
 
@@ -27,33 +27,33 @@ class UserService {
       }
     );
   }
-  
+
   // get all user
-  getUsers= async (data)=> {// Ids of course, department, college
-      try {
-        
-        const query=Object.fromEntries(
-          Object.entries(data).filter(([_, v]) => v !== "")
-        );
-        console.log(query);
-        
-        const response = await this.api.get('/all',{params:query});
+  getUsers = async (data) => {
+    // Ids of course, department, college
+    try {
+      const query = Object.fromEntries(
+        Object.entries(data).filter(([_, v]) => v !== '')
+      );
+      console.log(query);
 
-        console.log(response);
+      const response = await this.api.get('/all', { params: query });
 
-        return response?.data?.data;
-      } catch (error) {
-        console.error('Error userService: getUsers: ', error);
-        throw error;
-      }
-  }
+      console.log(response);
+
+      return response?.data?.data;
+    } catch (error) {
+      console.error('Error userService: getUsers: ', error);
+      throw error;
+    }
+  };
 
   // deleteUser=async ()=> {}
 
-  updateUser=async (data)=> {
+  updateUser = async (data) => {
     //required data: _id,name,surname,sem,year,currentdegree,degree,qualification,role,email,
     try {
-      const response = await this.api.patch('/update',data);
+      const response = await this.api.patch('/update', data);
 
       console.log(response);
       //may use response.status to verify success 201
@@ -63,92 +63,93 @@ class UserService {
       console.error('Error userService: updateUser: ', error);
       throw error;
     }
-  }
+  };
 
   //get current user
-  currentUser=async ()=> {
+  currentUser = async () => {
     try {
       const response = await this.api.get('/me');
 
       console.log(response);
-      
+
       return response.data?.data?.user;
       //current user data
     } catch (error) {
       console.error('Error userService: currentUser: ', error);
       throw error;
     }
-  }
+  };
 
   //get current user populated
-  currentUserData=async ()=> {
+  currentUserData = async () => {
     try {
       const response = await this.api.get('/mydata');
 
       console.log(response);
-      
+
       return response.data?.data?.user;
       //current user data
     } catch (error) {
       console.error('Error userService: currentUserData: ', error);
       throw error;
     }
-  }
+  };
 
   //dashboard data
-  userDashData=async ()=> {
+  userDashData = async () => {
     try {
       const response = await this.api.get('/dashboard');
 
       console.log(response);
-      
+
       return response.data;
     } catch (error) {
       console.error('Error userService: userDashData: ', error);
       throw error;
     }
-  }
+  };
 
   // password update
-  passwordUpdate=async (data)=> {
-    //required: current_password, new_password, confirmpassword 
+  passwordUpdate = async (data) => {
+    //required: current_password, new_password, confirmpassword
     try {
-      const response = await this.api.post('/updatepassword',data);
+      const response = await this.api.post('/updatepassword', data);
 
       console.log(response);
-      
+
       return response.data?.data?.user;
     } catch (error) {
       console.error('Error userService: passwordUpdate: ', error);
       throw error;
     }
-  }
-  
-  callToVerify=async ()=> {
+  };
+
+  callToVerify = async () => {
     try {
       const response = await this.api.get('/sendmail');
 
       console.log(response);
-      
-      return response.status===200;
+
+      return response.status === 200;
     } catch (error) {
       console.error('Error userService: callToVerify: ', error);
       throw error;
     }
-  }
+  };
 
-  verifyUser=async (data)=> {// emailToken
+  verifyUser = async (data) => {
+    // emailToken
     try {
-      const response = await this.api.post('/verifyemail',data);
+      const response = await this.api.post('/verifyemail', data);
 
       console.log(response);
-      
-      return response.status===201;
+
+      return response.status === 201;
     } catch (error) {
       console.error('Error userService: verifyUser: ', error);
       throw error;
     }
-  }
+  };
 }
 
 export const userService = new UserService();

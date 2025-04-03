@@ -1,4 +1,5 @@
 import College from '../models/collegemodel.js';
+import User from '../models/usermodel.js';
 import ApiError from '../utils/apierror.js';
 import asynchandler from '../utils/asynchandler.js';
 import Email from '../utils/emailhandler.js';
@@ -31,6 +32,10 @@ export const addcollege = asynchandler(async (req, res, next) => {
   if (!newcollege) {
     return next(new ApiError('College cannot added', 422));
   }
+
+  const updateduser = await User.findByIdAndUpdate(requser._id, {
+    college: newcollege._id,
+  });
 
   try {
     const url = `${process.env.FRONTEND_URL}/updatecollege`;
@@ -141,8 +146,13 @@ export const updatecollege = asynchandler(async (req, res, next) => {
   //if exist get info and update the college
   const { name, id } = req.body;
 
-  if (!id && !reqcollege.id) {
+  if (!id && !reqcollege._id) {
     return next(new ApiError('Please Provide the Id of College', 400));
+  }
+
+  if (!reqcollege._id) {
+    const existedcollege = await College.findOne({ id });
+    if (existedcollege) return next(new ApiError('College already exist', 404));
   }
   //update the college
   const updatedcollege = await College.findByOneAndUpdate(

@@ -3,6 +3,7 @@ import {
   adddegree,
   deletedegree,
   getall,
+  getdegree,
   updatedegree,
 } from '../controllers/degreecontrollers.js';
 
@@ -11,6 +12,8 @@ const router = express.Router();
 router.post('/add/:id', adddegree);
 //get all degree  college id
 router.get('/all/:id', getall);
+//get a degree  
+router.get('/gerdegree/:id', getdegree);
 //delete degree id
 router.delete('/del/:id', deletedegree);
 //update degree id

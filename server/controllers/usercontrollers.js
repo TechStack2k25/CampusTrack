@@ -10,6 +10,7 @@ import College from '../models/collegemodel.js';
 import Message from '../models/messagemodel.js';
 import Task from '../models/taskmodel.js';
 import Email from '../utils/emailhandler.js';
+import * as crypto from 'crypto';
 
 export const getall = asynchandler(async (req, res, next) => {
   const queryobj = req.query;
@@ -111,11 +112,12 @@ export const getprofile = asynchandler(async (req, res, next) => {
 });
 
 export const getUserData = asynchandler(async (req, res, next) => {
-  const requser = await User.findById(req.user._id)
-  .populate('college department course');
+  const requser = await User.findById(req.user._id).populate(
+    'college department course'
+  );
   console.log(requser);
-  
-  if(!requser) return next(new ApiError('User not found', 404));
+
+  if (!requser) return next(new ApiError('User not found', 404));
   res.status(201).json({
     message: 'Get User Data sucessfully',
     data: {
@@ -332,6 +334,7 @@ export const sendEmail = asynchandler(async (req, res, next) => {
   try {
     const emailURL = `${process.env.FRONTEND_URL}/verifyemail/${emailToken}`;
     await new Email(requser, emailURL).sendEmailToken();
+    await requser.save({ validateBeforeSave: false });
     res.status(200).json({
       status: 'success',
       message: 'Token sent to email!',
@@ -357,6 +360,7 @@ export const verifyuser = asynchandler(async (req, res, next) => {
     .update(emailToken)
     .digest('hex');
 
+  console.log(hashedToken);
   const requser = await User.findOne({
     emailToken: hashedToken,
     emailExpires: { $gte: Date.now() },

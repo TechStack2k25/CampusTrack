@@ -9,6 +9,7 @@ import {
   update_sem,
   sendEmail,
   getUserData,
+  verifyuser,
 } from '../controllers/usercontrollers.js';
 import {
   activeuser,
