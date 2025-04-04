@@ -1,10 +1,10 @@
 import express from 'express';
-import dotenv from 'dotenv';
 import {
   addcollege,
   delcollege,
   requestfordelete,
   updatecollege,
+  getcollege,
 } from '../controllers/collegecontrollers.js';
 import { restrict_to } from '../controllers/authcontrollers.js';
 
@@ -15,6 +15,8 @@ router.get('/deletecollegemail', requestfordelete);
 router.delete('/del', delcollege);
 //update
 router.patch('/update', updatecollege);
+router.get('/:id', getcollege);
 //create
 router.post('/create', restrict_to(['Owner']), addcollege);
+
 export default router;

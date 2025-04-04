@@ -57,6 +57,25 @@ export const addcollege = asynchandler(async (req, res, next) => {
   });
 });
 
+export const getcollege = asynchandler(async (req, res, next) => {
+  //get the info of the college
+  const college_id = req.params.id;
+
+  //check the college is find to delete
+  const reqcollege = await College.findById(college_id);
+
+  //if not found due to some error
+  if (!reqcollege) {
+    return next(new ApiError("College can't delete ", 422));
+  }
+
+  //return success message
+  res.status(201).json({
+    message: 'fetched college successfuly',
+    data: reqcollege,
+  });
+});
+
 export const requestfordelete = asynchandler(async (req, res, next) => {
   const user_id = req.user._id;
 

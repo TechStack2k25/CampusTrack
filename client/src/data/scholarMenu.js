@@ -25,7 +25,8 @@ export const facultyMenu = [
 
 export const adminMenu = [
   { name: 'Dashboard', link: '/dashboard' },
-  { name: 'Departments', link: '/Departments' },
+  { name: 'Departments', link: '/departments' },
+  { name: 'Degrees', link: '/degrees' },
   { name: 'Faculty', link: '/faculty' },
   { name: 'Scholars', link: '/scholars' },
   { name: 'Events', link: '/events' },

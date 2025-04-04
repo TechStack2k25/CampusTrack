@@ -3,6 +3,8 @@ import Approvals from "./Approvals";
 import Departments from "./Departments";
 import Faculty from "./Faculty";
 import Scholars from "./Scholars";
+import Degrees from "./Degrees";
+import Profile from "./Profile";
 
 
 export {
@@ -11,5 +13,7 @@ export {
     Departments,
     Faculty,
     Scholars,
+    Degrees,
+    Profile,
     
 }

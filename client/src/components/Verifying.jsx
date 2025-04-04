@@ -19,26 +19,26 @@ function Verifying() {
       } else {
         setVerified(false);
       }
-    } catch (error) {
-      console.error(error);
+    }
+    catch (error) {
       setVerified(false);
-    } finally {
+    }
+    finally {
       setIsVerifying(false);
     }
-  };
+  }
+
 
   useEffect(() => {
     fetchData();
   }, []);
 
   return (
-    <div className='flex items-center justify-center min-h-screen bg-gray-100 dark:bg-gray-900'>
+    <div className="flex items-center justify-center min-h-screen bg-gray-100 dark:bg-gray-900">
       {isVerifying ? (
-        <div className='p-6 flex flex-col items-center shadow-md rounded-lg'>
-          <FaSpinner className='animate-spin text-blue-500 text-6xl' />
-          <p className='mt-4 text-lg text-gray-700 font-black dark:text-gray-300'>
-            Verifying...
-          </p>
+        <div className="p-6 flex flex-col items-center bg-white shadow-md rounded-lg">
+          <FaSpinner className="animate-spin text-blue-500 text-6xl" />
+          <p className="mt-4 text-lg text-gray-700 dark:text-gray-300">Verifying...</p>
         </div>
       ) : (
         !isVerifying && (
@@ -74,8 +74,9 @@ function Verifying() {
             </div>
           </div>
         )
-      )}
-    </div>
+      )
+      }
+    </div >
   );
 }
 

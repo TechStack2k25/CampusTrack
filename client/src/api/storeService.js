@@ -40,7 +40,7 @@ class StoreService {
     }
   }
 
-  deleteMaterial=async ()=> {//data required: material_id
+  deleteMaterial=async (data)=> {//data required: material_id
     try {
       const response = await this.api.delete(`/delete/${data?._id}`);
       console.log(response);
@@ -51,11 +51,15 @@ class StoreService {
     }
   }
    
-  addMaterial=async (data)=> {//data required: _id,
+  addMaterial=async (data)=> {//data required: _id:course,
     try {
         const formData = new FormData();
       formData.append("file", data?.file); 
-      const response = await this.api.post(`/update/${data?._id}`,formData, {
+      formData.append("lecture", data?.lecture); 
+      formData.append("part", data?.part); 
+      console.log((formData));
+      
+      const response = await this.api.post(`/addresource/${data?._id}`,formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },

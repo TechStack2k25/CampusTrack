@@ -1,29 +1,49 @@
 import { useForm } from "react-hook-form";
 import { useSelector, useDispatch } from "react-redux";
-import { setError, clearError, loginSuccess, setSuccess } from "../store/slices/userSlice";
-import { userService } from "../api/userService";
-import Input from "./Utils/Input";
-import { useState } from "react";
+import { setError, clearError, loginSuccess, setSuccess } from "../../store/slices/userSlice";
+import { userService } from "../../api/userService.js";
+import { ConfirmModal, Input }from "../Utils";
+import { useEffect, useState } from "react";
+import { collegeService } from "../../api/collegeService.js";
 
 const Profile = () => {
-  const user = useSelector((state)=>state.user?.user);
+    const user=useSelector((state)=>state.user.user);
   const dispatch=useDispatch();
   const [password,setPassword]=useState({
     current_password:"", new_password:"", confirmpassword:"",
   });
+  const [confirmDelete,setConfirmDelete]=useState(false);
+
+  const [college,setCollege]=useState({name:"",id:""});
 
   const {
     register,
     handleSubmit,
-    formState:{ errors }
+    formState:{ errors },
+    reset
   } = useForm({
-    defaultValues: user, // Pre-fill form with user data
+    defaultValues: college, // Pre-fill form with user data
   });
 
+  const fetchCollege=async()=>{
+    try {
+        const res=await collegeService.getCollege({_id:user?.college});
+        console.log(res);
+        
+        if(res){
+            setCollege(res);
+            reset(res);
+        }        
+    } catch (error) {
+        console.error(error);        
+    }
+  }
 
-  // updating user data
+
+
+  // updating college data
   const onSubmit = async(data) => {
-    // console.log("Updated Profile Data:", data);
+    console.log("Updated Profile Data:", data);
     dispatch(clearError());
     try {
         if(password?.new_password?.length>0 || password?.confirmpassword?.length>0 || password?.current_password?.length>0){
@@ -42,7 +62,7 @@ const Profile = () => {
             const res=await userService.passwordUpdate(password);
             // console.log(res);
             if(!res){
-                dispatch(setError("Try again later!"));
+                dispatch(setError("Try Again later!"));
             }
             else{
                 dispatch(setSuccess("Password updated!"));
@@ -52,32 +72,49 @@ const Profile = () => {
             }
             
         }
-        const newuser=await userService.updateUser(data);
-        if(newuser){
-            dispatch(loginSuccess(newuser));
-            dispatch(setSuccess("Profile updated successfully!"));
+
+        const newcollege=await collegeService.updateCollege(data);
+        if(newcollege){
+            console.log(newcollege);
+            
+            setCollege(newcollege);
+            reset(newcollege);
         }
-        else{
-            dispatch(setError("Try again later!"));
-        }
+
     } catch (error) {
         dispatch(setError(error?.response?.data?.message));
     }
   };
 
+  useEffect(()=>{
+    fetchCollege();
+  },[]);
+
+  const deleteCollege=async()=>{
+    try {
+        const res=await collegeService.deleteCollege();
+        if(res){
+            dispatch(setSuccess('Checkout your mail!'));
+        }
+        else dispatch(setError('Try again later!')) ;     
+    } catch (error) {
+        console.error(error);  
+        dispatch(setError('Try again later!')) ;     
+    }
+  }
+
   return (
     <div className="flex-1 p-6">
         <div className="max-w-md mx-auto mt-10 p-6 border dark:border-gray-800 shadow-lg rounded-lg">
-            <h2 className="text-xl font-bold text-center mb-4 dark:text-white">Profile</h2>
+            <h2 className="text-xl font-bold text-center mb-4 dark:text-white">College</h2>
             {/* Edit Profile Form */}
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
 
             <div>
-                <label className="block text-sm font-medium text-gray-600 tracking-tight dark:text-gray-400">Email</label>
+                <label className="block text-sm font-medium text-gray-600 tracking-tight dark:text-gray-400">College ID:</label>
                 <input
                 type="text"
-                value={user?.email}
-                disabled={true}
+                {...register("id", { required: "College Id is required" })}
                 className="w-full dark:bg-gray-600 dark:text-white p-2 border border-gray-300 rounded mt-1"
                 />
             </div>
@@ -91,56 +128,6 @@ const Profile = () => {
                 />
                 {errors.name && <p className="text-red-500 text-sm">{errors.name.message}</p>}
             </div>
-
-            <div>
-                <label className="block text-sm font-medium text-gray-600 tracking-tight dark:text-gray-400"><strong>Surname:</strong></label>
-                <input
-                type="text"
-                {...register("surname")}
-                className="w-full p-2 border border-gray-300 rounded mt-1"
-                />
-                {errors?.surname && <p className="text-red-500 text-sm">{errors.surname.message}</p>}
-            </div>
-
-            {/* {user?.currentdegree && <div>
-                <label className="block text-sm font-medium text-gray-600 tracking-tight dark:text-gray-400">Degree:</label>
-                <input
-                type="text"
-                value={user?.currentdegree}
-                disabled={true}
-                className="w-full p-2 border border-gray-300 rounded mt-1"
-                />
-            </div>} */}
-
-            {/* {user?.role!=="User" && user?.college && <div>
-                <label className="block text-sm font-medium text-gray-600 tracking-tight dark:text-gray-400">College:</label>
-                <input
-                type="text"
-                value={user?.college}
-                disabled={true}
-                className="w-full p-2 border border-gray-300 rounded mt-1"
-                />
-            </div>} */}
-
-            {user.role==='Student' && <div>
-                <label className="block text-sm font-medium text-gray-600 tracking-tight dark:text-gray-400">Batch:</label>
-                <input
-                type="number"
-                value={user?.year}
-                disabled={true}
-                className="w-full p-2 border border-gray-300 rounded mt-1"
-                />
-            </div>}
-
-            {user.role==='Student' && <div>
-                <label className="block text-sm font-medium text-gray-600 tracking-tight dark:text-gray-400">Semester:</label>
-                <input
-                type="number"
-                value={user?.sem}
-                disabled={true}
-                className="w-full p-2 border border-gray-300 rounded mt-1"
-                />
-            </div>}
 
             <Input
 
@@ -173,15 +160,15 @@ const Profile = () => {
 
              />
 
-            
-
-            {/* qualifications later on */}
-
             <button type="submit" className="w-full bg-blue-500 text-white p-2 rounded hover:bg-blue-600">
-                Update Profile
+                Update
             </button>
             </form>
+            <button type="none" className="mt-2 w-full bg-red-500 text-white p-2 rounded hover:bg-red-600" onClick={()=>setConfirmDelete(true)}>
+                Delete
+            </button>
         </div>
+        {confirmDelete && <ConfirmModal  text={"All Data Will be Deleted!!"} done={deleteCollege} cancel={()=>setConfirmDelete(false)} danger={true} />}
     </div>
   );
 };

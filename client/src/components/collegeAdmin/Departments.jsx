@@ -83,7 +83,7 @@ const Departments = () => {
   return (
     <div className="flex-1 p-6 min-h-screen">
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold text-gray-700 dark:text-gray-300">Departments</h1>
+        <h1 className="ml-8 sm:ml-0  text-2xl font-bold text-gray-700 dark:text-gray-300">Departments</h1>
         <button
           onClick={() => {
             setDept({code:"",name:""});
