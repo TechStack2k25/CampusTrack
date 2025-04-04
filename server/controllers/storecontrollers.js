@@ -2,7 +2,7 @@ import Course from '../models/coursemodel.js';
 import Store from '../models/storemodel.js';
 import ApiError from '../utils/apierror.js';
 import asynchandler from '../utils/asynchandler.js';
-import { uploadOnCloudinary } from '../utils/cloudinary.js';
+import { deleteOnCloudinary, uploadOnCloudinary } from '../utils/cloudinary.js';
 
 export const getall = asynchandler(async (req, res, next) => {
   const course = req.params.id;
@@ -19,7 +19,7 @@ export const getall = asynchandler(async (req, res, next) => {
     message: 'All Resource fetched',
     data: {
       allresources,
-      course:reqcourse,
+      course: reqcourse,
     },
   });
 });
@@ -29,6 +29,23 @@ export const deleteresource = asynchandler(async (req, res, next) => {
 
   if (!id) {
     return next(new ApiError('Course Material Not Found Try again', 404));
+  }
+  const resource_for_delete = await Store.findById(id);
+
+  if (!resource_for_delete) {
+    return next(new ApiError('Resource not found', 404));
+  }
+
+  const deleted_url = resource_for_delete.resource;
+
+  if (!deleted_url) {
+    return next(new ApiError('Resource not found', 404));
+  }
+
+  const dleted_result = await deleteOnCloudinary(deleted_url);
+
+  if (!dleted_result) {
+    return next(new ApiError('Error in Deleting And Try Again', 404));
   }
 
   const deletedstore = await Store.findByIdAndDelete(id);

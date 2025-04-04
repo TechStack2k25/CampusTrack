@@ -26,8 +26,6 @@ router.get(
     failureRedirect: `${process.env.FRONTEND_URL}/login`,
   }),
   (req, res) => {
-    // Successful authentication
-    console.log(req);
     if (req.user) {
       res.status(201).json({
         message: 'User Login Successfully',

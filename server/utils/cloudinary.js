@@ -36,7 +36,6 @@ export const uploadOnCloudinary = async (
 
     return uploadResult;
   } catch (error) {
-    return next(new ApiError('Error in uploading file', 422));
     fs.unlinkSync(localFilePath);
     return null;
   }
@@ -46,12 +45,12 @@ export const deleteOnCloudinary = async (fileUrl, resourceType = 'auto') => {
   try {
     if (!fileUrl) return null;
     const public_id = extractPublicId(fileUrl);
-    const deleteResult = await cloudinary.uploader.destroy(fileUrl, {
+    const deleteResult = await cloudinary.uploader.destroy(public_id, {
       resource_type: resourceType,
       invalidate: true,
     });
     return deleteResult;
   } catch (error) {
-    return next(new ApiError('Error in deleting previous file', 422));
+    return null;
   }
 };

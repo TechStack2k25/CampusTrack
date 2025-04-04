@@ -132,7 +132,6 @@ export const getall_submission = asynchandler(async (req, res, next) => {
     return next(new ApiError('Course not found', 422));
   }
   let alltasks = await Task.find({ _id: { $in: reqcourse.task } });
-  // console.log(alltasks);
   const userIdsSet = new Set();
 
   alltasks.forEach((task) => {
@@ -156,8 +155,6 @@ export const getall_submission = asynchandler(async (req, res, next) => {
       const file = submitted_by.get(user._id?.toString());
       if (file) {
         const userData = user?.toObject();
-        // console.log(userData);
-
         return { ...userData, file };
       }
     });
@@ -261,13 +258,6 @@ export const submittask = asynchandler(async (req, res, next) => {
   if (!reqtask) {
     return next(new ApiError('Task not found', 404));
   }
-  console.log(req?.body?.file);
-
-  const uploadedfile = await uploadOnCloudinary(req.file.path);
-
-  if (!uploadedfile.url) {
-    return next(new ApiError('Error in Submitted Assignment', 444));
-  }
 
   const submitted_file = reqtask.submitted_by.get(req.user._id.toString());
 
@@ -296,7 +286,17 @@ export const submittask = asynchandler(async (req, res, next) => {
   if (submitted_file) {
     temp = temp > fixedpoint / 2 ? temp : fixedpoint / 2;
     userreward.reward = userreward.reward - 1.75 * fixedpoint + temp;
-    await deleteOnCloudinary(submitted_file);
+    const deleted_result = await deleteOnCloudinary(submitted_file);
+
+    if (!deleted_result) {
+      return next(new ApiError('Error in Updating Assignment', 422));
+    }
+  }
+
+  const uploadedfile = await uploadOnCloudinary(req.file.path);
+
+  if (!uploadedfile.url) {
+    return next(new ApiError('Error in Submitted Assignment', 444));
   }
   //now save the user reward
   userreward.save();

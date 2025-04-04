@@ -6,14 +6,17 @@ import {
   getdegree,
   updatedegree,
 } from '../controllers/degreecontrollers.js';
+import { restrict_to } from '../controllers/authcontrollers.js';
 
 const router = express.Router();
-//add degree college id
-router.post('/add/:id', adddegree);
 //get all degree  college id
 router.get('/all/:id', getall);
-//get a degree  
+
+//get a degree
 router.get('/getdegree/:id', getdegree);
+router.use(restrict_to(['Admin']));
+//add degree college id
+router.post('/add/:id', adddegree);
 //delete degree id
 router.delete('/del/:id', deletedegree);
 //update degree id
