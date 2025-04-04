@@ -236,8 +236,11 @@ export const restrict_to = (role) =>
   asynchandler(async (req, res, next) => {
     //get the role of the user
     const user_role = req.user.role;
+    console.log(req.user)
     //check the user is quthorised to perform action
     if (role !== user_role) {
+      console.log(role,user_role);
+      
       return next(new ApiError('You Cannot perform that action', 403));
     }
 

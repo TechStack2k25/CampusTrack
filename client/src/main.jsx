@@ -11,6 +11,8 @@ import Authenticate from './utils/Authenticate.jsx';
 import { QueryClientProvider } from "@tanstack/react-query";
 import queryClient from './api/queryClient.js';
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
+import { userService } from './api/userService.js';
+import { collegeService } from './api/collegeService.js';
 
 const router = createBrowserRouter([
   {
@@ -24,7 +26,8 @@ const router = createBrowserRouter([
       { path: '/*', element: <Authenticate auth={true}><Routers /> </Authenticate>},
     ],
   },
-  { path: '/verifyemail/:emailToken', element: <Verifying /> },
+  { path: '/verifyemail/:token', element: <Verifying argName={"emailToken"} verifyFunction={userService.verifyUser} /> },
+  { path: '/deletecollege/:token', element: <Verifying argName={"token"} verifyFunction={collegeService.deleteCollege} /> },
   { path: '*', element: <Notfound /> },
 ]);
 

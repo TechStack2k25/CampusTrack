@@ -9,7 +9,6 @@ import {
   updatepassword,
 } from '../controllers/authcontrollers.js';
 import dotenv from 'dotenv';
-import { verifyuser } from '../controllers/usercontrollers.js';
 // import passport from 'passport';
 
 dotenv.config({ path: './variable.env' });
@@ -45,5 +44,4 @@ router.get(
 router.post('/forgotpassword', forgotpassword);
 router.post('/resetpassword', resetpassword);
 router.get('/logout', logout);
-router.get('/verifyemail', verifyuser);
 export default router;

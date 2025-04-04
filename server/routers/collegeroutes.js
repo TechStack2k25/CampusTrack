@@ -15,7 +15,7 @@ router.get('/deletecollegemail', requestfordelete);
 //create
 router.post('/create', restrict_to('Owner'), addcollege);
 //delete
-router.delete('/del', delcollege);
+router.delete('/del/:token', delcollege);
 //update
 router.patch('/update', updatecollege);
 

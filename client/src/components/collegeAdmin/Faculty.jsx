@@ -3,12 +3,13 @@ import {DataList} from "../Utils/index.js";
 import { useDepartments } from "../../data/departments.js";
 import { useAllCourses } from "../../data/allcourses.js";
 import { useUsers } from "../../data/allUsers.js";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 
 
 const Faculty = () => {
   
   const { college }=useSelector((state)=>state.user?.user);
+  const dispatch=useDispatch();
   // Fetching department, courses, and roles
   const [query, setQuery] = useState({
     college: college,
@@ -38,6 +39,9 @@ const Faculty = () => {
   }, {});
 
 
+  const removeFaculty=async(student_id)=>{
+   //todo
+  }
 
 
 
@@ -50,6 +54,7 @@ const Faculty = () => {
       query={query}
       setQuery={setQuery}
       itemsPerPage={3} // Customizable-> items per page
+      handleRemove={removeFaculty}
     />
   );
 };

@@ -6,7 +6,7 @@ import { useSelector } from 'react-redux';
 import { dateFormat } from '../../utils/dateFormat';
 import { socketService } from '../../api/socketService';
 
-export default function ChatBox({ user, setUser, sendEnable=false }) {
+export default function ChatBox({ user, setUser,fetchUnseen, sendEnable=false }) {
   const messageRef = useRef(null);
   const [messages, setMessages] = useState([]);
   const me = useSelector((state) => state.user.user._id);
@@ -22,6 +22,10 @@ export default function ChatBox({ user, setUser, sendEnable=false }) {
         setTimeout(() => {
           scrollToBottom();
         }, 100);
+        if(user?.unseen>0){
+            fetchUnseen();
+            setUser((prev)=>{return {...prev,unseen:0}});
+        }
       }
     } catch (error) {
       console.error(error);

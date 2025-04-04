@@ -113,7 +113,7 @@ export const getprofile = asynchandler(async (req, res, next) => {
 
 export const getUserData = asynchandler(async (req, res, next) => {
   const requser = await User.findById(req.user._id).populate(
-    'college department course'
+    'college department course currentdegree'
   );
   console.log(requser);
 
@@ -194,7 +194,7 @@ export const get_dashboard = asynchandler(async (req, res, next) => {
   });
 });
 
-const updatetheuser = asynchandler(async (updated_user, sem, year) => {
+const updatetheuser = asynchandler(async (updated_user, sem, year,next) => {
   const reqcollege = updated_user.college;
   if (updated_user.sem === updated_user.currentdegree.totalSemesters) {
     if (updated_user.course.length === 0) {
@@ -236,7 +236,7 @@ const updatetheuser = asynchandler(async (updated_user, sem, year) => {
       { new: true }
     );
   } else {
-    throw new ApiError('Please Enter All Required Fields', 422);
+    return next(new ApiError('Please Enter All Required Fields', 422));
   }
   return updated_user;
 });
@@ -285,7 +285,7 @@ export const update_sem = asynchandler(async (req, res, next) => {
     updated_users.sem = NaN;
     updated_users.year = NaN;
     updated_users.department = null;
-    updated_users.collection = null;
+    updated_users.college = null;
     updated_users.currentdegree = null;
     updated_users.course = [];
     updated_users.role = 'User';
@@ -311,9 +311,15 @@ export const update_sem = asynchandler(async (req, res, next) => {
       college: reqcollege._id,
     }).populate('currentdegree');
 
+   try{
     updated_users = await Promise.all(
-      updated_users.map((user) => updatetheuser(user, sem, year))
+      updated_users.map((user) => updatetheuser(user, sem, year,next))
     );
+   }
+   catch(error){
+    console.log(error)
+    return next(new ApiError("Error in updating",404))
+   }
   }
 
   res.status(201).json({

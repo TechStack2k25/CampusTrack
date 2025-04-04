@@ -11,9 +11,9 @@ function UserList({unseenData, userData, setCurrentUser}) {
     <div className="flex-1 p-2 overflow-y-auto hide-scrollbar">
         <ul>
         {userData?.users.map((user) => 
-            user && <li key={user._id} onClick={()=>setCurrentUser(user)} className="flex items-center justify-between p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer">
+            user && <li key={user._id} onClick={()=>setCurrentUser({...user, unseen:unseenData?.[user?._id] || 0})} className="flex items-center justify-between p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer">
             <span className="font-medium">{user.name}</span>
-            {unseenData?.[user?._id] && <span className={`text-sm text-white bg-blue-500`}>{unseenData?.[user?._id]}</span>}
+            {unseenData?.[user?._id]>0 && <span className={`text-xs font-bold w-5 h-5 rounded-full flex items-center justify-center text-white bg-blue-500`}>{unseenData?.[user?._id]}</span>}
             </li>
         )}
         </ul>

@@ -150,6 +150,21 @@ class UserService {
       throw error;
     }
   };
+
+  updateSem = async (data) => {
+    //  message='Individual' || 'remove_student', sem, year, student_id
+    try {
+      const response = await this.api.post('/update_sem', data);
+
+      console.log(response);
+
+      return response.data?.data;
+      //updated_users,updated_colleges,updated_course,
+    } catch (error) {
+      console.error('Error userService: updateSem: ', error);
+      throw error;
+    }
+  };
 }
 
 export const userService = new UserService();

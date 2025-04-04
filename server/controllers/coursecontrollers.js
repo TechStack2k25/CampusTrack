@@ -236,21 +236,25 @@ export const remove_student = asynchandler(async (req, res, next) => {
   }
   let updatedcourse;
   //check that remove the individual student
-
-  student_attendance = reqcourse.student_attendance.get(student_id)
-    ? reqcourse.student_attendance.delete(student_id)
-    : reqcourse.student_attendance.delete(student_id);
+  let student_attendance;
+  if(reqcourse.student_attendance && reqcourse.student_attendance.get(student_id))
+   student_attendance =  reqcourse.student_attendance.delete(student_id);
   if (message === 'Individual') {
     //remove student from course
-    updatedcourse = Course.findByIdAndUpdate(course_id, {
-      $pull: { users: student_id },
+    updatedcourse = await Course.findByIdAndUpdate(course_id, {
+      $pull : { users: student_id },
       student_attendance,
-    });
-
+    }, { new: true });
+    console.log(updatecourse)
     //from student remove course
-    const updated_student = await User.findById(student_id, {
-      $pull: { course: course_id },
-    });
+    const updated_student = await User.findByIdAndUpdate(
+      student_id,
+      {
+        $pull: { course: course_id }, // removes course_id from 'course' array
+      },
+      { new: true }
+    );
+    
   } else {
     //delete courses from students
     const updated_students = await User.updateMany(
@@ -262,6 +266,7 @@ export const remove_student = asynchandler(async (req, res, next) => {
         $push: { pastcourse: course_id },
       }
     );
+    
 
     //remove all student from course
     updatecourse = await Course.findByIdAndUpdate(course_id, {

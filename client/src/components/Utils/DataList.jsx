@@ -3,7 +3,7 @@ import Pagination from "./Pagination";
 import { nanoid } from "@reduxjs/toolkit";
 import { FaTrashAlt } from "react-icons/fa";
 
-const DataList = ({ title, data, filters, itemsPerPage = 5, options, query, setQuery }) => {
+const DataList = ({ title, data, filters, itemsPerPage = 5, options, query, setQuery, handleRemove }) => {
   const [currentPage, setCurrentPage] = useState(1);
 
 

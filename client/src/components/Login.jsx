@@ -119,8 +119,10 @@ const Login = () => {
             >
               Login
             </button>
-            <GoogleAuthButton onClick={handleGoogle} />
           </form>
+          <div className='my-2 flex justify-center'>
+            <GoogleAuthButton onClick={handleGoogle} />
+          </div>
           <p className='mt-6 text-center text-sm dark:text-gray-500 text-gray-600'>
             Don't have an account?{' '}
             <Link to={'/signup'} className='text-indigo-600 hover:underline'>

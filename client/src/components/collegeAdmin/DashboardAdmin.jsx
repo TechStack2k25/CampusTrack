@@ -3,17 +3,17 @@ import { userService } from '../../api/userService';
 import Table from '../Utils/Table';
 
 
-const activityColumns = [{
-  name:"Activity",
-  id:"title",
-}, {
-  name:"Date",
-  id:"date",
-  type:"date",
-}, {
-  name:"Status",
-  id:"status",
-}];
+// const activityColumns = [{
+//   name:"Activity",
+//   id:"title",
+// }, {
+//   name:"Date",
+//   id:"date",
+//   type:"date",
+// }, {
+//   name:"Status",
+//   id:"status",
+// }];
 
 const eventColumns = [{
   name:"Activity",
@@ -84,9 +84,9 @@ function DashboardAdmin() {
       </div>}
 
       {/* Recent Activity Section (mapping will done later) */}
-      {activityData?.length>0 && <div className='mt-8'>
+      {/* {activityData?.length>0 && <div className='mt-8'>
         <Table title={"Recent Activities"} data={activityData} columns={activityColumns} colorScheme={colorScheme} />
-      </div>}
+      </div>} */}
     </section>
   </main>
   )
