@@ -48,6 +48,7 @@ app.use('/api/auth', authroutes);
 //all user routes
 app.use('/api/user', userroutes);
 //to protect all routes login to acess any task
+app.use('/api/college', collegeroutes);
 app.use(protect);
 app.use(activeuser);
 //all task routes
@@ -66,7 +67,7 @@ app.use('/api/message', messageroutes);
 app.use('/api/request', requestroutes);
 app.use('/api/degree', degreeroutes);
 //all college routes
-app.use('/api/college', restrict_to(['Admin']), collegeroutes);
+
 // to handle the error
 app.use(globalerrorhandler);
 export default app;
