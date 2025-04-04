@@ -85,6 +85,8 @@ export const requestfordelete = asynchandler(async (req, res, next) => {
     return next(new ApiError('College Not Found', 404));
   }
 
+  const requser=await User.findById(user_id);
+
   const deleteToken = reqcollege.createdeletetoken();
 
   if (!deleteToken) {
@@ -99,16 +101,18 @@ export const requestfordelete = asynchandler(async (req, res, next) => {
       message: 'Email Sent successfully',
     });
   } catch (error) {
+    console.log(error);
+    
     reqcollege.deletecollegetoken = undefined;
     reqcollege.deleteTokenExpires = undefined;
     reqcollege.save();
-    return next('Error in sending mail try again', 402);
+    return next(new ApiError('Error in sending mail try again', 402));
   }
 });
 
 export const delcollege = asynchandler(async (req, res, next) => {
   //get the info of the college
-  const { token } = req.body;
+  const { token } = req.params;
 
   //check the college is find to delete
   const reqcollege = await College.findOne({
@@ -135,16 +139,10 @@ export const delcollege = asynchandler(async (req, res, next) => {
       (reqcollege.deleteTokenExpires = undefined),
       reqcollege.save();
   }
-  try {
-    await new Email(requser, null).sendEmailonverification();
-
-    res.status(200).json({
-      status: 'success',
-      message: 'Email Sent',
-    });
-  } catch (error) {
-    return next(new ApiError('Error in send Email', 404));
-  }
+  res.status(200).json({
+    status: 'success',
+    message: 'College deleted',
+  });
 });
 
 export const updatecollege = asynchandler(async (req, res, next) => {
@@ -174,7 +172,7 @@ export const updatecollege = asynchandler(async (req, res, next) => {
     if (existedcollege) return next(new ApiError('College already exist', 404));
   }
   //update the college
-  const updatedcollege = await College.findByOneAndUpdate(
+  const updatedcollege = await College.findOneAndUpdate(
     { admin },
     { name, id },
     { new: true }

@@ -58,9 +58,9 @@ class CollegeService {
   }
 
   // deleting a college
-  deleteCollege=async (data)=> {//data required: _id,
+  deleteCollege=async (data)=> {//data required: token,
     try {
-      const response = await this.api.delete(`/del/${data?._id}`);
+      const response = await this.api.delete(`/del/${data?.token}`);
 
       console.log(response);
       
@@ -72,9 +72,9 @@ class CollegeService {
   }
 
   // updating college
-  updateCollege=async (data)=> {//data required: _id, id, name, degree
+  updateCollege=async (data)=> {//data required:  id, name, degree
     try {
-      const response = await this.api.patch(`/update/${data?._id}`,data);
+      const response = await this.api.patch(`/update`,data);
 
       console.log(response);
       
@@ -82,6 +82,20 @@ class CollegeService {
       //getting updated college
     } catch (error) {
       console.error('Error collegeService: updateCollege: ', error);
+      throw error;
+    }
+  }
+
+  // request to delete college
+  deleteCollegeRequestMail=async ()=> {
+    try {
+      const response = await this.api.get(`/deletecollegemail`);
+
+      console.log(response);
+      
+      return response.status===201;
+    } catch (error) {
+      console.error('Error collegeService: deleteCollegeRequestMail: ', error);
       throw error;
     }
   }

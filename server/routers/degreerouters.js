@@ -11,6 +11,7 @@ import { restrict_to } from '../controllers/authcontrollers.js';
 const router = express.Router();
 //get all degree  college id
 router.get('/all/:id', getall);
+
 //get a degree
 router.get('/getdegree/:id', getdegree);
 router.use(restrict_to(['Admin']));

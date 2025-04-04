@@ -18,23 +18,25 @@ function App() {
   const { status:userStatus, user }=useSelector((state)=>state.user);
 
   const currentUser=async()=>{
-    const res=await userService.currentUser();
-    if(res){
-      dispatch(loginSuccess(res));
+    try {
+      const res=await userService.currentUser();
+      if(res){
+        dispatch(loginSuccess(res));
+      }
+    } catch (error) {
+      console.log(error);
     }
   }
 
   useEffect(()=>{
-    if(userStatus) {
       currentUser();
-      if(user?.role!=='User'){
+      if(userStatus && user?.role!=='User'){
         socketService.connect();
         const rooms=[...user?.course];
         rooms.push(user?.college);
         rooms.push(user?.department);
         socketService.joinRooms(rooms);
       }
-    }
     return () => {
       socketService.disconnect();
     };

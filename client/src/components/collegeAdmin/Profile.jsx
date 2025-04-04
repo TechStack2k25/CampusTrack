@@ -5,6 +5,7 @@ import { userService } from "../../api/userService.js";
 import { ConfirmModal, Input }from "../Utils";
 import { useEffect, useState } from "react";
 import { collegeService } from "../../api/collegeService.js";
+import { FaEdit } from "react-icons/fa";
 
 const Profile = () => {
     const user=useSelector((state)=>state.user.user);
@@ -13,6 +14,7 @@ const Profile = () => {
     current_password:"", new_password:"", confirmpassword:"",
   });
   const [confirmDelete,setConfirmDelete]=useState(false);
+  const [confirmUpdateSem,setConfirmUpdateSem]=useState(false);
 
   const [college,setCollege]=useState({name:"",id:""});
 
@@ -92,8 +94,9 @@ const Profile = () => {
 
   const deleteCollege=async()=>{
     try {
-        const res=await collegeService.deleteCollege();
+        const res=await collegeService.deleteCollegeRequestMail();
         if(res){
+            setConfirmDelete(false);
             dispatch(setSuccess('Checkout your mail!'));
         }
         else dispatch(setError('Try again later!')) ;     
@@ -103,8 +106,31 @@ const Profile = () => {
     }
   }
 
+  const updateSemesters=async()=>{
+    try {
+        const res=await userService.updateSem();
+        if(res){
+            dispatch(setSuccess("Semester Updated!"));
+        }
+    } catch (error) {
+        console.error(error);
+        dispatch(setError(error?.response?.data?.message));
+    }
+    finally{
+        setConfirmUpdateSem(false);
+    }
+  }
+
   return (
     <div className="flex-1 p-6">
+        <button 
+            className="absolute top-2 right-2 text-blue-600 hover:text-blue-800 transition"
+            title="Update Semester"
+            onClick={()=>setConfirmUpdateSem(true)}
+        >
+            <FaEdit className="w-5 h-5" />
+        </button>
+
         <div className="max-w-md mx-auto mt-10 p-6 border dark:border-gray-800 shadow-lg rounded-lg">
             <h2 className="text-xl font-bold text-center mb-4 dark:text-white">College</h2>
             {/* Edit Profile Form */}
@@ -169,6 +195,7 @@ const Profile = () => {
             </button>
         </div>
         {confirmDelete && <ConfirmModal  text={"All Data Will be Deleted!!"} done={deleteCollege} cancel={()=>setConfirmDelete(false)} danger={true} />}
+        {confirmUpdateSem && <ConfirmModal  text={"Semester(+) will be updated!!"} done={updateSemesters} cancel={()=>setConfirmUpdateSem(false)} />}
     </div>
   );
 };

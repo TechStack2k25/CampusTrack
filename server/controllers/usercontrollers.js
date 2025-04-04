@@ -115,7 +115,7 @@ export const getprofile = asynchandler(async (req, res, next) => {
 
 export const getUserData = asynchandler(async (req, res, next) => {
   const requser = await User.findById(req.user._id).populate(
-    'college department course'
+    'college department course currentdegree'
   );
   if (!requser) return next(new ApiError('User not found', 404));
   res.status(201).json({
@@ -194,6 +194,7 @@ export const get_dashboard = asynchandler(async (req, res, next) => {
   });
 });
 
+
 const updatetheuser = async (updated_user, sem, year) => {
   const reqcollege = updated_user.college;
   if (updated_user.sem % 2 == 0) year = true;
@@ -238,7 +239,7 @@ const updatetheuser = async (updated_user, sem, year) => {
       { new: true }
     );
   } else {
-    throw new ApiError('Please Enter All Required Fields', 422);
+    return next(new ApiError('Please Enter All Required Fields', 422));
   }
   return updated_user;
 };
@@ -315,9 +316,15 @@ export const update_sem = asynchandler(async (req, res, next) => {
       role: 'Student',
     }).populate('currentdegree');
 
+   try{
     updated_users = await Promise.all(
-      updated_users.map((user) => updatetheuser(user, sem, year))
+      updated_users.map((user) => updatetheuser(user, sem, year,next))
     );
+   }
+   catch(error){
+    console.log(error)
+    return next(new ApiError("Error in updating",404))
+   }
   }
 
   res.status(201).json({

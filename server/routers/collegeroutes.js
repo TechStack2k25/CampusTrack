@@ -1,5 +1,5 @@
 import express from 'express';
-import dotenv from 'dotenv';
+
 import {
   addcollege,
   delcollege,
@@ -11,7 +11,7 @@ import { protect, restrict_to } from '../controllers/authcontrollers.js';
 
 const router = express.Router();
 //delete
-router.delete('/del', delcollege);
+router.delete('/del/:token', delcollege);
 router.use(protect);
 router.use(restrict_to(['Admin']));
 router.get('/deletecollegemail', requestfordelete);

@@ -123,6 +123,21 @@ class CourseService {
       throw error;
     }
   }
+
+  // remove student
+  removeStudent_s=async (data)=> {//data required: _id(course),student_id, message:'Individual'|| 'All'
+    try {
+      const response = await this.api.post(`/remove_student/${data?._id}`,data);
+
+      console.log(response);
+      
+      return response.data?.data?.updatecourse;
+      //getting updatedcourse
+    } catch (error) {
+      console.error('Error courseService: removeStudent_s: ', error);
+      throw error;
+    }
+  }
   
 }
 

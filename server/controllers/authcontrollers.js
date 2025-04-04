@@ -232,6 +232,7 @@ export const restrict_to = (role) =>
   asynchandler(async (req, res, next) => {
     //get the role of the user
     const user_role = req.user.role;
+
     console.log(role.includes(user_role));
     //check the user is quthorised to perform action
     if (!role.includes(user_role)) {

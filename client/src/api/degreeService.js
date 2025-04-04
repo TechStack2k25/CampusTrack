@@ -53,6 +53,19 @@ class DegreeService {
     }
   }
 
+  getDegree=async (data)=> {//data required: _id(degree)
+    try {
+      const response = await this.api.get(`/getdegree/${data?._id}`);
+
+      console.log(response);
+      return response.data?.data?.reqdegree;
+
+    } catch (error) {
+      console.error('Error DegreeService: getDegree: ', error);
+      throw error;
+    }
+  }
+
   // deleting a degree
   deleteDegree=async (data)=> {//data required: _id,
     try {

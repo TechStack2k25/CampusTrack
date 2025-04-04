@@ -37,8 +37,8 @@ const Signup = () => {
 
   // Google Auth handler
   const handleGoogleAuth = () => {
-    //window.location.href
-    //for Oauth
+    
+    window.location.href = 'http://localhost:3000/api/auth/google';
   };
 
   return (
