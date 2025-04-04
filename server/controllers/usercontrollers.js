@@ -383,3 +383,37 @@ export const verifyuser = asynchandler(async (req, res, next) => {
     message: 'Email Verify successfully',
   });
 });
+
+export const removefaculty = asynchandler(async (req, res, next) => {
+  const { remove_id } = req.body;
+  if (remove_id) {
+    return next(new ApiError('Please Provide All Details', 404));
+  }
+
+  const requser = await User.findById(remove_id);
+
+  if (requser) {
+    return next(new ApiError('User Not Found', 404));
+  }
+  const allcourse = await Course.updateMany(
+    { teacher: requser._id },
+    {
+      teacher: null,
+    },
+    { new: true }
+  );
+
+  const updateduser = await User.findByIdAndUpdate(
+    remove_id,
+    {
+      college: null,
+      department: null,
+      role: 'User',
+    },
+    { new: true }
+  );
+
+  res.status(201).json({
+    message: 'User Removed Succeesfully',
+  });
+});

@@ -9,6 +9,7 @@ import {
   sendEmail,
   getUserData,
   verifyuser,
+  removefaculty,
 } from '../controllers/usercontrollers.js';
 import {
   activeuser,
@@ -34,6 +35,7 @@ router.patch('/update', updateuser);
 router.get('/mydata', getUserData);
 
 router.get('/dashboard', get_dashboard);
-
-router.post('/update_sem', restrict_to(['Admin']), update_sem);
+router.restrict_to(['Admin']);
+router.post('/update_sem', update_sem);
+router.post('/remove_faculty', removefaculty);
 export default router;
