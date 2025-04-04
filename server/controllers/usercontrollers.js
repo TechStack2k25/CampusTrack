@@ -102,7 +102,9 @@ export const updateuser = asynchandler(async (req, res, next) => {
 });
 
 export const getprofile = asynchandler(async (req, res, next) => {
-  const requser = await User.findById(req.user._id);
+  const requser = await User.findById(req.user._id).populate(
+    'college degree department'
+  );
   res.status(201).json({
     message: 'Get profile sucessfully',
     data: {
@@ -115,8 +117,6 @@ export const getUserData = asynchandler(async (req, res, next) => {
   const requser = await User.findById(req.user._id).populate(
     'college department course'
   );
-  console.log(requser);
-
   if (!requser) return next(new ApiError('User not found', 404));
   res.status(201).json({
     message: 'Get User Data sucessfully',
@@ -194,8 +194,10 @@ export const get_dashboard = asynchandler(async (req, res, next) => {
   });
 });
 
-const updatetheuser = asynchandler(async (updated_user, sem, year) => {
+const updatetheuser = async (updated_user, sem, year) => {
   const reqcollege = updated_user.college;
+  if (updated_user.sem % 2 == 0) year = true;
+  console.log(sem, year);
   if (updated_user.sem === updated_user.currentdegree.totalSemesters) {
     if (updated_user.course.length === 0) {
       const dep_id = updated_user.department;
@@ -204,7 +206,7 @@ const updatetheuser = asynchandler(async (updated_user, sem, year) => {
       updated_user.sem = NaN;
       updated_user.year = NaN;
       updated_user.department = null;
-      updated_user.collection = null;
+      updated_user.college = null;
       updated_user.currentdegree = null;
       updated_user.course = [];
       updated_user.role = 'User';
@@ -239,10 +241,11 @@ const updatetheuser = asynchandler(async (updated_user, sem, year) => {
     throw new ApiError('Please Enter All Required Fields', 422);
   }
   return updated_user;
-});
+};
 
 export const update_sem = asynchandler(async (req, res, next) => {
-  const { message, sem, year, student_id } = req.body;
+  let { message, sem, year, student_id } = req.body;
+  sem = true;
 
   const reqcollege = await College.findOne({ admin: req.user._id });
   let updated_users, updated_departments, updated_colleges, updated_course;
@@ -285,7 +288,7 @@ export const update_sem = asynchandler(async (req, res, next) => {
     updated_users.sem = NaN;
     updated_users.year = NaN;
     updated_users.department = null;
-    updated_users.collection = null;
+    updated_users.college = null;
     updated_users.currentdegree = null;
     updated_users.course = [];
     updated_users.role = 'User';
@@ -309,6 +312,7 @@ export const update_sem = asynchandler(async (req, res, next) => {
   } else {
     updated_users = await User.find({
       college: reqcollege._id,
+      role: 'Student',
     }).populate('currentdegree');
 
     updated_users = await Promise.all(
@@ -360,7 +364,6 @@ export const verifyuser = asynchandler(async (req, res, next) => {
     .update(emailToken)
     .digest('hex');
 
-  console.log(hashedToken);
   const requser = await User.findOne({
     emailToken: hashedToken,
     emailExpires: { $gte: Date.now() },

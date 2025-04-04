@@ -16,8 +16,9 @@ router.post('/add_course/:id', add_course_by_student);
 //get all course
 router.get('/all/:id', getall);
 //remove student by course id
-router.post('/remove_student/:id', restrict_to('faculty'), remove_student);
-router.use(restrict_to('HOD'));
+router.use(restrict_to(['HOD', 'faculty']));
+router.post('/remove_student/:id', remove_student);
+router.use(restrict_to(['HOD']));
 //create
 router.post('/create/:id', addcourse);
 //delete

@@ -73,6 +73,10 @@ export const create_request = asynchandler(async (req, res, next) => {
         return next(new ApiError('Error in generating request.Try again', 404));
       }
 
+      if (requset_role == 'Student') {
+        sem = 1;
+        year = 1;
+      }
       //check the request is already exist
       const existed_request = await Request.findOne({
         requestType,

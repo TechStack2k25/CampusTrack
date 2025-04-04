@@ -4,8 +4,6 @@ import dotenv from 'dotenv';
 import { googleauthcallback } from '../controllers/authcontrollers.js';
 dotenv.config({ path: '../variable.env' });
 
-console.log(process.env.O_AUTH_CLIENT_SECRET);
-
 passport.use(
   new OAuth2Strategy(
     {

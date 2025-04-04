@@ -1,5 +1,4 @@
 import express from 'express';
-
 import {
   getall,
   deluser,
@@ -13,24 +12,28 @@ import {
 } from '../controllers/usercontrollers.js';
 import {
   activeuser,
+  protect,
   restrict_to,
   updatepassword,
 } from '../controllers/authcontrollers.js';
 
 const router = express.Router();
+router.post('/verifyemail', verifyuser);
+router.use(protect);
 router.get('/me', getprofile);
 router.get('/sendmail', sendEmail);
-router.post('/verifyemail', verifyuser);
-router.post('/updatepassword', activeuser, updatepassword);
+router.use(activeuser);
+router.post('/updatepassword', updatepassword);
 //get all user
-router.get('/all', activeuser, getall);
+router.get('/all', getall);
 //delete
-router.delete('/del', activeuser, deluser);
+router.delete('/del', deluser);
 //update
-router.patch('/update', activeuser, updateuser);
+router.patch('/update', updateuser);
 
 router.get('/mydata', getUserData);
+
 router.get('/dashboard', get_dashboard);
 
-router.post('/update_sem', restrict_to('Admin'), update_sem);
+router.post('/update_sem', restrict_to(['Admin']), update_sem);
 export default router;

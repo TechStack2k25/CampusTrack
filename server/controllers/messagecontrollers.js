@@ -51,7 +51,16 @@ export const dashboardmessages = asynchandler(async (req, res, next) => {
         lastMessageTime: { $first: '$createdAt' },
         unseen: {
           $sum: {
-            $cond: [{ $not: [{ $in: [req.user._id, '$seenBy'] }] }, 1, 0],
+            $cond: [
+              {
+                $and: [
+                  { $not: [{ $in: [req.user._id, '$seenBy'] }] },
+                  { $ne: ['$senderId', req.user._id] },
+                ],
+              },
+              1,
+              0,
+            ],
           },
         },
       },

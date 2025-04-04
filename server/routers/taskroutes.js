@@ -16,7 +16,7 @@ router.post('/submit/:id', upload.single('file'), submittask);
 //get all task
 router.get('/all/:id', getall);
 //allow faculty to change in task
-router.use(restrict_to('faculty'));
+router.use(restrict_to(['faculty']));
 router.get('/get_submission/:id', getall_submission);
 //create
 router.post('/create/:id', addtask);

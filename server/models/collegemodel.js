@@ -49,8 +49,8 @@ collegeSchema.pre(
         department: null,
         college: null,
         currentdegree: null,
-        sem: NaN,
-        year: NaN,
+        sem: 0,
+        year: 0,
         course: [],
       }
     );

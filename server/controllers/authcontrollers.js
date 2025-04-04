@@ -27,9 +27,7 @@ export const googleauthcallback = async (
   done
 ) => {
   try {
-    console.log(profile.email);
     const requser = await User.findOne({ email: profile.email });
-    console.log(requser);
     if (requser) {
       return done(null, requser);
     }
@@ -44,7 +42,6 @@ export const googleauthcallback = async (
 
     return done(null, requser);
   } catch (error) {
-    console.log(error);
     return done(error, null);
   }
 };
@@ -125,8 +122,7 @@ export const login = asynchandler(async (req, res, next) => {
   }
 
   //find the user who are requested
-  const requser = await User.findOne({ email })
-    .select('+password');
+  const requser = await User.findOne({ email }).select('+password');
 
   //check the user is found or not
   if (!requser) {
@@ -236,8 +232,9 @@ export const restrict_to = (role) =>
   asynchandler(async (req, res, next) => {
     //get the role of the user
     const user_role = req.user.role;
+    console.log(role.includes(user_role));
     //check the user is quthorised to perform action
-    if (role !== user_role) {
+    if (!role.includes(user_role)) {
       return next(new ApiError('You Cannot perform that action', 403));
     }
 

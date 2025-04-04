@@ -31,7 +31,6 @@ app.use(express.json());
 app.use(cookieParser());
 
 dotenv.config({ path: './variable.env' });
-console.log(process.env.SESSION_SECRET_STRING);
 app.use(
   session({
     secret: process.env.SESSION_SECRET_STRING,
@@ -46,32 +45,28 @@ app.use(passport.session());
 app.use(morgan('dev'));
 //all auth routes redirect to authroutes.js
 app.use('/api/auth', authroutes);
-//to protect all routes login to acess any task
-app.use(protect);
-
-//all task routes
-app.use('/api/task', taskroutes);
 //all user routes
 app.use('/api/user', userroutes);
-//to accept and get all request
+//to protect all routes login to acess any task
+app.use(protect);
 app.use(activeuser);
-
-app.use('/api/request', requestroutes);
-app.use('/api/message', messageroutes);
-app.use('/api/store', storeroutes);
-app.use('/api/degree', degreeroutes);
-//all event routes
+//all task routes
+app.use('/api/task', taskroutes);
+//to accept and get all request
 app.use('/api/event', eventroutes);
-
+app.use('/api/store', storeroutes);
 //mark attendace of student
 app.use('/api/attendance', attendanceroutes);
 //all course routes and only hod can make change in courses
 app.use('/api/course', courseroutes);
 //all departmentroute
 app.use('/api/department', departmentroutes);
-
+app.use(restrict_to(['Admin', 'HOD', 'faculty']));
+app.use('/api/message', messageroutes);
+app.use('/api/request', requestroutes);
+app.use('/api/degree', degreeroutes);
 //all college routes
-app.use('/api/college', restrict_to('Admin'), collegeroutes);
+app.use('/api/college', restrict_to(['Admin']), collegeroutes);
 // to handle the error
 app.use(globalerrorhandler);
 export default app;
