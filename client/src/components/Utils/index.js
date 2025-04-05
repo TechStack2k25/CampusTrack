@@ -17,6 +17,8 @@ import ListElement from "./ListElement";
 import Input from "./Input";
 import GoogleAuthButton from './GoogleAuthButton';
 import Loader from './Loader';
+import Table from './Table';
+import Modal from './Modal';
 
 export {
     CourseCard,
@@ -38,5 +40,7 @@ export {
     Input,
     GoogleAuthButton,
     Loader,
+    Table,
+    Modal,
 
 }

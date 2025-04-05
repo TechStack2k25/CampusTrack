@@ -58,10 +58,12 @@ const CourseCard = ({ course ,deletefn ,updatefn }) => {
           </button>
         </div>}
         {courseId && <ConfirmModal 
+          heading={"Are you sure?"}
           text={'This action cannot be undone. Do you want to delete this course?'}
           done={handleConfirmDelete}
           cancel={handleCancelDelete}
           danger={true}
+          cancelText={"Cancel"} doneText={"Confirm"}
         />}
     </div>
   );

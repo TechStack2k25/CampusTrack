@@ -32,15 +32,29 @@ export const googleauthcallback = async (
       return done(null, requser);
     }
 
-    const newuser = await User.create({ email: profile.email });
+    const buffer = crypto.randomBytes(4);
+    const number = buffer.readInt32BE() % 100000000;
+    const password = number.toString().padStart(8, '0');
+    const newuser = await User.create({
+      email: profile.email,
+      password,
+      confirmpassword: password,
+      active: true,
+    });
 
-    const error = new ApiError('Error in creating user');
+    let error = new ApiError('Error in creating user');
 
     if (!newuser) {
       return done(error, null);
     }
 
-    return done(null, requser);
+    try {
+      await new Email(newuser, password).sendPassword();
+    } catch (error) {
+      error = new ApiError('Error in Sending mail');
+    }
+
+    return done(null, newuser);
   } catch (error) {
     return done(error, null);
   }
@@ -164,6 +178,7 @@ export const login = asynchandler(async (req, res, next) => {
 
 export const protect = asynchandler(async (req, res, next) => {
   if (req.user) {
+    //if user id deleted check
     return next();
   }
   //test token store header
@@ -263,7 +278,7 @@ export const forgotpassword = asynchandler(async (req, res, next) => {
   await requser.save({ validateBeforeSave: false });
 
   try {
-    const resetURL = `${process.env.FRONTEND_URL}/resetpassword/${resetToken}`;
+    const resetURL = `${process.env.FRONTEND_URL}/forgot-password/${resetToken}`;
     await new Email(requser, resetURL).sendPasswordReset();
 
     res.status(200).json({
@@ -377,8 +392,30 @@ export const updatepassword = asynchandler(async (req, res, next) => {
   });
 });
 export const logout = asynchandler(async (req, res, next) => {
-  res.clearCookie('acesstoken').clearCookie('refreshtoken');
-  res.status(200).json({ status: 'success' });
+  // Always clear both JWT cookies
+  res.clearCookie('accesstoken').clearCookie('refreshtoken');
+  // console.log(req);
+
+  // If the user was logged in using session (Google)
+  if (req.isAuthenticated && req.isAuthenticated()) {
+    req.logout(function (err) {
+      if (err) return next(err);
+
+      req.session.destroy((err) => {
+        if (err) return next(err);
+
+        res.clearCookie('connect.sid'); // Session cookie
+        return res
+          .status(200)
+          .json({ status: 'success', message: 'Logged out from Google' });
+      });
+    });
+  } else {
+    // JWT-only login
+    return res
+      .status(200)
+      .json({ status: 'success', message: 'Logged out from JWT' });
+  }
 });
 
 export const activeuser = (req, res, next) => {

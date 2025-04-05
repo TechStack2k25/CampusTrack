@@ -194,8 +194,8 @@ const Profile = () => {
                 Delete
             </button>
         </div>
-        {confirmDelete && <ConfirmModal  text={"All Data Will be Deleted!!"} done={deleteCollege} cancel={()=>setConfirmDelete(false)} danger={true} />}
-        {confirmUpdateSem && <ConfirmModal  text={"Semester(+) will be updated!!"} done={updateSemesters} cancel={()=>setConfirmUpdateSem(false)} />}
+        {confirmDelete && <ConfirmModal  heading={"Are you sure?"} cancelText={"Cancel"} doneText={"Confirm"} text={"All Data Will be Deleted!!"} done={deleteCollege} cancel={()=>setConfirmDelete(false)} danger={true} />}
+        {confirmUpdateSem && <ConfirmModal heading={"Are you sure?"} cancelText={"Cancel"} doneText={"Confirm"}  text={"Semester(+) will be updated!!"} done={updateSemesters} cancel={()=>setConfirmUpdateSem(false)} />}
     </div>
   );
 };

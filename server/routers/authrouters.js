@@ -7,6 +7,7 @@ import {
   logout,
   resetpassword,
   updatepassword,
+  cachecontrol,
 } from '../controllers/authcontrollers.js';
 import dotenv from 'dotenv';
 // import passport from 'passport';

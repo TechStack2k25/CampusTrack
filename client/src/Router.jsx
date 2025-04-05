@@ -6,6 +6,7 @@ import { Assignments, Courses, Events, Leaderboard, Lectures, Request, StudyMate
 import {AssignmentsFaculty, AssignmentsSubmissions, Attendance, DashboardFacultyContent, Notification} from './components/facultyComponents/index.js';
 import { Approvals, DashboardAdmin, Degrees, Departments, Faculty, Scholars, Profile as AdminProfile } from './components/collegeAdmin/index.js';
 import { DashboardContent, Notfound, Profile } from './components/index.js';
+import WebAdmin from './components/WebAdmin/WebAdmin.jsx';
 
 
 const Routers = () => {
@@ -16,6 +17,7 @@ const Routers = () => {
   
     return (
       <Routes>
+        {role==='Owner' &&  <Route path='dashboard' element={<WebAdmin/>}/>}
         {role==='faculty' && (
           <>
           <Route  element={<DashboardFaculty/>}>

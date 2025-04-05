@@ -65,9 +65,9 @@ export default class Email {
   async sendEmailonverification() {
     const subject = 'Your College is verified';
     const htmlbody = `<p>Hello <strong>${this.firstName}</strong>,</p>
-             <p>Please use the following link to update you college:</p>
+             <p>Please use the following link to update your college or login your account to update it:</p>
              <a href="${this.url}">${this.url}</a>`;
-    const url = `Hello ${this.firstName},\n\nPlease use the following link to update you college: ${this.url}\n\n.`;
+    const url = `Hello ${this.firstName},\n\nPlease use the following link to update you college or login your account to update it: ${this.url}\n\n.`;
     await this.send(subject, htmlbody, url);
   }
 
@@ -80,6 +80,15 @@ export default class Email {
              <p>Warning Once you delete You lose all data </p>
              <p>The link is valid for 10 minutes.</p>`;
     const url = `Hello ${this.firstName},\n\n>Please use the following link to delete your college account:: ${this.url}\n\nWarning Once you delete You lose all data \n\nThe link is valid for 10 minutes.`;
+    await this.send(subject, htmlbody, url);
+  }
+
+  async sendPassword() {
+    const subject =
+      'Your Password for current account';
+    const htmlbody = `
+             <p>Please use ${this.url} as current password to change your password.</p>`;
+    const url = `Please use the ${this.url} as current password to change your password`;
     await this.send(subject, htmlbody, url);
   }
 }
