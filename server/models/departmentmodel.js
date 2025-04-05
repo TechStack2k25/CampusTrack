@@ -35,58 +35,58 @@ const deparmentSchema = mongoose.Schema({
   },
 });
 
-deparmentSchema.pre(
-  'deleteMany',
-  asynchandler(async function (next) {
-    //delete all the course of department
-    const courseIds = this.courses;
-    const userId = this.user;
+deparmentSchema.pre('deleteMany', async function (next) {
+  const filter = this.getQuery(); // filter used in deleteMany
+
+  const departments = await this.model.find(filter);
+
+  for (const dept of departments) {
+    const courseIds = dept.courses;
+    const userIds = dept.users;
 
     await User.updateMany(
-      { _id: { $in: userId } },
-      {
-        department: null,
-        course: [],
-      }
-    );
-    //filter the courses and delete
-    const result = await Course.deleteMany({ _id: { $in: courseIds } });
-
-    //check all courses delete successfully
-    if (result.acknowledged) {
-      return next(new ApiError('error in deleted course of department ', 422));
-    }
-
-    next();
-  })
-);
-
-deparmentSchema.pre(
-  'findOneAndDelete',
-  asynchandler(async function (next) {
-    //delete all the course of department
-    const courseIds = this.courses;
-    //filter the courses and delete
-    const result = await Course.deleteMany({ _id: { $in: courseIds } });
-
-    const userId = this.user;
-
-    await User.updateMany(
-      { _id: { $in: userId } },
+      { _id: { $in: userIds } },
       {
         department: null,
         course: [],
       }
     );
 
-    //check all courses delete successfully
-    if (result.acknowledged) {
-      return next(new ApiError('error in deleted course of department ', 422));
-    }
+    await Course.deleteMany({ _id: { $in: courseIds } });
+  }
 
-    next();
-  })
-);
+  next();
+});
+
+deparmentSchema.pre('findOneAndDelete', async function (next) {
+  const department = await this.model.findOne(this.getQuery());
+
+  if (!department) {
+    return next(); // nothing to delete
+  }
+
+  const courseIds = department.courses;
+  const userIds = department.user;
+
+  // Delete related courses
+  const result = await Course.deleteMany({ _id: { $in: courseIds } });
+
+  // Optional: Check if deletion failed
+  if (!result) {
+    return next(new Error('Error deleting courses of department', 400));
+  }
+
+  // Update users: remove department and courses
+  await User.updateMany(
+    { _id: { $in: userIds } },
+    {
+      department: null,
+      course: [],
+    }
+  );
+
+  next();
+});
 const Department = new mongoose.model('Department', deparmentSchema);
 
 export default Department;

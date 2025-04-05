@@ -194,7 +194,6 @@ export const get_dashboard = asynchandler(async (req, res, next) => {
   });
 });
 
-
 const updatetheuser = async (updated_user, sem, year) => {
   const reqcollege = updated_user.college;
   if (updated_user.sem % 2 == 0) year = true;
@@ -316,15 +315,14 @@ export const update_sem = asynchandler(async (req, res, next) => {
       role: 'Student',
     }).populate('currentdegree');
 
-   try{
-    updated_users = await Promise.all(
-      updated_users.map((user) => updatetheuser(user, sem, year,next))
-    );
-   }
-   catch(error){
-    console.log(error)
-    return next(new ApiError("Error in updating",404))
-   }
+    try {
+      updated_users = await Promise.all(
+        updated_users.map((user) => updatetheuser(user, sem, year, next))
+      );
+    } catch (error) {
+      console.log(error);
+      return next(new ApiError('Error in updating', 404));
+    }
   }
 
   res.status(201).json({
@@ -393,13 +391,13 @@ export const verifyuser = asynchandler(async (req, res, next) => {
 
 export const removefaculty = asynchandler(async (req, res, next) => {
   const { remove_id } = req.body;
-  if (remove_id) {
+  if (!remove_id) {
     return next(new ApiError('Please Provide All Details', 404));
   }
 
   const requser = await User.findById(remove_id);
 
-  if (requser) {
+  if (!requser) {
     return next(new ApiError('User Not Found', 404));
   }
   const allcourse = await Course.updateMany(

@@ -16,7 +16,10 @@ export const addcollege = asynchandler(async (req, res, next) => {
     return next(new ApiError('User Not Found', 404));
   }
 
-  const reqcollege = await College.findOne({ admin: requser._id });
+  const reqcollege = await College.findOne({
+    admin: requser._id,
+    active: true,
+  });
 
   if (reqcollege) {
     return next(
@@ -35,10 +38,11 @@ export const addcollege = asynchandler(async (req, res, next) => {
 
   const updateduser = await User.findByIdAndUpdate(requser._id, {
     college: newcollege._id,
+    role: 'Admin',
   });
 
   try {
-    const url = `${process.env.FRONTEND_URL}/updatecollege`;
+    const url = `${process.env.FRONTEND_URL}/profile`;
     await new Email(requser, url).sendEmailonverification();
 
     res.status(200).json({
@@ -85,7 +89,7 @@ export const requestfordelete = asynchandler(async (req, res, next) => {
     return next(new ApiError('College Not Found', 404));
   }
 
-  const requser=await User.findById(user_id);
+  const requser = await User.findById(user_id);
 
   const deleteToken = reqcollege.createdeletetoken();
 
@@ -102,7 +106,7 @@ export const requestfordelete = asynchandler(async (req, res, next) => {
     });
   } catch (error) {
     console.log(error);
-    
+
     reqcollege.deletecollegetoken = undefined;
     reqcollege.deleteTokenExpires = undefined;
     reqcollege.save();

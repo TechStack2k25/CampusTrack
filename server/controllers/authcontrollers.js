@@ -387,3 +387,8 @@ export const activeuser = (req, res, next) => {
   }
   next();
 };
+
+export const cachecontrol = (req, res, next) => {
+  res.set('Cache-Control', 'no-store');
+  next();
+};

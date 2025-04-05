@@ -13,6 +13,7 @@ import {
 } from '../controllers/usercontrollers.js';
 import {
   activeuser,
+  cachecontrol,
   protect,
   restrict_to,
   updatepassword,
@@ -34,8 +35,8 @@ router.patch('/update', updateuser);
 
 router.get('/mydata', getUserData);
 
-router.get('/dashboard', get_dashboard);
-router.restrict_to(['Admin']);
+router.get('/dashboard', cachecontrol, get_dashboard);
+router.use(restrict_to(['Admin']));
 router.post('/update_sem', update_sem);
 router.post('/remove_faculty', removefaculty);
 export default router;
