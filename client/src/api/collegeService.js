@@ -43,7 +43,7 @@ class CollegeService {
   }
 
   // creating college
-  createCollege=async (data)=> {//data required: name, id(college), degree
+  createCollege=async (data)=> {//data required: college Admin: email
     try {
       const response = await this.api.post('/create',data);
 

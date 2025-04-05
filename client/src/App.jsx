@@ -28,8 +28,13 @@ function App() {
     }
   }
 
-  useEffect(()=>{
-      currentUser();
+  useEffect(() => {
+    const delayAndFetch = async () => {
+      await new Promise((res) => setTimeout(res, 300)); // Wait for session cookie
+      await currentUser();
+    };
+  
+    delayAndFetch();
       if(userStatus && user?.role!=='User'){
         socketService.connect();
         const rooms=[...user?.course];

@@ -31,15 +31,26 @@ export const googleauthcallback = async (
     if (requser) {
       return done(null, requser);
     }
+  
+    const buffer=crypto.randomBytes(4);
+    const number=buffer.readInt32BE() %100000000
+    const password=number.toString().padStart(8,'0')
+    const newuser = await User.create({ email: profile.email ,password,confirmpassword:password,active:true});
 
-    const newuser = await User.create({ email: profile.email });
-
-    const error = new ApiError('Error in creating user');
+    let error = new ApiError('Error in creating user');
 
     if (!newuser) {
       return done(error, null);
     }
+    
+    try {
+      await new Email(newuser,password).sendPassword()
+    } catch (error) {
+       error = new ApiError('Error in Sending mail');
+      
+    }
 
+    
     return done(null, requser);
   } catch (error) {
     return done(error, null);
@@ -263,7 +274,7 @@ export const forgotpassword = asynchandler(async (req, res, next) => {
   await requser.save({ validateBeforeSave: false });
 
   try {
-    const resetURL = `${process.env.FRONTEND_URL}/resetpassword/${resetToken}`;
+    const resetURL = `${process.env.FRONTEND_URL}/forgot-password/${resetToken}`;
     await new Email(requser, resetURL).sendPasswordReset();
 
     res.status(200).json({

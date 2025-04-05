@@ -151,6 +151,8 @@ const Departments = () => {
           done={handleConfirmDelete}
           cancel={handleCancelDelete}
           danger={true}
+          heading={"Are you sure?"}
+          cancelText={"Cancel"} doneText={"Confirm"}
         />
       }
 

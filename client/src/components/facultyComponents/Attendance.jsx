@@ -252,7 +252,7 @@ const Attendance = () => {
             )}
         </div>
       )}
-      {removeStudents && <ConfirmModal text={"Want to remove all students?"} done={()=>removeStudent({_id:1},"All")} cancel={()=>setRemoveStudents(false)} danger={true} />}
+      {removeStudents && <ConfirmModal heading={"Are you sure?"} cancelText={"Cancel"} doneText={"Confirm"} text={"Want to remove all students?"} done={()=>removeStudent({_id:1},"All")} cancel={()=>setRemoveStudents(false)} danger={true} />}
     </div>
   );
 };

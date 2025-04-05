@@ -5,7 +5,7 @@ import * as crypto from 'crypto';
 const collegeSchema = mongoose.Schema({
   name: {
     type: String,
-    required: true,
+    default: "",
   },
   id: {
     type: String,

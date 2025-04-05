@@ -35,7 +35,7 @@ router.patch('/update', updateuser);
 router.get('/mydata', getUserData);
 
 router.get('/dashboard', get_dashboard);
-router.restrict_to(['Admin']);
+router.use(restrict_to(['Admin']));
 router.post('/update_sem', update_sem);
 router.post('/remove_faculty', removefaculty);
 export default router;

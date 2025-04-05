@@ -102,9 +102,7 @@ export const updateuser = asynchandler(async (req, res, next) => {
 });
 
 export const getprofile = asynchandler(async (req, res, next) => {
-  const requser = await User.findById(req.user._id).populate(
-    'college degree department'
-  );
+  const requser = await User.findById(req.user._id);
   res.status(201).json({
     message: 'Get profile sucessfully',
     data: {

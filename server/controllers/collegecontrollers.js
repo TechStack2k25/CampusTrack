@@ -26,6 +26,7 @@ export const addcollege = asynchandler(async (req, res, next) => {
   //if not exist create the college
   const newcollege = await College.create({
     admin: requser._id,
+    id: requser._id
   });
 
   //if error in created in entity
@@ -35,16 +36,12 @@ export const addcollege = asynchandler(async (req, res, next) => {
 
   const updateduser = await User.findByIdAndUpdate(requser._id, {
     college: newcollege._id,
+    role: 'Admin',
   });
 
   try {
-    const url = `${process.env.FRONTEND_URL}/updatecollege`;
+    const url = `${process.env.FRONTEND_URL}/profile`;
     await new Email(requser, url).sendEmailonverification();
-
-    res.status(200).json({
-      status: 'success',
-      message: 'Email Sent',
-    });
   } catch (error) {
     return next(new ApiError('Error in send Email', 404));
   }

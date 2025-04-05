@@ -13,7 +13,7 @@ const router = express.Router();
 //delete
 router.delete('/del/:token', delcollege);
 router.use(protect);
-router.use(restrict_to(['Admin']));
+router.use(restrict_to(['Admin','Owner']));
 router.get('/deletecollegemail', requestfordelete);
 //update
 router.patch('/update', updatecollege);
