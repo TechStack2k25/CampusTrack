@@ -102,7 +102,7 @@ export const requestfordelete = asynchandler(async (req, res, next) => {
       message: 'Email Sent successfully',
     });
   } catch (error) {
-    console.log(error);
+    // console.log(error);
 
     reqcollege.deletecollegetoken = undefined;
     reqcollege.deleteTokenExpires = undefined;
@@ -116,7 +116,7 @@ export const delcollege = asynchandler(async (req, res, next) => {
   const { token } = req.params;
 
   const hashedToken = crypto.createHash('sha256').update(token).digest('hex');
-  console.log(hashedToken);
+  // console.log(hashedToken);
   //check the college is find to delete
   const reqcollege = await College.findOne({
     deletecollegetoken: hashedToken,

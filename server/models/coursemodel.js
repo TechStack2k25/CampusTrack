@@ -58,7 +58,7 @@ courseSchema.pre('findOneAndDelete', async function (next) {
     return next(); // Course not found, nothing to do
   }
 
-  console.log(course._id);
+  // console.log(course._id);
   await User.updateMany(
     { course: { $in: course._id } },
     { $pull: { course: course._id } }

@@ -85,7 +85,7 @@ deparmentSchema.pre('findOneAndDelete', async function (next) {
     return next(); // nothing to delete
   }
 
-  console.log('delete the department');
+  // console.log('delete the department');
   const courseIds = department.courses;
 
   // Delete related courses

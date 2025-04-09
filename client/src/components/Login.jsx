@@ -21,13 +21,13 @@ const Login = () => {
   const { loading, error } = useSelector((state) => state.user);
 
   const handleSubmission = async (data) => {
-    console.log('User Data:', data);
+    // console.log('User Data:', data);
     dispatch(loginStart());
     try {
       //Normal signup data
       const user = await authService.userLogin(data);
       if (user) {
-        console.log(user);
+        // console.log(user);
         dispatch(loginSuccess(user));
       } else {
         dispatch(loginFailure('Try again later..'));
@@ -38,7 +38,9 @@ const Login = () => {
   };
 
   const handleGoogle = () => {
-    window.location.href = 'http://localhost:3000/api/auth/google';
+    window.location.href = `${
+      import.meta.env.VITE_BACKENED_URL
+    }/api/auth/google`;
   };
 
   return (

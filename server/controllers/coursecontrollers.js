@@ -255,7 +255,7 @@ export const remove_student = asynchandler(async (req, res, next) => {
       },
       { new: true }
     );
-    console.log(updatecourse);
+    // console.log(updatecourse);
     //from student remove course
     const updated_student = await User.findByIdAndUpdate(student_id, {
       $pull: { course: course_id },

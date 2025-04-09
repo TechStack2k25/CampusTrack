@@ -34,7 +34,7 @@ const UserMenu = () => {
   };
 
   const logoutUser = () => {
-    console.log('logout user...');
+    // console.log('logout user...');
     dispatch(clearError());
     //call API
     try {
@@ -71,7 +71,7 @@ const UserMenu = () => {
   return (
     <div className='relative' ref={menuRef}>
       <div className='flex items-center space-x-2 sm:space-x-4'>
-        {!['User','Owner'].includes(user?.role) && <Notifications />}
+        {!['User', 'Owner'].includes(user?.role) && <Notifications />}
         {/* User Icon */}
         <button onClick={toggleMenu} className='flex items-center rounded-full'>
           <div className='cursor-pointer h-10 aspect-square bg-blue-500 rounded-full flex items-center justify-center text-white font-bold'>
@@ -97,19 +97,20 @@ const UserMenu = () => {
                 </div>
               </Link>
             </li>
-            {user?.role!=='Owner' && <li>
-              <NavLink
-                to="/profile"
-                className={({ isActive }) =>
-                  isActive
-                    ? 'bg-blue-400 dark:bg-blue-800 text-white  rounded hover:bg-white hover:text-blue-500 dark:hover:text-blue-800 block w-full text-left px-4 py-2 text-bold'
-                    : 'block w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-900'
-                }
-              >
-                {user?.role === 'Admin' ? "College" : "Profile"}
-
-              </NavLink>
-            </li>}
+            {user?.role !== 'Owner' && (
+              <li>
+                <NavLink
+                  to='/profile'
+                  className={({ isActive }) =>
+                    isActive
+                      ? 'bg-blue-400 dark:bg-blue-800 text-white  rounded hover:bg-white hover:text-blue-500 dark:hover:text-blue-800 block w-full text-left px-4 py-2 text-bold'
+                      : 'block w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-900'
+                  }
+                >
+                  {user?.role === 'Admin' ? 'College' : 'Profile'}
+                </NavLink>
+              </li>
+            )}
             {!user?.active && (
               <li
                 className={
@@ -126,24 +127,24 @@ const UserMenu = () => {
                 )}
               </li>
             )}
-            {!['Admin', 'HOD','Owner'].includes(user?.role) && user?.active && (
-              <li>
-                <NavLink
-                  to='/request'
-                  className={({ isActive }) =>
-                    isActive
-                      ? 'bg-blue-400 dark:bg-blue-800 text-white  rounded hover:bg-white hover:text-blue-500 dark:hover:text-blue-800 block w-full text-left px-4 py-2 text-bold'
-                      : 'block w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-900'
-                  }
-                >
-                  Request
-                </NavLink>
-              </li>
-            )}
+            {!['Admin', 'HOD', 'Owner'].includes(user?.role) &&
+              user?.active && (
+                <li>
+                  <NavLink
+                    to='/request'
+                    className={({ isActive }) =>
+                      isActive
+                        ? 'bg-blue-400 dark:bg-blue-800 text-white  rounded hover:bg-white hover:text-blue-500 dark:hover:text-blue-800 block w-full text-left px-4 py-2 text-bold'
+                        : 'block w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-900'
+                    }
+                  >
+                    Request
+                  </NavLink>
+                </li>
+              )}
             {user?.role === 'User' && user?.active && (
               <li
-                className={`cursor-pointer block w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-900`
-                }
+                className={`cursor-pointer block w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-900`}
                 onClick={() => setSetUpCollege(true)}
               >
                 SetUp College
@@ -160,12 +161,24 @@ const UserMenu = () => {
           </ul>
         </div>
       )}
-      {setUpCollege && <ConfirmModal heading={"College SetUp"} doneText='Done' text={<>
-        Kindly mail your email credentials to{" "}
-        <a href="mailto:11082004harshit@gmail.com" className="text-blue-600 underline">
-          11082004harshit@gmail.com
-        </a>
-      </>} done={() => setSetUpCollege(false)} />}
+      {setUpCollege && (
+        <ConfirmModal
+          heading={'College SetUp'}
+          doneText='Done'
+          text={
+            <>
+              Kindly mail your email credentials to{' '}
+              <a
+                href='mailto:11082004harshit@gmail.com'
+                className='text-blue-600 underline'
+              >
+                11082004harshit@gmail.com
+              </a>
+            </>
+          }
+          done={() => setSetUpCollege(false)}
+        />
+      )}
     </div>
   );
 };

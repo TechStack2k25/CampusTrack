@@ -15,52 +15,53 @@ class AttendanceService {
     });
 
     // Add Response Interceptor
-  this.api.interceptors.response.use(
-    (response) => response, // Pass successful responses
-    (error) => {
-      if (error.response && error.response.status === 401) {
-        console.warn('Unauthorized! Logging out user...');
-        socketService.disconnect();
-        store.dispatch(logout()); // Dispatch logout action
+    this.api.interceptors.response.use(
+      (response) => response, // Pass successful responses
+      (error) => {
+        if (error.response && error.response.status === 401) {
+          // console.warn('Unauthorized! Logging out user...');
+          socketService.disconnect();
+          store.dispatch(logout()); // Dispatch logout action
+        }
+        return Promise.reject(error); // Reject error for further handling
       }
-      return Promise.reject(error); // Reject error for further handling
-    }
-  );
-}
+    );
+  }
 
-  
   // marking students attendance
-  markAttendance= async (data)=> {//data required: courseId, presentStudentIds
+  markAttendance = async (data) => {
+    //data required: courseId, presentStudentIds
     try {
-      const response = await this.api.post(`/mark`,data);
+      const response = await this.api.post(`/mark`, data);
 
-      console.log(response);
-      
+      // console.log(response);
+
       return response.data?.message;
       //getting status with message
     } catch (error) {
-      console.error('Error AttendanceService: markAttendance: ', error);
+      // console.error('Error AttendanceService: markAttendance: ', error);
       throw error;
     }
-  }
+  };
 
-  
   // all courses student
-  studentCoursesAttendance=async ()=> {//cookies required
+  studentCoursesAttendance = async () => {
+    //cookies required
     try {
-      
       const response = await this.api.get(`/get_student`);
 
-      console.log(response);
-      
+      // console.log(response);
+
       return response.data?.data;
       //getting all courses student attendance
     } catch (error) {
-      console.error('Error AttendanceService: studentCoursesAttendance: ', error);
+      // console.error(
+      //   'Error AttendanceService: studentCoursesAttendance: ',
+      //   error
+      // );
       throw error;
     }
-  }
-  
+  };
 }
 
 export const attendanceService = new AttendanceService();

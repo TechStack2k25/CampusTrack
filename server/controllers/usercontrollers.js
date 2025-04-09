@@ -195,7 +195,7 @@ export const get_dashboard = asynchandler(async (req, res, next) => {
 const updatetheuser = async (updated_user, sem, year) => {
   const reqcollege = updated_user.college;
   if (updated_user.sem % 2 == 0) year = true;
-  console.log(sem, year);
+  // console.log(sem, year);
   if (updated_user.sem === updated_user.currentdegree.totalSemesters) {
     if (updated_user.course.length === 0) {
       const dep_id = updated_user.department;
@@ -318,7 +318,7 @@ export const update_sem = asynchandler(async (req, res, next) => {
         updated_users.map((user) => updatetheuser(user, sem, year, next))
       );
     } catch (error) {
-      console.log(error);
+      // console.log(error);
       return next(new ApiError('Error in updating', 404));
     }
   }

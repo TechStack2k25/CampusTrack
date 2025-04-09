@@ -15,65 +15,63 @@ class MessageService {
     });
 
     // Add Response Interceptor
-  this.api.interceptors.response.use(
-    (response) => response, // Pass successful responses
-    (error) => {
-      if (error.response && error.response.status === 401) {
-        console.warn('Unauthorized! Logging out user...');
-        socketService.disconnect();
-        store.dispatch(logout()); // Dispatch logout action
+    this.api.interceptors.response.use(
+      (response) => response, // Pass successful responses
+      (error) => {
+        if (error.response && error.response.status === 401) {
+          // console.warn('Unauthorized! Logging out user...');
+          socketService.disconnect();
+          store.dispatch(logout()); // Dispatch logout action
+        }
+        return Promise.reject(error); // Reject error for further handling
       }
-      return Promise.reject(error); // Reject error for further handling
-    }
-  );
-}
+    );
+  }
 
-  
-  getAllSenders= async ()=> {
+  getAllSenders = async () => {
     try {
       const response = await this.api.get(`/dashboard_message`);
 
-      console.log(response);
-      
+      // console.log(response);
+
       return response.data?.data?.allmessages;
       //messages array
     } catch (error) {
-      console.error('Error messageService: getAllSenders: ', error);
+      // console.error('Error messageService: getAllSenders: ', error);
       throw error;
     }
-  }
-  
-  getUserMessages= async (data)=> {//data required: _id
+  };
+
+  getUserMessages = async (data) => {
+    //data required: _id
     try {
       const response = await this.api.get(`/getmessage/${data?._id}`);
 
-      console.log(response);
-      
+      // console.log(response);
+
       return response.data?.data?.allmessages;
       //messages array
     } catch (error) {
-      console.error('Error messageService: getUserMessages: ', error);
+      // console.error('Error messageService: getUserMessages: ', error);
       throw error;
     }
-  }
+  };
 
-  
   // all courses student
-  sendMessage=async (data)=> {//_id, text
+  sendMessage = async (data) => {
+    //_id, text
     try {
-      
-      const response = await this.api.post(`/send/${data?._id}`,data);
+      const response = await this.api.post(`/send/${data?._id}`, data);
 
-      console.log(response);
-      
+      // console.log(response);
+
       return response.data?.data?.newmessage;
       //new message
     } catch (error) {
-      console.error('Error messageService: sendMessage: ', error);
+      // console.error('Error messageService: sendMessage: ', error);
       throw error;
     }
-  }
-  
+  };
 }
 
 export const messageService = new MessageService();
