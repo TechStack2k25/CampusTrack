@@ -5,6 +5,7 @@ import asynchandler from '../utils/asynchandler.js';
 import Email from '../utils/emailhandler.js';
 import { isvaliduser } from './authcontrollers.js';
 import dotenv from 'dotenv';
+import * as crypto from 'crypto';
 dotenv.config({ path: './variable.env' });
 export const addcollege = asynchandler(async (req, res, next) => {
   //get the data from req to create new entity
@@ -29,7 +30,7 @@ export const addcollege = asynchandler(async (req, res, next) => {
   //if not exist create the college
   const newcollege = await College.create({
     admin: requser._id,
-    id: requser._id
+    id: requser._id,
   });
 
   //if error in created in entity
@@ -92,7 +93,7 @@ export const requestfordelete = asynchandler(async (req, res, next) => {
   if (!deleteToken) {
     return next(new ApiError('Error in creating token Try Again', 404));
   }
-
+  await reqcollege.save();
   try {
     const deleteurl = `${process.env.FRONTEND_URL}/deletecollege/${deleteToken}`;
     await new Email(requser, deleteurl).sendEmailForDeleteCollege();
@@ -114,9 +115,11 @@ export const delcollege = asynchandler(async (req, res, next) => {
   //get the info of the college
   const { token } = req.params;
 
+  const hashedToken = crypto.createHash('sha256').update(token).digest('hex');
+  console.log(hashedToken);
   //check the college is find to delete
   const reqcollege = await College.findOne({
-    deletecollegetoken: token,
+    deletecollegetoken: hashedToken,
     deleteTokenExpires: { $gte: Date.now() },
   });
 
@@ -126,13 +129,13 @@ export const delcollege = asynchandler(async (req, res, next) => {
   }
 
   //delete the college
-  const dele_or_not = await College.findByOneAndDelete({
-    deletecollegetoken: token,
+  const dele_or_not = await College.findOneAndDelete({
+    deletecollegetoken: hashedToken,
     deleteTokenExpires: { $gte: Date.now() },
   });
 
   //if  error in deleted college  then return error
-  if (!dele_or_not?.acknowledged) {
+  if (!dele_or_not) {
     return next(new ApiError('Error in deleted the college', 422));
   } else {
     (reqcollege.deletecollegetoken = undefined),

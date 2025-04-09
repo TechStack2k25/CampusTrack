@@ -2,6 +2,7 @@ import asynchandler from '../utils/asynchandler.js';
 import mongoose from 'mongoose';
 import Course from './coursemodel.js';
 import User from './usermodel.js';
+import College from './collegemodel.js';
 
 const deparmentSchema = mongoose.Schema({
   name: {
@@ -42,15 +43,34 @@ deparmentSchema.pre('deleteMany', async function (next) {
 
   for (const dept of departments) {
     const courseIds = dept.courses;
-    const userIds = dept.users;
+    const userIds = dept.user;
 
     await User.updateMany(
       { _id: { $in: userIds } },
       {
-        department: null,
-        course: [],
+        $set: {
+          role: 'User',
+          department: null,
+          college: null,
+          currentdegree: null,
+          sem: 0,
+          year: 0,
+          course: [],
+        },
       }
     );
+
+    const updatehod = User.findByIdAndUpdate(dept.hod, {
+      $set: {
+        role: 'User',
+        department: null,
+        college: null,
+        currentdegree: null,
+        sem: 0,
+        year: 0,
+        course: [],
+      },
+    });
 
     await Course.deleteMany({ _id: { $in: courseIds } });
   }
@@ -65,8 +85,8 @@ deparmentSchema.pre('findOneAndDelete', async function (next) {
     return next(); // nothing to delete
   }
 
+  console.log('delete the department');
   const courseIds = department.courses;
-  const userIds = department.user;
 
   // Delete related courses
   const result = await Course.deleteMany({ _id: { $in: courseIds } });
@@ -78,13 +98,27 @@ deparmentSchema.pre('findOneAndDelete', async function (next) {
 
   // Update users: remove department and courses
   await User.updateMany(
-    { _id: { $in: userIds } },
+    { department: department._id },
     {
-      department: null,
-      course: [],
+      $set: {
+        role: 'User',
+        department: null,
+        college: null,
+      },
     }
   );
 
+  const updatehod = User.findByIdAndUpdate(department.hod, {
+    $set: {
+      role: 'User',
+      department: null,
+      college: null,
+    },
+  });
+
+  const updatedcollege = await College.findByIdAndUpdate(department.college, {
+    $pull: { department: department._id },
+  });
   next();
 });
 const Department = new mongoose.model('Department', deparmentSchema);
