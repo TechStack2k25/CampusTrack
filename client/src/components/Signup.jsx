@@ -4,7 +4,11 @@ import { FcGoogle } from "react-icons/fc";
 import { Link } from 'react-router-dom';
 import { authService } from "../api/authService";
 import { useDispatch } from 'react-redux';
-import { loginStart, loginSuccess, loginFailure } from "../store/slices/userSlice";
+import {
+  loginStart,
+  loginSuccess,
+  loginFailure,
+} from '../store/slices/userSlice';
 
 const Signup = () => {
   const {
@@ -47,10 +51,10 @@ const Signup = () => {
               Email:
             </label>
             <input
-              type="email"
-              id="email"
-              {...register("email", {
-                required: "Email is required",
+              type='email'
+              id='email'
+              {...register('email', {
+                required: 'Email is required',
                 pattern: {
                   value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
                   message: "Enter a valid email address",
@@ -68,13 +72,13 @@ const Signup = () => {
               Password:
             </label>
             <input
-              type="password"
-              id="password"
-              {...register("password", {
-                required: "Password is required",
+              type='password'
+              id='password'
+              {...register('password', {
+                required: 'Password is required',
                 minLength: {
                   value: 8,
-                  message: "Password must be at least 8 characters",
+                  message: 'Password must be at least 8 characters',
                 },
               })}
               className={`w-full px-4 py-2 mt-1 border ${
@@ -122,7 +126,7 @@ const Signup = () => {
             onClick={handleGoogleAuth}
             className="w-full flex items-center justify-center bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-600 py-2 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 transition duration-200"
           >
-            <FcGoogle className="mr-2 text-xl" />
+            <FcGoogle className='mr-2 text-xl' />
             Sign Up with Google
           </button>
         </div>

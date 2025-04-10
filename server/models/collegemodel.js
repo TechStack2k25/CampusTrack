@@ -2,10 +2,13 @@ import asynchandler from '../utils/asynchandler.js';
 import mongoose from 'mongoose';
 import Department from './departmentmodel.js';
 import * as crypto from 'crypto';
+import Degree from './degreemodel.js';
+import ApiError from '../utils/apierror.js';
+import User from './usermodel.js';
 const collegeSchema = mongoose.Schema({
   name: {
     type: String,
-    default: "",
+    default: '',
   },
   id: {
     type: String,
@@ -40,7 +43,6 @@ collegeSchema.pre('findOneAndDelete', async function (next) {
 
     const depIds = college.department;
     const userIds = college.users;
-
     // Update users to remove their college and related data
     await User.updateMany(
       { _id: { $in: userIds } },
@@ -56,15 +58,20 @@ collegeSchema.pre('findOneAndDelete', async function (next) {
         },
       }
     );
-
+    const adminupdate = await User.findByIdAndUpdate(college.admin, {
+      role: 'User',
+    });
     // Delete all departments associated with the college
     const result = await Department.deleteMany({ _id: { $in: depIds } });
-
+    const result2 = await Degree.deleteMany({ college: college._id });
     // If the operation failed, throw error
     if (!result) {
       return next(new Error('Error in deleting departments of college'));
     }
 
+    if (!result2) {
+      return next(new ApiError('Error in delete degrees', 404));
+    }
     next(); // Proceed with deletion
   } catch (err) {
     next(err); // Forward error to Mongoose

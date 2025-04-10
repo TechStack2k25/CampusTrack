@@ -62,10 +62,11 @@ app.use('/api/attendance', attendanceroutes);
 app.use('/api/course', courseroutes);
 //all departmentroute
 app.use('/api/department', departmentroutes);
-app.use(restrict_to(['Admin', 'HOD', 'faculty']));
-app.use('/api/message', messageroutes);
-app.use('/api/request', requestroutes);
 app.use('/api/degree', degreeroutes);
+app.use('/api/message', messageroutes);
+app.use(restrict_to(['Admin', 'HOD', 'faculty']));
+app.use('/api/request', requestroutes);
+
 //all college routes
 
 // to handle the error

@@ -97,7 +97,6 @@ const Sidebar = ({ menuItems }) => {
           </ul>
         </div>
       </aside>
-
       {/* Toggle Button */}
       <div
         onClick={() => setOpen(!open)}

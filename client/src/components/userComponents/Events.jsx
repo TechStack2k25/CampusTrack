@@ -29,18 +29,18 @@ const Events = () => {
   const mutationTocreateEvent = useMutation({
     mutationFn: eventService.createEvent,
     onSuccess: (data) => {
-      console.log("Event created successfully:", data);
+      // console.log("Event created successfully:", data);
       dispatch(setSuccess("Event added successfully!"));
       queryClient.invalidateQueries(["allevents"]);
     },
     onError: (error) => {
       dispatch(setError(error?.response?.data?.message));
-      console.error("Error adding event:", error);
+      // console.error("Error adding event:", error);
     },
   });
 
   const addEvent = (newEvent) => {
-    console.log(newEvent);
+    // console.log(newEvent);
     mutationTocreateEvent.mutate(newEvent);
   };
 

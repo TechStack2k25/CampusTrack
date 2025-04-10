@@ -16,8 +16,8 @@ const Request = () => {
   });
 
   const user = useSelector((state) => state.user.user);
-  const watchRole = watch("role");
-  const watchCollege = watch("college");
+  const watchRole = watch('role');
+  const watchCollege = watch('college');
   const [debouncedCollege, setDebouncedCollege] = useState(watchCollege);
   const [degrees, setDegrees] = useState([]);
   const dispatch = useDispatch();
@@ -38,7 +38,7 @@ const Request = () => {
     },
     onError: (error) => {
       dispatch(setError(error?.response?.data?.message));
-      console.error("Error creating request:", error);
+      // console.error("Error creating request:", error);
     },
   });
 
@@ -50,7 +50,7 @@ const Request = () => {
       const res = await degreeService.getAll({ _id: departments[0]?.college });
       if (res) setDegrees(res);
     } catch (error) {
-      console.log(error);
+      // console.log(error);
     }
   };
 
@@ -144,7 +144,6 @@ const Request = () => {
               </div>
             </>
           )}
-
           {["Student", "faculty"].includes(user?.role) && (
             <div className="flex flex-col">
               <label htmlFor="course_id" className="text-sm font-medium text-gray-600 dark:text-gray-400">

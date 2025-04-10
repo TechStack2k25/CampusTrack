@@ -6,67 +6,82 @@ import { useSelector } from 'react-redux';
 import { userService } from '../../api/userService.js';
 import { Table } from '../Utils';
 import EmptyDashboard from '../Utils/EmptyDashboard.jsx';
-import { FiLayers, FiSend, FiHome, FiFileText, FiUploadCloud, FiBookOpen, FiCalendar, FiMessageCircle } from "react-icons/fi";
+import {
+  FiLayers,
+  FiSend,
+  FiHome,
+  FiFileText,
+  FiUploadCloud,
+  FiBookOpen,
+  FiCalendar,
+  FiMessageCircle,
+} from 'react-icons/fi';
 
 const studentFeatures = [
   {
-    title: "Request New Courses",
-    description: "Can’t find your desired course? Submit a request and get notified when it's added.",
-    icon: <FiFileText className="text-indigo-600 text-3xl" />,
+    title: 'Request New Courses',
+    description:
+      "Can’t find your desired course? Submit a request and get notified when it's added.",
+    icon: <FiFileText className='text-indigo-600 text-3xl' />,
   },
   {
-    title: "Upload Assignments",
-    description: "Easily upload your assignments before the deadline and get submission updates.",
-    icon: <FiUploadCloud className="text-emerald-600 text-3xl" />,
+    title: 'Upload Assignments',
+    description:
+      'Easily upload your assignments before the deadline and get submission updates.',
+    icon: <FiUploadCloud className='text-emerald-600 text-3xl' />,
   },
   {
-    title: "Access Study Materials",
-    description: "View lecture notes, PDFs, and resources shared by your faculty in one place.",
-    icon: <FiBookOpen className="text-blue-600 text-3xl" />,
+    title: 'Access Study Materials',
+    description:
+      'View lecture notes, PDFs, and resources shared by your faculty in one place.',
+    icon: <FiBookOpen className='text-blue-600 text-3xl' />,
   },
   {
-    title: "Track Event Calendar",
-    description: "Stay updated with upcoming events, webinars, exams, and important dates.",
-    icon: <FiCalendar className="text-yellow-500 text-3xl" />,
+    title: 'Track Event Calendar',
+    description:
+      'Stay updated with upcoming events, webinars, exams, and important dates.',
+    icon: <FiCalendar className='text-yellow-500 text-3xl' />,
   },
   {
-    title: "Ask Doubts & Chat",
-    description: "Use the forum or direct chat to resolve doubts with peers or faculty in real-time.",
-    icon: <FiMessageCircle className="text-pink-600 text-3xl" />,
+    title: 'Ask Doubts & Chat',
+    description:
+      'Use the forum or direct chat to resolve doubts with peers or faculty in real-time.',
+    icon: <FiMessageCircle className='text-pink-600 text-3xl' />,
   },
 ];
 
 const userFeatures = [
   {
-    title: "Manage your Events",
-    description: "Add important events and schedule accordingly.",
-    icon: <FiLayers className="text-green-600 text-3xl" />,
+    title: 'Manage your Events',
+    description: 'Add important events and schedule accordingly.',
+    icon: <FiLayers className='text-green-600 text-3xl' />,
   },
   {
-    title: "Request to Join College",
-    description: "Find your college with its ID and request to become a verified member of its network.",
-    icon: <FiSend className="text-orange-500 text-3xl" />,
+    title: 'Request to Join College',
+    description:
+      'Find your college with its ID and request to become a verified member of its network.',
+    icon: <FiSend className='text-orange-500 text-3xl' />,
   },
   {
-    title: "Set Up Your Own College",
-    description: "Want to set-up college? Send a request to add and manage your own college space.",
-    icon: <FiHome className="text-pink-600 text-3xl" />,
+    title: 'Set Up Your Own College',
+    description:
+      'Want to set-up college? Send a request to add and manage your own college space.',
+    icon: <FiHome className='text-pink-600 text-3xl' />,
   },
 ];
-
 const eventColumns = [
   {
-    name: "Activity",
-    id: "title",
+    name: 'Activity',
+    id: 'title',
   },
   {
-    name: "Date",
-    id: "deadline",
-    type: "date",
+    name: 'Date',
+    id: 'deadline',
+    type: 'date',
   },
   {
-    name: "Description",
-    id: "description",
+    name: 'Description',
+    id: 'description',
   },
 ];
 

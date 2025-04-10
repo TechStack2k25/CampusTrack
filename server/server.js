@@ -13,15 +13,15 @@ app.get('/', (req, res) => {
 //server start listening
 const port = process.env.PORT;
 server.listen(port, () => {
-  console.log(`Server is created succesfully and run on the port ${port}`);
+  // console.log(`Server is created succesfully and run on the port ${port}`);
 });
 
 //connect the database
 mongoose
   .connect(process.env.CONN_STR)
   .then(() => {
-    console.log('Created database succesfully');
+    // console.log('Created database succesfully');
   })
   .catch((error) => {
-    console.log(`DB Connection failed due to ${error}`);
+    // console.log(`DB Connection failed due to ${error}`);
   });

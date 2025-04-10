@@ -79,12 +79,13 @@ const UserMenu = () => {
                 </div>
               </Link>
             </li>
-
+            
             {user?.role !== 'Owner' && (
               <li>
                 <NavLink
                   to='/profile'
                   className={({ isActive }) =>
+
                     `flex items-center gap-2 w-full text-left px-4 py-2 rounded-md text-sm ${
                       isActive
                         ? 'bg-blue-500 text-white dark:bg-blue-700'

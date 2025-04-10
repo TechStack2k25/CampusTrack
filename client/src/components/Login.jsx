@@ -36,7 +36,9 @@ const Login = () => {
   };
 
   const handleGoogle = () => {
-    window.location.href = 'http://localhost:3000/api/auth/google';
+    window.location.href = `${
+      import.meta.env.VITE_BACKENED_URL
+    }/api/auth/google`;
   };
 
   return (

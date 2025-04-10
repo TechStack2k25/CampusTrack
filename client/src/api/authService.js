@@ -14,80 +14,82 @@ class AuthService {
     });
   }
   // Sign up the user
-  userSignUp=async (data)=> {//data required: email, password, confirmpassword
+  userSignUp = async (data) => {
+    //data required: email, password, confirmpassword
     try {
-      const response = await this.api.post('/signup',data);
+      const response = await this.api.post('/signup', data);
 
-      console.log(response);
+      // console.log(response);
       //may use response.status to verify success 201
       return response.data?.data?.user;
       //getting tokens with userEmail
-
     } catch (error) {
-      console.error('Error authService: userSignUp: ', error);
+      // console.error('Error authService: userSignUp: ', error);
       throw error;
     }
-  }
+  };
 
   // Login the user
-  userLogin=async (data)=> {//data required: email, password
+  userLogin = async (data) => {
+    //data required: email, password
     try {
-      const response = await this.api.post('/login',data);
+      const response = await this.api.post('/login', data);
 
-      console.log(response);
+      // console.log(response);
       //may use response.status to verify success 201
       return response.data?.data?.user;
       //getting tokens with user in response.data.data
     } catch (error) {
-      console.error('Error authService: userLogin: ', error);
+      // console.error('Error authService: userLogin: ', error);
       throw error;
     }
-  }
+  };
 
   // forgot password call
-  userForgotPassword= async (data) =>{//email
+  userForgotPassword = async (data) => {
+    //email
     try {
-      const response = await this.api.post('/forgotpassword',data,{
+      const response = await this.api.post('/forgotpassword', data, {
         timeout: 60000,
       });
 
-      console.log(response);
-      return response.status===200;
+      // console.log(response);
+      return response.status === 200;
     } catch (error) {
-      console.error('Error authService: userForgotPassword: ', error);
+      // console.error('Error authService: userForgotPassword: ', error);
       throw error;
     }
-  }
+  };
 
   // reset password call
-  userResetPassword= async (data) =>{// resetToken, password, confirmpassword
+  userResetPassword = async (data) => {
+    // resetToken, password, confirmpassword
     try {
-      const response = await this.api.post('/resetpassword',data);
+      const response = await this.api.post('/resetpassword', data);
 
-      console.log(response);
+      // console.log(response);
       return response.data?.data?.user;
     } catch (error) {
-      console.error('Error authService: userResetPassword: ', error);
+      // console.error('Error authService: userResetPassword: ', error);
       throw error;
     }
-  }
+  };
 
   //Logout the user
-  userLogout=async ()=>{
+  userLogout = async () => {
     try {
       const response = await this.api.get('/logout');
 
-      console.log(response);
+      // console.log(response);
       //may use response.status to verify success 201
-      if(response.status===200) socketService.disconnect();
-      return response.status===200;
+      if (response.status === 200) socketService.disconnect();
+      return response.status === 200;
       //getting tokens with user in response.data.data
     } catch (error) {
-      console.error('Error authService: userLogin: ', error);
+      // console.error('Error authService: userLogin: ', error);
       throw error;
     }
-  }
-  
+  };
 }
 
 export const authService = new AuthService();

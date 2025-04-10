@@ -8,7 +8,7 @@ import { useNavigate } from "react-router-dom";
 import { eventService } from "../../api/eventService.js";
 
 const EventItem = ({ event }) => {
-  const isEvent = event?.extendedProps?.tasktype === "Event";
+  const isEvent = event?.extendedProps?.tasktype === 'Event';
   const isPastEvent = new Date(event?.start) < new Date();
 
   const colorClass = isEvent
@@ -29,6 +29,7 @@ const EventItem = ({ event }) => {
 
 const Calender = () => {
   const navigate = useNavigate();
+  
   const [currData, setCurrData] = useState();
   const [selectedInfo, setSelectedInfo] = useState(null);
   const [isCalendarModalOpen, setIsCalendarModalOpen] = useState(false);
@@ -55,7 +56,7 @@ const Calender = () => {
     setEvents(
       response.map((event) => ({
         id: event?._id,
-        title: event.title || "Untitled Event",
+        title: event.title || 'Untitled Event',
         start: event?.deadline || new Date().toISOString(),
         tasktype: event?.tasktype,
       }))
@@ -68,34 +69,37 @@ const Calender = () => {
 
   const handleDateClick = (info) => {
     setSelectedInfo({
-      type: "date",
-      date: info.dateStr,
+      type: 'date',
+      date: info.dateStr, //Date String -> dateStr (yyyymmdd)
     });
     setIsCalendarModalOpen(true);
   };
 
   const handleEventClick = (info) => {
     setSelectedInfo({
-      type: "event",
+      type: 'event',
       title: info.event.title,
       start: info.event.start,
     });
     setIsCalendarModalOpen(true);
   };
 
+  // const deleteEvent=()=>{
+  // // console.log("delete: ",selectedInfo);
+  // }
   return (
     <div className="p-6">
       <div className="sm:max-w-6xl sm:mx-auto bg-white dark:bg-gray-900 rounded-lg shadow-lg p-4 transition-all">
         <FullCalendar
           plugins={[dayGridPlugin, interactionPlugin, listPlugin]}
-          initialView="dayGridMonth"
+          initialView='dayGridMonth'
           events={events}
           eventContent={(info) => <EventItem event={info.event} />}
           eventClick={handleEventClick}
           headerToolbar={{
-            left: "prev,next today",
-            center: "title",
-            right: "dayGridMonth,dayGridDay",
+            left: 'prev,next today',
+            center: 'title',
+            right: 'dayGridMonth,dayGridDay',
           }}
           editable
           selectable

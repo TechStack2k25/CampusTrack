@@ -152,6 +152,7 @@ const Profile = () => {
                     value={user?.sem || 1}
                     disabled
                     className="w-full p-2 border border-gray-300 rounded mt-1"
+
                   />
                 </div>
 
@@ -164,6 +165,7 @@ const Profile = () => {
                     value={user?.year || 1}
                     disabled
                     className="w-full p-2 border border-gray-300 rounded mt-1"
+
                   />
                 </div>
 
@@ -176,6 +178,7 @@ const Profile = () => {
                     value={user?.currentdegree?.name || ""}
                     disabled
                     className="w-full p-2 border border-gray-300 rounded mt-1"
+
                   />
                 </div>
               </>
@@ -203,6 +206,7 @@ const Profile = () => {
                 setPassword((prev) => ({
                   ...prev,
                   new_password: e.target.value.trim(),
+
                 }))
               }
             />
@@ -216,6 +220,7 @@ const Profile = () => {
                 setPassword((prev) => ({
                   ...prev,
                   confirmpassword: e.target.value.trim(),
+
                 }))
               }
             />
