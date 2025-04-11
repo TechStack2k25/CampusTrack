@@ -183,6 +183,8 @@ export const protect = asynchandler(async (req, res, next) => {
     //if user id deleted check
     return next();
   }
+
+  console.log(re);
   //test token store header
   const test_token = req.headers.authorization;
 
