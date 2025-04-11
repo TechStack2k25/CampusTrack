@@ -43,46 +43,58 @@ const DataList = ({
       </div>
 
       {/* Filters Section */}
-      <div className='grid md:grid-cols-2 grid-cols-1 gap-4 mb-6'>
-        {filters &&
-          filters?.map(
-            (filter) =>
-              filter?.enable && (
-                <div key={filter.key}>
-                  <div className='flex justify-between gap-2 items-center'>
-                    <label
-                      htmlFor={filter?.label}
-                      key={filter?.label + filter?.key}
-                      className='block text-md font-medium text-gray-700 dark:text-gray-300'
-                    >
-                      {filter?.label}
-                    </label>
-                    {
-                      // Dynamic Select Input
-                      <select
-                        key={filter?.key}
-                        className='px-4 py-2 border rounded shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-800'
-                        value={query?.[filter?.key] || ''}
-                        onChange={(e) =>
-                          setQuery((prev) => ({
-                            ...prev,
-                            [filter?.key]: e.target.value,
-                          }))
-                        }
-                      >
-                        <option value=''>{filter?.placeholder}</option>
-                        {options?.[filter.key]?.map((option) => (
-                          <option key={option?._id} value={option._id}>
-                            {option.name}
-                          </option>
-                        ))}
-                      </select>
-                    }
-                  </div>
-                </div>
-              )
-          )}
-      </div>
+      <div className="grid md:grid-cols-2 grid-cols-1 gap-4 mb-6 w-full max-w-4xl">
+  {filters &&
+    filters.map(
+      (filter) =>
+        filter?.enable && (
+          <div key={filter.key} className="flex flex-col space-y-1">
+            <label
+              htmlFor={filter.key}
+              className="text-sm font-medium text-gray-700 dark:text-gray-300"
+            >
+              {filter.label}
+            </label>
+
+            {options?.[filter.key] ? (
+              <select
+                id={filter.key}
+                value={query?.[filter.key] || ''}
+                onChange={(e) =>
+                  setQuery((prev) => ({
+                    ...prev,
+                    [filter.key]: e.target.value,
+                  }))
+                }
+                className="w-full px-4 py-2 rounded-md border shadow-sm text-gray-800 dark:text-white dark:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-700"
+              >
+                <option value="">{filter.placeholder}</option>
+                {options[filter.key].map((option) => (
+                  <option key={option._id} value={option._id}>
+                    {option.name}
+                  </option>
+                ))}
+              </select>
+            ) : (
+              <input
+                type="text"
+                id={filter.key}
+                placeholder={filter.placeholder}
+                value={query?.[filter.key] || ''}
+                onChange={(e) =>
+                  setQuery((prev) => ({
+                    ...prev,
+                    [filter.key]: e.target.value,
+                  }))
+                }
+                className="w-full px-4 py-2 rounded-md border shadow-sm text-gray-800 dark:text-white dark:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-700"
+              />
+            )}
+          </div>
+        )
+    )}
+</div>
+
 
       {/* Listing Section */}
       {data && data.length > 0 ? (

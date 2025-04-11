@@ -44,7 +44,7 @@ export default class Email {
   // Password reset email method
   async sendPasswordReset() {
     const subject = 'Your password reset token (valid for only 10 minutes)';
-    const htmlbody = `<p>Hello <strong>${this.firstName}</strong>,</p>
+    const htmlbody = `<p>Hello <strong>${this.firstName || 'User'}</strong>,</p>
              <p>Please use the following link to reset your password:</p>
              <a href="${this.url}">${this.url}</a>
              <p>The link is valid for 10 minutes.</p>`;
@@ -54,7 +54,7 @@ export default class Email {
 
   async sendEmailToken() {
     const subject = 'Your Email verification token (valid for only 10 minutes)';
-    const htmlbody = `<p>Hello <strong>${this.firstName}</strong>,</p>
+    const htmlbody = `<p>Hello <strong>${this.firstName || 'User'}</strong>,</p>
              <p>Please use the following link to verify  your email:</p>
              <a href="${this.url}">${this.url}</a>
              <p>The link is valid for 10 minutes.</p>`;
@@ -64,7 +64,7 @@ export default class Email {
 
   async sendEmailonverification() {
     const subject = 'Your College is verified';
-    const htmlbody = `<p>Hello <strong>${this.firstName}</strong>,</p>
+    const htmlbody = `<p>Hello <strong>${this.firstName || 'User'}</strong>,</p>
              <p>Please use the following link to update your college or login your account to update it:</p>
              <a href="${this.url}">${this.url}</a>`;
     const url = `Hello ${this.firstName},\n\nPlease use the following link to update you college or login your account to update it: ${this.url}\n\n.`;
@@ -74,7 +74,7 @@ export default class Email {
   async sendEmailForDeleteCollege() {
     const subject =
       'Your Email verification for delete college (valid for only 10 minutes)';
-    const htmlbody = `<p>Hello <strong>${this.firstName}</strong>,</p>
+    const htmlbody = `<p>Hello <strong>${this.firstName || 'Admin'}</strong>,</p>
              <p>Please use the following link to delete your college account:</p>
              <a href="${this.url}">${this.url}</a>
              <p>Warning Once you delete You lose all data </p>

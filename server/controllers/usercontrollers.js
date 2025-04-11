@@ -62,7 +62,7 @@ export const updateuser = asynchandler(async (req, res, next) => {
     email,
   } = req.body;
 
-  const semail = email.trim().toLowerCase();
+  const semail = email?.trim().toLowerCase();
   //check the user exist or not
   const requser =
     (await User.findOne({ email: semail })) ||
@@ -318,7 +318,7 @@ export const update_sem = asynchandler(async (req, res, next) => {
         updated_users.map((user) => updatetheuser(user, sem, year, next))
       );
     } catch (error) {
-      // console.log(error);
+      console.log(error);
       return next(new ApiError('Error in updating', 404));
     }
   }
