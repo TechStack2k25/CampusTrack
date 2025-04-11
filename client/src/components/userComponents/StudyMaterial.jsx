@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import {
   FaBookOpen,
   FaPlus,
-  FaFileDownload,
+  FaEye,
   FaUpload,
   FaTimes,
   FaTrash,
@@ -122,7 +122,7 @@ function StudyMaterial() {
                     target='_blank'
                     className='text-blue-600 hover:text-blue-800 flex items-center gap-2'
                   >
-                    <FaFileDownload /> Download
+                    <FaEye /> View
                   </a>
                   {user?.role === 'faculty' && (
                     <button

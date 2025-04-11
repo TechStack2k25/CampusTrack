@@ -120,7 +120,7 @@ const Routers = () => {
             {/* <Route path="lectures" element={<Lectures />} /> */}
             {/* <Route path="notifications" element={<Notification />} /> */}
             <Route path='request' element={<Request />} />
-            <Route path='leaderboard' element={<Leaderboard />} />
+            {/* <Route path='leaderboard' element={<Leaderboard />} /> */}
             <Route path='*' element={<Notfound />} />
           </Route>
         </>

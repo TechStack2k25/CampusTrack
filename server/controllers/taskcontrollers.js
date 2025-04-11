@@ -262,22 +262,23 @@ export const submittask = asynchandler(async (req, res, next) => {
   const submitted_file = reqtask.submitted_by.get(req.user._id.toString());
 
   const userreward = await User.findById(req.user._id);
+  let temp;
+  let fixedpoint, varpoint;
+  if (reqtask.tasktype === 'Assignment') {
+    fixedpoint = 70.0;
+    varpoint = 1.0;
+  } else if (tasktype === 'Project') {
+    fixedpoint = 150.0;
+    varpoint = 1.5;
+  }
   if (!submitted_file) {
-    let fixedpoint, varpoint;
-    if (reqtask.tasktype === 'Assignment') {
-      fixedpoint = 70.0;
-      varpoint = 1.0;
-    } else if (tasktype === 'Project') {
-      fixedpoint = 150.0;
-      varpoint = 1.5;
-    }
     //to adjust the global time to indian time
     const istOffset = 5.5 * 60 * 60 * 1000;
     const newdeadline = new Date(reqtask.deadline - istOffset).getTime();
     const newDate = new Date(Date.now()).getTime();
     const variable = (newdeadline - newDate) / (1000 * 3600);
     //add the point to the user total point on thne basis of time he submit
-    let temp = fixedpoint + varpoint * variable;
+    temp = fixedpoint + varpoint * variable;
     temp = temp > 1.75 * fixedpoint ? 1.75 * fixedpoint : temp;
     temp > fixedpoint / 2
       ? (userreward.reward = Math.ceil(userreward.reward + temp))

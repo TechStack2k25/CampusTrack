@@ -65,7 +65,7 @@ const Events = () => {
             className={`px-4 py-2 rounded ${
               filter === "upcoming"
                 ? "bg-green-500 text-white"
-                : "bg-gray-200 hover:bg-gray-300"
+                : "bg-gray-200 hover:bg-gray-300 text-black"
             }`}
             onClick={() => setFilter("upcoming")}
           >
@@ -75,7 +75,7 @@ const Events = () => {
             className={`px-10 py-2 rounded ${
               filter === "past"
                 ? "bg-blue-500 text-white"
-                : "bg-gray-200 hover:bg-gray-300"
+                : "bg-gray-200 hover:bg-gray-300 text-black"
             }`}
             onClick={() => setFilter("past")}
           >

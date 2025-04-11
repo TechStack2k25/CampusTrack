@@ -42,12 +42,6 @@ const studentFeatures = [
       'Stay updated with upcoming events, webinars, exams, and important dates.',
     icon: <FiCalendar className='text-yellow-500 text-3xl' />,
   },
-  {
-    title: 'Ask Doubts & Chat',
-    description:
-      'Use the forum or direct chat to resolve doubts with peers or faculty in real-time.',
-    icon: <FiMessageCircle className='text-pink-600 text-3xl' />,
-  },
 ];
 
 const userFeatures = [

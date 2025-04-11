@@ -109,7 +109,7 @@ const UserMenu = () => {
                 onClick={!isVerifying ? sendVerificationMail : null}
               >
                 {isVerifying ? <FaSpinner className='animate-spin w-4 h-4' /> : <FaEnvelopeOpenText />}
-                {isVerifying ? 'Sending...' : 'Verify Email'}
+                {isVerifying ? 'Requesting...' : 'Verify Email'}
               </li>
             )}
 
