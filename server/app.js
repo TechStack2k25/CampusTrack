@@ -25,6 +25,10 @@ import './utils/passport.config.js';
 import session from 'express-session';
 import passport from 'passport';
 import path from 'path';
+
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, '../client', 'dist', 'index.html'));
+});
 // extract json payload from request body and make available in req.body;
 app.use(express.json());
 
@@ -75,9 +79,5 @@ app.use('/api/request', requestroutes);
 app.use(globalerrorhandler);
 if (process.env.NODE_ENV === 'production') {
   app.use(express.static(path.join(__dirname, '../client/dist')));
-
-  app.get('*', (req, res) => {
-    res.sendFile(path.join(__dirname, '../client', 'dist', 'index.html'));
-  });
 }
 export default app;
