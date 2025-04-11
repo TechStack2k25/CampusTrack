@@ -319,6 +319,7 @@ export const updaterequest = asynchandler(async (req, res, next) => {
       requser.role = require_request.request_role;
       requser.currentdegree = require_request.request_degree;
       requser.college = reqcollege._id;
+      requser.sem = require_request.request_sem;
       requser.year = require_request.request_year;
       requser.save({ validateBeforeSave: false });
       reqcollege.save();

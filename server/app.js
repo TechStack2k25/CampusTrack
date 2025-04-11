@@ -24,6 +24,7 @@ import dotenv from 'dotenv';
 import './utils/passport.config.js';
 import session from 'express-session';
 import passport from 'passport';
+import path from 'path';
 // extract json payload from request body and make available in req.body;
 app.use(express.json());
 
@@ -31,6 +32,7 @@ app.use(express.json());
 app.use(cookieParser());
 
 dotenv.config({ path: './variable.env' });
+const __dirname = path.resolve();
 app.use(
   session({
     secret: process.env.SESSION_SECRET_STRING,
@@ -71,4 +73,11 @@ app.use('/api/request', requestroutes);
 
 // to handle the error
 app.use(globalerrorhandler);
+if (process.env.NODE_ENV === 'production') {
+  app.use(express.static(path.join(__dirname, '../client/dist')));
+
+  app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, '../client', 'dist', 'index.html'));
+  });
+}
 export default app;
