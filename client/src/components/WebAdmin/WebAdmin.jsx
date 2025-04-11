@@ -17,49 +17,50 @@ const WebAdmin = () => {
         setEmail('');
       }
     } catch (err) {
-      // console.error("Error creating college:", err?.response?.data?.message || err.message);
-      alert('Error creating college instance.');
+      alert('❌ Error creating college instance.');
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className='max-w-xl mx-auto mt-10 p-6 bg-white dark:bg-gray-900 rounded-xl shadow-lg border dark:border-gray-700'>
-      <h2 className='text-2xl font-bold mb-6 text-center dark:text-white'>
+    <div className="max-w-xl mx-auto mt-10 p-6 bg-white dark:bg-gray-900 rounded-xl shadow-lg border dark:border-gray-700">
+      <h2 className="text-2xl font-bold mb-6 text-center text-gray-800 dark:text-white">
         New College Setup
       </h2>
-      <form onSubmit={handleSubmit} className='space-y-4'>
+
+      <form onSubmit={handleSubmit} className="space-y-5">
         <div>
-          <label className='block text-sm font-medium text-gray-700 dark:text-gray-200'>
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
             Admin Email
           </label>
           <input
-            type='text'
-            name='email'
+            type="email"
+            name="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
-            className='w-full mt-1 px-3 py-2 border rounded-md shadow-sm dark:bg-gray-800 dark:text-white'
+            className="w-full px-4 py-2 rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+            placeholder="admin@college.edu"
           />
         </div>
         <button
-          type='submit'
+          type="submit"
           disabled={loading}
-          className='w-full bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700 transition'
+          className="w-full py-2 px-4 bg-blue-600 hover:bg-blue-700 text-white rounded-md transition duration-200 font-medium disabled:opacity-60"
         >
           {loading ? 'Submitting...' : 'Create College'}
         </button>
       </form>
 
       {createdCollege && (
-        <Modal title='College Created' onClose={() => setCreatedCollege(null)}>
-          <div className='text-gray-800 dark:text-white'>
+        <Modal title="✅ College Created" onClose={() => setCreatedCollege(null)}>
+          <div className="text-gray-800 dark:text-white space-y-2">
             <p>
               <strong>Admin DB ID:</strong> {createdCollege?.admin}
             </p>
-            <p className='mt-4 text-yellow-600 dark:text-yellow-400'>
-              📩 College Created and mail sent!
+            <p className="text-yellow-600 dark:text-yellow-400">
+              📩 A confirmation email has been sent!
             </p>
           </div>
         </Modal>

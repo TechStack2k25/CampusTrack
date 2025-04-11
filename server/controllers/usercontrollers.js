@@ -318,7 +318,7 @@ export const update_sem = asynchandler(async (req, res, next) => {
         updated_users.map((user) => updatetheuser(user, sem, year, next))
       );
     } catch (error) {
-      // console.log(error);
+      console.log(error);
       return next(new ApiError('Error in updating', 404));
     }
   }

@@ -103,7 +103,7 @@ const DashboardContent = () => {
   }, []);
 
   return (
-    <main className="flex-1 p-6 dark:bg-gray-950 bg-gray-50 min-h-screen">
+    <main className="flex-1 p-6 dark:bg-transparent bg-gray-50 min-h-screen">
       <h2 className="text-center text-3xl font-bold mb-10 text-indigo-700 dark:text-indigo-400 dark:shadow-sm">
         Welcome {name ? `! ${name}` : "to Your Dashboard"} 🚀
       </h2>
