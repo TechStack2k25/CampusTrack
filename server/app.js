@@ -49,7 +49,13 @@ app.use(
 );
 app.use(passport.initialize());
 app.use(passport.session());
+if (process.env.NODE_ENV === 'production') {
+  app.use(express.static(path.join(__dirname, '../client/dist')));
 
+  app.get(/^\/(?!api).*/, (req, res) => {
+    res.sendFile(path.join(__dirname, '../client/dist', 'index.html'));
+  });
+}
 app.use('/api/auth', authroutes);
 app.use('/api/user', userroutes);
 app.use('/api/college', collegeroutes);
@@ -68,14 +74,6 @@ app.use('/api/message', messageroutes);
 
 app.use(restrict_to(['Admin', 'HOD', 'faculty']));
 app.use('/api/request', requestroutes);
-
-if (process.env.NODE_ENV === 'production') {
-  app.use(express.static(path.join(__dirname, '../client/dist')));
-
-  app.get('*', (req, res) => {
-    res.sendFile(path.join(__dirname, '../client/dist', 'index.html'));
-  });
-}
 
 app.use(globalerrorhandler);
 

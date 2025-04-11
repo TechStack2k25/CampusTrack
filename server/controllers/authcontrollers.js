@@ -177,14 +177,11 @@ export const login = asynchandler(async (req, res, next) => {
 });
 
 export const protect = asynchandler(async (req, res, next) => {
-  console.log(req);
-
   if (req.user) {
     //if user id deleted check
     return next();
   }
 
-  console.log(re);
   //test token store header
   const test_token = req.headers.authorization;
 
