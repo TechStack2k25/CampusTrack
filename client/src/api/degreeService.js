@@ -1,5 +1,5 @@
 import axios from 'axios';
-import store  from '../store/store.js';
+import store from '../store/store.js';
 import { logout } from '../store/slices/userSlice.js';
 import { socketService } from './socketService.js';
 
@@ -13,87 +13,91 @@ class DegreeService {
         'Content-Type': 'application/json',
       },
     });
-    
-  // Add Response Interceptor
-  this.api.interceptors.response.use(
-    (response) => response, // Pass successful responses
-    (error) => {
-      if (error.response && error.response.status === 401) {
-        console.warn('Unauthorized! Logging out user...');
-        socketService.disconnect();
-        store.dispatch(logout()); // Dispatch logout action
+
+    // Add Response Interceptor
+    this.api.interceptors.response.use(
+      (response) => response, // Pass successful responses
+      (error) => {
+        if (error.response && error.response.status === 401) {
+          // console.warn('Unauthorized! Logging out user...');
+          socketService.disconnect();
+          store.dispatch(logout()); // Dispatch logout action
+        }
+        return Promise.reject(error); // Reject error for further handling
       }
-      return Promise.reject(error); // Reject error for further handling
-    }
-  );
-}
+    );
+  }
 
-  addDegree=async (data)=> {//data required: _id(college), name , totalYears, totalSemesters 
+  addDegree = async (data) => {
+    //data required: _id(college), name , totalYears, totalSemesters
     try {
-      const response = await this.api.post(`/add/${data?._id}`,data);
+      const response = await this.api.post(`/add/${data?._id}`, data);
 
-      console.log(response);
+      // console.log(response);
       return response.data?.data?.newdegree;
       //getting new degree data
     } catch (error) {
-      console.error('Error DegreeService: addDegree: ', error);
+      // console.error('Error DegreeService: addDegree: ', error);
       throw error;
     }
-  }
+  };
 
-  getAll=async (data)=> {//data required: _id(college)
+  getAll = async (data) => {
+    //data required: _id(college)
     try {
       const response = await this.api.get(`/all/${data?._id}`);
 
-      console.log(response);
+      // console.log(response);
       return response.data?.data?.alldegree;
     } catch (error) {
-      console.error('Error DegreeService: getAll: ', error);
+      // console.error('Error DegreeService: getAll: ', error);
       throw error;
     }
-  }
+  };
 
-  getDegree=async (data)=> {//data required: _id(degree)
+  getDegree = async (data) => {
+    //data required: _id(degree)
     try {
       const response = await this.api.get(`/getdegree/${data?._id}`);
 
-      console.log(response);
+      // console.log(response);
       return response.data?.data?.reqdegree;
-
     } catch (error) {
-      console.error('Error DegreeService: getDegree: ', error);
+      // console.error('Error DegreeService: getDegree: ', error);
       throw error;
     }
-  }
+  };
 
   // deleting a degree
-  deleteDegree=async (data)=> {//data required: _id,
+  deleteDegree = async (data) => {
+    //data required: _id,
     try {
       const response = await this.api.delete(`/del/${data?._id}`);
 
-      console.log(response);
-      
-      return response.status===201;
+      // console.log(response);
+
+      return response.status === 201;
     } catch (error) {
-      console.error('Error DegreeService: deleteDegree: ', error);
+      // console.error('Error DegreeService: deleteDegree: ', error);
       throw error;
     }
-  }
+  };
 
   // updating
-  updateDegree=async (data)=> {//data required: _id, name, totalYears, totalSemesters
+  updateDegree = async (data) => {
+    //data required: _id, name, totalYears, totalSemesters
     try {
-      const response = await this.api.patch(`/update/${data?._id}`,data);
+      const response = await this.api.patch(`/update/${data?._id}`, data);
 
-      console.log(response);
-      
+      // console.log(response);
+
       return response.data?.data?.updateddegree;
       //getting updated degree
     } catch (error) {
-      console.error('Error DegreeService: updateDegree: ', error);
+      // console.error('Error DegreeService: updateDegree: ', error);
       throw error;
     }
-  }
+  };
 }
 
 export const degreeService = new DegreeService();

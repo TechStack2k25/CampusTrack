@@ -29,7 +29,10 @@ export const addcourse = asynchandler(async (req, res, next) => {
 
   coursecode = coursecode.trim().toLowerCase();
   //create the course
-  const exist_course = await Course.findOne({ coursecode });
+  const exist_course = await Course.findOne({
+    coursecode,
+    department: department_id,
+  });
 
   //if exist give error
   if (exist_course) {
@@ -237,15 +240,22 @@ export const remove_student = asynchandler(async (req, res, next) => {
   let updatedcourse;
   //check that remove the individual student
   let student_attendance;
-  if(reqcourse.student_attendance && reqcourse.student_attendance.get(student_id))
-   student_attendance =  reqcourse.student_attendance.delete(student_id);
+  if (
+    reqcourse.student_attendance &&
+    reqcourse.student_attendance.get(student_id)
+  )
+    student_attendance = reqcourse.student_attendance.delete(student_id);
   if (message === 'Individual') {
     //remove student from course
-    updatedcourse = await Course.findByIdAndUpdate(course_id, {
-      $pull: { users: student_id },
-      student_attendance,
-    }, { new: true });
-    console.log(updatecourse)
+    updatedcourse = await Course.findByIdAndUpdate(
+      course_id,
+      {
+        $pull: { users: student_id },
+        student_attendance,
+      },
+      { new: true }
+    );
+    // console.log(updatecourse);
     //from student remove course
     const updated_student = await User.findByIdAndUpdate(student_id, {
       $pull: { course: course_id },
@@ -261,7 +271,6 @@ export const remove_student = asynchandler(async (req, res, next) => {
         $push: { pastcourse: course_id },
       }
     );
-    
 
     //remove all student from course
     updatecourse = await Course.findByIdAndUpdate(course_id, {

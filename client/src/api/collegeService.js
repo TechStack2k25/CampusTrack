@@ -1,5 +1,5 @@
 import axios from 'axios';
-import store  from '../store/store.js';
+import store from '../store/store.js';
 import { logout } from '../store/slices/userSlice.js';
 import { socketService } from './socketService.js';
 
@@ -13,92 +13,96 @@ class CollegeService {
         'Content-Type': 'application/json',
       },
     });
-    
-  // Add Response Interceptor
-  this.api.interceptors.response.use(
-    (response) => response, // Pass successful responses
-    (error) => {
-      if (error.response && error.response.status === 401) {
-        console.warn('Unauthorized! Logging out user...');
-        socketService.disconnect();
-        store.dispatch(logout()); // Dispatch logout action
+
+    // Add Response Interceptor
+    this.api.interceptors.response.use(
+      (response) => response, // Pass successful responses
+      (error) => {
+        if (error.response && error.response.status === 401) {
+          // console.warn('Unauthorized! Logging out user...');
+          socketService.disconnect();
+          store.dispatch(logout()); // Dispatch logout action
+        }
+        return Promise.reject(error); // Reject error for further handling
       }
-      return Promise.reject(error); // Reject error for further handling
-    }
-  );
-}
+    );
+  }
 
   // getting college
-  getCollege=async (data)=> {//data required: _id(college)
+  getCollege = async (data) => {
+    //data required: _id(college)
     try {
-      const response = await this.api.get(data?._id,data);
+      const response = await this.api.get(data?._id, data);
 
-      console.log(response);
+      // console.log(response);
       return response.data?.data;
       //gettingcollege data
     } catch (error) {
-      console.error('Error collegeService: getCollege: ', error);
+      // console.error('Error collegeService: getCollege: ', error);
       throw error;
     }
-  }
+  };
 
   // creating college
-  createCollege=async (data)=> {//data required: name, id(college), degree
+  createCollege = async (data) => {
+    //data required: college Admin: email
     try {
-      const response = await this.api.post('/create',data);
+      const response = await this.api.post('/create', data);
 
-      console.log(response);
+      // console.log(response);
       //may use response.status to verify success 201
       return response.data?.data?.data;
       //getting new college data
     } catch (error) {
-      console.error('Error collegeService: createCollege: ', error);
+      // console.error('Error collegeService: createCollege: ', error);
       throw error;
     }
-  }
+  };
 
   // deleting a college
-  deleteCollege=async (data)=> {//data required: token,
+  deleteCollege = async (data) => {
+    //data required: token,
     try {
       const response = await this.api.delete(`/del/${data?.token}`);
 
-      console.log(response);
-      
-      return response.status===201;
+      // console.log(response);
+
+      return response.status === 201;
     } catch (error) {
-      console.error('Error collegeService: deleteCollege: ', error);
+      // console.error('Error collegeService: deleteCollege: ', error);
       throw error;
     }
-  }
+  };
 
   // updating college
-  updateCollege=async (data)=> {//data required:  id, name, degree
+  updateCollege = async (data) => {
+    //data required:  id, name, degree
     try {
-      const response = await this.api.patch(`/update`,data);
+      const response = await this.api.patch(`/update`, data);
 
-      console.log(response);
-      
+      // console.log(response);
+
       return response.data?.data;
       //getting updated college
     } catch (error) {
-      console.error('Error collegeService: updateCollege: ', error);
+      // console.error('Error collegeService: updateCollege: ', error);
       throw error;
     }
-  }
+  };
 
   // request to delete college
-  deleteCollegeRequestMail=async ()=> {
+  deleteCollegeRequestMail = async () => {
     try {
       const response = await this.api.get(`/deletecollegemail`);
 
-      console.log(response);
-      
-      return response.status===201;
+      // console.log(response);
+
+      return response.status === 201;
     } catch (error) {
-      console.error('Error collegeService: deleteCollegeRequestMail: ', error);
+      // console.error('Error collegeService: deleteCollegeRequestMail: ', error);
       throw error;
     }
-  }
+  };
 }
 
 export const collegeService = new CollegeService();

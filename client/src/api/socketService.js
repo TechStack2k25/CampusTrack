@@ -8,15 +8,15 @@ class SocketService {
   }
 
   connect() {
-    if(this.socket?.connected) return;
-    this.socket = io('http://localhost:3000');//backend server
-    
+    if (this.socket?.connected) return;
+    this.socket = io(import.meta.env.VITE_BACKENED_URL); //backend server
+
     this.socket.on('connect', () => {
-      console.log('Connected to socket server', this.socket.id);
+      // console.log('Connected to socket server', this.socket.id);
     });
 
     this.socket.on('disconnect', () => {
-      console.log('Disconnected from socket server');
+      // console.log('Disconnected from socket server');
     });
   }
 

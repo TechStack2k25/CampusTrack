@@ -18,7 +18,7 @@ class StoreService {
       (response) => response, // Pass successful responses
       (error) => {
         if (error.response && error.response.status === 401) {
-          console.warn('Unauthorized! Logging out user...');
+          // console.warn('Unauthorized! Logging out user...');
           socketService.disconnect();
           store.dispatch(logout()); // Dispatch logout action
         }
@@ -28,57 +28,64 @@ class StoreService {
   }
 
   // get all study material for a course
-  getAll=async (data)=> {//data required: course_id
+  getAll = async (data) => {
+    //data required: course_id
     try {
       const response = await this.api.get(`/getall/${data?._id}`);
-      console.log(response);
+      // console.log(response);
       return response?.data?.data;
       //getting allresources, course
     } catch (error) {
-      console.error('Error StoreService: getAll: ', error);
+      // console.error('Error StoreService: getAll: ', error);
       throw error;
     }
-  }
+  };
 
-  deleteMaterial=async (data)=> {//data required: material_id
+  deleteMaterial = async (data) => {
+    //data required: material_id
     try {
       const response = await this.api.delete(`/delete/${data?._id}`);
-      console.log(response);
-      return response.status===201;
+      // console.log(response);
+      return response.status === 201;
     } catch (error) {
-      console.error('Error StoreService: deleteMaterial: ', error);
+      // console.error('Error StoreService: deleteMaterial: ', error);
       throw error;
     }
-  }
-   
-  addMaterial=async (data)=> {//data required: _id:course,
-    try {
-        const formData = new FormData();
-      formData.append("file", data?.file); 
-      formData.append("lecture", data?.lecture); 
-      formData.append("part", data?.part); 
-      console.log((formData));
-      
-      const response = await this.api.post(`/addresource/${data?._id}`,formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-        timeout: 60000, // Increase timeout for file uploads
-        // onUploadProgress: (progressEvent) => {
-        //   const percentCompleted = Math.round(
-        //     (progressEvent.loaded / progressEvent.total) * 100
-        //   );
-        //   toast.info(`Uploading: ${percentCompleted}%`); // Show Toastify notification
-        // },
-      });
+  };
 
-      console.log(response);
+  addMaterial = async (data) => {
+    //data required: _id:course,
+    try {
+      const formData = new FormData();
+      formData.append('file', data?.file);
+      formData.append('lecture', data?.lecture);
+      formData.append('part', data?.part);
+      // console.log((formData));
+
+      const response = await this.api.post(
+        `/addresource/${data?._id}`,
+        formData,
+        {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+          timeout: 60000, // Increase timeout for file uploads
+          // onUploadProgress: (progressEvent) => {
+          //   const percentCompleted = Math.round(
+          //     (progressEvent.loaded / progressEvent.total) * 100
+          //   );
+          //   toast.info(`Uploading: ${percentCompleted}%`); // Show Toastify notification
+          // },
+        }
+      );
+
+      // console.log(response);
       return response.data?.data?.uploadedresource;
     } catch (error) {
-      console.error('Error StoreService: addMaterial: ', error);
+      // console.error('Error StoreService: addMaterial: ', error);
       throw error;
     }
-  }
+  };
 }
 
 export const storeService = new StoreService();

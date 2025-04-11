@@ -1,5 +1,9 @@
 import mongoose from 'mongoose';
 import asynchandler from '../utils/asynchandler.js';
+import Store from './storemodel.js';
+import User from './usermodel.js';
+import Task from './taskmodel.js';
+import Department from './departmentmodel.js';
 
 const courseSchema = new mongoose.Schema({
   name: {
@@ -41,52 +45,72 @@ const courseSchema = new mongoose.Schema({
     type: Number,
     default: 0, // This will hold the total number of classes held
   },
+  department: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Department',
+  },
 });
 
-courseSchema.pre(
-  'findOneAndDelete',
-  asynchandler(async function (next) {
-    await User.updateMany(
-      { courses: this._id }, // Find users who have this course in their array
-      { $pull: { courses: this._id } } // Remove course ID from their array
-    );
-    //delete all task of course
-    const taskIds = this.task || [];
+courseSchema.pre('findOneAndDelete', async function (next) {
+  const course = await this.model.findOne(this.getQuery());
 
-    //store the number of task
-    const total_task = taskIds.length;
+  if (!course) {
+    return next(); // Course not found, nothing to do
+  }
 
-    //here filter the  task and delete
-    const result = await Task.deleteMany({ _id: { $in: taskIds } });
+  // console.log(course._id);
+  await User.updateMany(
+    { course: { $in: course._id } },
+    { $pull: { course: course._id } }
+  );
 
-    //check the all task all deleted properly
-    if (total_task !== result.deletedCount) {
-      return next(new ApiError('Error in deleteding the task', 422));
+  // Delete all tasks of the course
+  const taskIds = course.task || [];
+  const total_task = taskIds.length;
+
+  const result = await Task.deleteMany({ _id: { $in: taskIds } });
+  const result2 = await Store.deleteMany({ course: course._id });
+  // Check if all tasks were deleted
+  if (total_task !== result.deletedCount) {
+    return next(new Error('Error in deleting the tasks'));
+  }
+
+  const updateddepartment = await Department.findByIdAndUpdate(
+    course.department,
+    {
+      $pull: { courses: course._id },
     }
-    next();
-  })
-);
+  );
+  next();
+});
 
-courseSchema.pre(
-  'deleteMany',
-  asynchandler(async function (next) {
+courseSchema.pre('deleteMany', async function (next) {
+  const filter = this.getQuery();
+
+  const courses = await this.model.find(filter);
+
+  for (const course of courses) {
+    const courseId = course._id;
+    const taskIds = course.task || [];
+
+    // Remove the course from all users who have it
     await User.updateMany(
-      { courses: this._id }, // Find users who have this course in their array
-      { $pull: { courses: this._id } } // Remove course ID from their array
+      { course: courseId },
+      { $pull: { course: courseId } }
     );
-    //delete all task of course
-    const taskIds = this.task || [];
 
-    //here filter the  task and delete
+    // Delete all tasks of the course
     const result = await Task.deleteMany({ _id: { $in: taskIds } });
-
-    //check the all task all deleted properly
-    if (result.acknowledged) {
-      return next(new ApiError('Error in deleteding the task', 422));
+    const result2 = await Store.deleteMany({ course: course._id });
+    // Check if task deletion count matches
+    if (!result) {
+      return next(
+        new Error('Error in deleting some tasks for course: ' + courseId)
+      );
     }
-    next();
-  })
-);
+  }
+  next();
+});
 
 const Course = mongoose.model('Course', courseSchema);
 export default Course;

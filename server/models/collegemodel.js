@@ -2,14 +2,16 @@ import asynchandler from '../utils/asynchandler.js';
 import mongoose from 'mongoose';
 import Department from './departmentmodel.js';
 import * as crypto from 'crypto';
+import Degree from './degreemodel.js';
+import ApiError from '../utils/apierror.js';
+import User from './usermodel.js';
 const collegeSchema = mongoose.Schema({
   name: {
     type: String,
-    required: true,
+    default: '',
   },
   id: {
     type: String,
-    required: true,
     unique: true,
   },
   department: [
@@ -32,38 +34,49 @@ const collegeSchema = mongoose.Schema({
   deleteTokenExpires: Date,
 });
 
-collegeSchema.pre(
-  'findOneAndDelete',
-  asynchandler(async function (next) {
-    //delete all department college
-    const depIds = this.department;
+collegeSchema.pre('findOneAndDelete', async function (next) {
+  try {
+    // Get the college document being deleted
+    const college = await this.model.findOne(this.getQuery());
 
-    //remove the user from college
-    const userId = this.users;
+    if (!college) return next(); // Nothing to delete
 
-    //now change the role of it
+    const depIds = college.department;
+    const userIds = college.users;
+    // Update users to remove their college and related data
     await User.updateMany(
-      { _id: { $in: userId } },
+      { _id: { $in: userIds } },
       {
-        $set: { role: 'User' },
-        department: null,
-        college: null,
-        currentdegree: null,
-        sem: 0,
-        year: 0,
-        course: [],
+        $set: {
+          role: 'User',
+          department: null,
+          college: null,
+          currentdegree: null,
+          sem: 0,
+          year: 0,
+          course: [],
+        },
       }
     );
-
-    //filter the courses and delete
+    const adminupdate = await User.findByIdAndUpdate(college.admin, {
+      role: 'User',
+    });
+    // Delete all departments associated with the college
     const result = await Department.deleteMany({ _id: { $in: depIds } });
-
-    //check all courses delete successfully
-    if (result.acknowledged) {
-      return next(new ApiError('error in deleted course of department ', 422));
+    const result2 = await Degree.deleteMany({ college: college._id });
+    // If the operation failed, throw error
+    if (!result) {
+      return next(new Error('Error in deleting departments of college'));
     }
-  })
-);
+
+    if (!result2) {
+      return next(new ApiError('Error in delete degrees', 404));
+    }
+    next(); // Proceed with deletion
+  } catch (err) {
+    next(err); // Forward error to Mongoose
+  }
+});
 
 collegeSchema.methods.createdeletetoken = function () {
   const deleteToken = crypto.randomBytes(32).toString('hex');

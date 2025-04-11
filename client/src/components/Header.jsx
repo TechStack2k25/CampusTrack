@@ -8,7 +8,7 @@ function Header() {
   const location = useLocation();
   const navigate = useNavigate();
   const { user, status } = useSelector((state) => state.user);
-  // console.log(user,status);
+
   const scroll = (label) => {
     const Element = document.querySelector(label);
     if (Element) {
@@ -17,52 +17,57 @@ function Header() {
   };
 
   useEffect(() => {
-    if (status && !user?.active) {
+    setTimeout(()=>{
+      if (status && !user?.active) {
       toast.info('Verify your email!');
-    }
+    }},3000);
   }, []);
 
   return (
-    <header className='sticky top-0 z-50  dark:bg-black bg-white border-b-2 dark:border-gray-700 border-gray-200 dark:text-white text-black rounded-b-md '>
-      <div className='container mx-auto flex justify-between items-center md:px-10 p-5'>
-        <h1 className='text-2xl font-bold'>CampusTrack</h1>
+    <header className="sticky top-0 z-50 bg-white dark:bg-black border-b dark:border-gray-700 border-gray-200 shadow-sm dark:text-white text-black rounded-b-md transition-all duration-300">
+      <div className="container mx-auto flex justify-between items-center p-4 sm:px-8 md:px-12">
+        <h1 className="text-2xl font-bold text-indigo-600 dark:text-indigo-400">
+          CampusTrack
+        </h1>
+
         {!status && location.pathname === '/' && (
-          <nav className='hidden sm:block'>
-            <ul className='flex space-x-6'>
+          <nav className="hidden sm:block">
+            <ul className="flex space-x-6 font-medium">
               <li
                 onClick={() => scroll('#home')}
-                className='hover:text-indigo-500 cursor-pointer'
+                className="hover:text-indigo-500 transition cursor-pointer"
               >
                 Home
               </li>
               <li
                 onClick={() => scroll('#features')}
-                className='hover:text-indigo-500 cursor-pointer'
+                className="hover:text-indigo-500 transition cursor-pointer"
               >
                 Features
               </li>
               <li
                 onClick={() => scroll('#roles')}
-                className='hover:text-indigo-500 cursor-pointer'
+                className="hover:text-indigo-500 transition cursor-pointer"
               >
                 Roles
               </li>
             </ul>
           </nav>
         )}
+
         {status ? (
           <UserMenu />
         ) : location.pathname === '/' ? (
           <button
             onClick={() => navigate('/login')}
-            className='bg-indigo-500 px-4 py-2 rounded hover:bg-indigo-600 text-white dark:text-black'
+            className="bg-indigo-600 hover:bg-indigo-700 text-white dark:text-black px-5 py-2 rounded-lg font-semibold shadow-sm ring-1 ring-indigo-500/10"
           >
             Login
           </button>
         ) : (
           <button
             onClick={() => navigate('/')}
-            className='bg-indigo-600 px-4 py-2 rounded hover:bg-indigo-500 text-white dark:text-black'
+            className="bg-indigo-500 hover:bg-indigo-600 text-white dark:text-black px-5 py-2 rounded-lg font-semibold shadow-sm ring-1 ring-indigo-500/10"
           >
             Home
           </button>

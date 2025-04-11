@@ -10,7 +10,7 @@ import { isvaliduser } from './authcontrollers.js';
 
 export const create_request = asynchandler(async (req, res, next) => {
   // extract data from req.body
-  const { requestType, course, college, dep_id, role, year, degree, sem } =
+  let { requestType, course, college, dep_id, role, year, degree, sem } =
     req.body;
 
   //get the data of user from req.user
@@ -73,7 +73,7 @@ export const create_request = asynchandler(async (req, res, next) => {
         return next(new ApiError('Error in generating request.Try again', 404));
       }
 
-      if (requset_role == 'Student') {
+      if (role == 'Student') {
         sem = 1;
         year = 1;
       }
@@ -301,6 +301,12 @@ export const updaterequest = asynchandler(async (req, res, next) => {
       if (!reqcollege) {
         return next('No college found', 404);
       }
+      const reqdepartment = await Department.findById(
+        require_request.request_dep
+      );
+      if (!reqdepartment) {
+        return next('No Department found', 404);
+      }
       //check the  user is exist or not
       const requser = await User.findById(require_request.request_by);
       if (!requser) {
@@ -308,13 +314,16 @@ export const updaterequest = asynchandler(async (req, res, next) => {
       }
       //add the user in the college and save
       reqcollege.users.push(require_request.request_by);
+      reqdepartment.user.push(require_request.request_by);
       requser.department = require_request.request_dep;
       requser.role = require_request.request_role;
       requser.currentdegree = require_request.request_degree;
       requser.college = reqcollege._id;
+      requser.sem = require_request.request_sem;
       requser.year = require_request.request_year;
       requser.save({ validateBeforeSave: false });
       reqcollege.save();
+      reqdepartment.save();
     } else if (
       require_request.request_dep &&
       require_request.request_role === 'HOD'

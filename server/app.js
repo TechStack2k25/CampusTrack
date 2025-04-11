@@ -1,3 +1,5 @@
+// server.js or app.js
+
 import express from 'express';
 import morgan from 'morgan';
 import globalerrorhandler from './controllers/errorcontroller.js';
@@ -17,57 +19,62 @@ import {
 import cookieParser from 'cookie-parser';
 import attendanceroutes from './routers/attendanceroutes.js';
 import degreeroutes from './routers/degreerouters.js';
-import { app } from './utils/socket.js';
+import { app } from './utils/socket.js'; // This assumes you're using the same 'app' from socket.js
 import messageroutes from './routers/messageroutes.js';
 import storeroutes from './routers/storeroutes.js';
 import dotenv from 'dotenv';
 import './utils/passport.config.js';
 import session from 'express-session';
 import passport from 'passport';
-// extract json payload from request body and make available in req.body;
-app.use(express.json());
-
-// extract json payload from request cookie and make available in req.cookies;
-app.use(cookieParser());
+import path from 'path';
 
 dotenv.config({ path: './variable.env' });
+const __dirname = path.resolve();
+
+app.use(express.json());
+app.use(cookieParser());
+
+app.use(morgan('dev'));
+
 app.use(
   session({
     secret: process.env.SESSION_SECRET_STRING,
     resave: false,
     saveUninitialized: true,
+    cookie: {
+      sameSite: 'lax',
+      secure: false,
+    },
   })
 );
 app.use(passport.initialize());
 app.use(passport.session());
+if (process.env.NODE_ENV === 'production') {
+  app.use(express.static(path.join(__dirname, '../client/dist')));
 
-//to console the http request
-app.use(morgan('dev'));
-//all auth routes redirect to authroutes.js
+  app.get(/^\/(?!api).*/, (req, res) => {
+    res.sendFile(path.join(__dirname, '../client/dist', 'index.html'));
+  });
+}
 app.use('/api/auth', authroutes);
-//all user routes
 app.use('/api/user', userroutes);
-//to protect all routes login to acess any task
 app.use('/api/college', collegeroutes);
+
 app.use(protect);
 app.use(activeuser);
-//all task routes
+
 app.use('/api/task', taskroutes);
-//to accept and get all request
 app.use('/api/event', eventroutes);
 app.use('/api/store', storeroutes);
-//mark attendace of student
 app.use('/api/attendance', attendanceroutes);
-//all course routes and only hod can make change in courses
 app.use('/api/course', courseroutes);
-//all departmentroute
 app.use('/api/department', departmentroutes);
-app.use(restrict_to(['Admin', 'HOD', 'faculty']));
-app.use('/api/message', messageroutes);
-app.use('/api/request', requestroutes);
 app.use('/api/degree', degreeroutes);
-//all college routes
+app.use('/api/message', messageroutes);
 
-// to handle the error
+app.use(restrict_to(['Admin', 'HOD', 'faculty']));
+app.use('/api/request', requestroutes);
+
 app.use(globalerrorhandler);
+
 export default app;

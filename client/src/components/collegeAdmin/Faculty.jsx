@@ -68,7 +68,7 @@ const Faculty = () => {
         dispatch(setSuccess('Removed!'));
       }
     } catch (error) {
-      console.log(error);
+      // console.log(error);
       dispatch(setError('Try again later!'));
     }
   };

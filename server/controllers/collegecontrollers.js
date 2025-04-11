@@ -5,6 +5,7 @@ import asynchandler from '../utils/asynchandler.js';
 import Email from '../utils/emailhandler.js';
 import { isvaliduser } from './authcontrollers.js';
 import dotenv from 'dotenv';
+import * as crypto from 'crypto';
 dotenv.config({ path: './variable.env' });
 export const addcollege = asynchandler(async (req, res, next) => {
   //get the data from req to create new entity
@@ -16,7 +17,10 @@ export const addcollege = asynchandler(async (req, res, next) => {
     return next(new ApiError('User Not Found', 404));
   }
 
-  const reqcollege = await College.findOne({ admin: requser._id });
+  const reqcollege = await College.findOne({
+    admin: requser._id,
+    active: true,
+  });
 
   if (reqcollege) {
     return next(
@@ -26,6 +30,7 @@ export const addcollege = asynchandler(async (req, res, next) => {
   //if not exist create the college
   const newcollege = await College.create({
     admin: requser._id,
+    id: requser._id,
   });
 
   //if error in created in entity
@@ -35,16 +40,12 @@ export const addcollege = asynchandler(async (req, res, next) => {
 
   const updateduser = await User.findByIdAndUpdate(requser._id, {
     college: newcollege._id,
+    role: 'Admin',
   });
 
   try {
-    const url = `${process.env.FRONTEND_URL}/updatecollege`;
+    const url = `${process.env.FRONTEND_URL}/profile`;
     await new Email(requser, url).sendEmailonverification();
-
-    res.status(200).json({
-      status: 'success',
-      message: 'Email Sent',
-    });
   } catch (error) {
     return next(new ApiError('Error in send Email', 404));
   }
@@ -85,14 +86,14 @@ export const requestfordelete = asynchandler(async (req, res, next) => {
     return next(new ApiError('College Not Found', 404));
   }
 
-  const requser=await User.findById(user_id);
+  const requser = await User.findById(user_id);
 
   const deleteToken = reqcollege.createdeletetoken();
 
   if (!deleteToken) {
     return next(new ApiError('Error in creating token Try Again', 404));
   }
-
+  await reqcollege.save();
   try {
     const deleteurl = `${process.env.FRONTEND_URL}/deletecollege/${deleteToken}`;
     await new Email(requser, deleteurl).sendEmailForDeleteCollege();
@@ -101,8 +102,8 @@ export const requestfordelete = asynchandler(async (req, res, next) => {
       message: 'Email Sent successfully',
     });
   } catch (error) {
-    console.log(error);
-    
+    // console.log(error);
+
     reqcollege.deletecollegetoken = undefined;
     reqcollege.deleteTokenExpires = undefined;
     reqcollege.save();
@@ -114,9 +115,11 @@ export const delcollege = asynchandler(async (req, res, next) => {
   //get the info of the college
   const { token } = req.params;
 
+  const hashedToken = crypto.createHash('sha256').update(token).digest('hex');
+  // console.log(hashedToken);
   //check the college is find to delete
   const reqcollege = await College.findOne({
-    deletecollegetoken: token,
+    deletecollegetoken: hashedToken,
     deleteTokenExpires: { $gte: Date.now() },
   });
 
@@ -126,13 +129,13 @@ export const delcollege = asynchandler(async (req, res, next) => {
   }
 
   //delete the college
-  const dele_or_not = await College.findByOneAndDelete({
-    deletecollegetoken: token,
+  const dele_or_not = await College.findOneAndDelete({
+    deletecollegetoken: hashedToken,
     deleteTokenExpires: { $gte: Date.now() },
   });
 
   //if  error in deleted college  then return error
-  if (!dele_or_not?.acknowledged) {
+  if (!dele_or_not) {
     return next(new ApiError('Error in deleted the college', 422));
   } else {
     (reqcollege.deletecollegetoken = undefined),
