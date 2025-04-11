@@ -178,7 +178,6 @@ export const login = asynchandler(async (req, res, next) => {
 
 export const protect = asynchandler(async (req, res, next) => {
   if (req.user) {
-    //if user id deleted check
     return next();
   }
 

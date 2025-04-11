@@ -36,9 +36,7 @@ const Login = () => {
   };
 
   const handleGoogle = () => {
-    window.location.href = `${
-      import.meta.env.VITE_BACKENED_URL
-    }/api/auth/google`;
+    window.location.href = `/api/auth/google`;
   };
 
   return (
@@ -71,7 +69,9 @@ const Login = () => {
                 })}
               />
               {errors?.email && (
-                <p className='mt-1 text-sm text-red-500'>{errors.email.message}</p>
+                <p className='mt-1 text-sm text-red-500'>
+                  {errors.email.message}
+                </p>
               )}
             </div>
             <div className='mb-4'>
@@ -95,7 +95,9 @@ const Login = () => {
                 })}
               />
               {errors?.password && (
-                <p className='mt-1 text-sm text-red-500'>{errors.password.message}</p>
+                <p className='mt-1 text-sm text-red-500'>
+                  {errors.password.message}
+                </p>
               )}
             </div>
             {error && (
@@ -110,14 +112,14 @@ const Login = () => {
               </Link>
             </div>
             <button
-              type="submit"
-              className="w-full bg-indigo-600 text-white py-2 px-4 rounded-lg hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 font-semibold tracking-wide transition-all duration-150 flex items-center justify-center"
+              type='submit'
+              className='w-full bg-indigo-600 text-white py-2 px-4 rounded-lg hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 font-semibold tracking-wide transition-all duration-150 flex items-center justify-center'
               disabled={loading}
             >
               {loading ? (
-                <FaSpinner className="animate-spin text-white text-lg" />
+                <FaSpinner className='animate-spin text-white text-lg' />
               ) : (
-                "Login"
+                'Login'
               )}
             </button>
           </form>
