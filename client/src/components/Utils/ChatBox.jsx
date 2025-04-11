@@ -122,23 +122,24 @@ export default function ChatBox({
       </div>
 
       {sendEnable && (
-        <div className='border-t p-2 flex items-center'>
+        <div className='border-t pt-2 mt-2 flex items-center gap-2'>
           <input
             type='text'
             placeholder='Type a message...'
-            className='flex-1 p-2 border rounded-lg focus:outline-none focus:ring text-black'
+            className='flex-1 p-2 border rounded-lg focus:outline-none focus:ring text-black dark:text-white dark:bg-gray-700'
             value={text}
             onChange={(e) => setText(e.target.value)}
+            onKeyDown={(e) => e.key === 'Enter' && sendTheMessage()}
           />
           <button
-            className='ml-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700'
+            className='p-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50'
             onClick={sendTheMessage}
-            disabled={text?.trim()?.length === 0 || isSending}
+            disabled={!text.trim() || isSending}
           >
             {isSending ? (
-              <FaSpinner className='animate-spin w-6 h-6 text-gray-600 dark:text-white' />
+              <FaSpinner className='animate-spin w-5 h-5' />
             ) : (
-              <FiSend className='w-6 h-6 text-gray-600 dark:text-white' />
+              <FiSend className='w-5 h-5' />
             )}
           </button>
         </div>

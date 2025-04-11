@@ -10,69 +10,86 @@ const AddEvent = ({ addEvent, openForm, setOpenForm }) => {
   } = useForm();
 
   const onSubmit = (data) => {
-    // Add the new event 
     addEvent(data);
     reset();
+    setOpenForm(false); // optional: close after submission
   };
 
   return (
-    <div className="relative max-w-md mx-auto border dark:border-gray-700 p-6 rounded-md shadow-md">
-      <h2 className="text-2xl font-bold text-center text-gray-800 mb-4 dark:text-white">
+    <div className="relative max-w-lg w-full mx-auto bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 p-6 sm:p-8 rounded-2xl shadow-2xl transition-all">
+      {/* Close Button */}
+      {openForm && (
+        <button
+          onClick={() => setOpenForm(false)}
+          className="absolute top-4 right-4 text-gray-600  hover:text-red-500 font-black dark:text-gray-300 dark:hover:text-red-400 transition"
+        >
+          X
+        </button>
+      )}
+
+      {/* Heading */}
+      <h2 className="text-3xl font-semibold text-center text-gray-800 dark:text-white mb-6">
         New Event
       </h2>
-      {openForm && <div onClick={()=>setOpenForm(false)} className="absolute cursor-pointer top-6 right-8 hover:text-gray-900 text-white bg-blue-500 font-medium text-2xl hover:bg-blue-700 h-8 text-center aspect-square rounded-lg">
-        X
-      </div>}
 
       {/* Form */}
-      <form onSubmit={handleSubmit(onSubmit)}>
-        <div className="mb-4">
-          <label className="block text-gray-700 dark:text-gray-300 tracking-tight">Event Title</label>
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+        {/* Title */}
+        <div>
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+            Event Title
+          </label>
           <input
             type="text"
-            className="w-full mt-1 p-2 border rounded-md "
-            placeholder="Enter event title"
+            placeholder="Title..."
+            className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
             {...register("title", { required: "Event title is required" })}
           />
           {errors.title && (
-            <p className="text-red-500 text-sm">{errors.title.message}</p>
+            <p className="text-sm text-red-500 mt-1">{errors.title.message}</p>
           )}
         </div>
 
-        <div className="mb-4">
-          <label className="block text-gray-700 dark:text-gray-300 tracking-tight">Event Date</label>
+        {/* Date */}
+        <div>
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+            Event Date
+          </label>
           <input
             type="date"
-            className="w-full mt-1 p-2 border rounded-md"
+            className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
             {...register("date", { required: "Event date is required" })}
           />
           {errors.date && (
-            <p className="text-red-500 text-sm">{errors.date.message}</p>
+            <p className="text-sm text-red-500 mt-1">{errors.date.message}</p>
           )}
         </div>
 
-        <div className="mb-4">
-          <label className="block text-gray-700 dark:text-gray-300 tracking-tight">Event Description</label>
+        {/* Description */}
+        <div>
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+            Event Description
+          </label>
           <textarea
-            className="w-full mt-1 p-2 border rounded-md"
-            placeholder="Enter event description"
+            placeholder="Briefly describe the event (max 100 characters)"
+            className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-800 dark:text-white resize-none h-24 focus:outline-none focus:ring-2 focus:ring-blue-500"
             {...register("description", {
               required: "Event description is required",
-              maxLength:{
-                value:100,
-                message:"Maximum 100 characters allowed!",
-              }
+              maxLength: {
+                value: 100,
+                message: "Maximum 100 characters allowed!",
+              },
             })}
           />
           {errors.description && (
-            <p className="text-red-500 text-sm">{errors.description.message}</p>
+            <p className="text-sm text-red-500 mt-1">{errors.description.message}</p>
           )}
         </div>
 
-
+        {/* Submit Button */}
         <button
           type="submit"
-          className="w-full bg-blue-500 text-white py-2 rounded-md hover:bg-blue-600"
+          className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-lg font-semibold transition duration-300"
         >
           Add Event
         </button>

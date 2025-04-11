@@ -1,42 +1,41 @@
-import React, { useState } from 'react';
-import { EventCard, AddEvents } from '../Utils/index.js';
-import { useEvents } from '../../data/events.js';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { eventService } from '../../api/eventService.js';
-import { setSuccess } from '../../store/slices/userSlice.js';
-import { useDispatch } from 'react-redux';
+import React, { useState } from "react";
+import { EventCard, AddEvents } from "../Utils/index.js";
+import { useEvents } from "../../data/events.js";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { eventService } from "../../api/eventService.js";
+import { setSuccess, setError } from "../../store/slices/userSlice.js";
+import { useDispatch } from "react-redux";
 
 const Events = () => {
-  const [filter, setFilter] = useState('upcoming');
+  const [filter, setFilter] = useState("upcoming");
   const [openForm, setOpenForm] = useState(false);
   const queryClient = useQueryClient();
   const dispatch = useDispatch();
 
   const currentDate = new Date();
-
   const { data: events } = useEvents();
 
-  // Ensure events array exists before filtering
+  // Filter events based on deadline
   const filteredEvents = events
     ? events.filter((event) => {
         const eventDate = new Date(event?.deadline);
-        return filter === 'upcoming'
+        return filter === "upcoming"
           ? eventDate >= currentDate
           : eventDate < currentDate;
       })
     : [];
 
+  // Mutation to create event
   const mutationTocreateEvent = useMutation({
     mutationFn: eventService.createEvent,
     onSuccess: (data) => {
-      // console.log('event created successfully:', data);
-      dispatch(setSuccess('Event added successfully!'));
-      //invalidate allevents queries to refetch data
-      queryClient.invalidateQueries(['allevents']);
+      // console.log("Event created successfully:", data);
+      dispatch(setSuccess("Event added successfully!"));
+      queryClient.invalidateQueries(["allevents"]);
     },
     onError: (error) => {
       dispatch(setError(error?.response?.data?.message));
-      // console.error('Error adding event:', error);
+      // console.error("Error adding event:", error);
     },
   });
 
@@ -46,7 +45,7 @@ const Events = () => {
   };
 
   return (
-    <div className='flex-1 min-h-screen sm:py-4'>
+    <div className="flex-1 min-h-screen sm:py-4">
       {openForm && (
         <AddEvents
           addEvent={addEvent}
@@ -54,57 +53,62 @@ const Events = () => {
           setOpenForm={setOpenForm}
         />
       )}
-      <div className='container mx-auto p-6'>
-        <h1 className='text-2xl text-center font-bold text-gray-800 dark:text-white tracking-tight mb-6'>
+
+      <div className="container mx-auto p-6">
+        <h1 className="text-2xl text-center font-bold text-gray-800 dark:text-white tracking-tight mb-6">
           My Events
         </h1>
 
-        <div className='flex justify-center mb-6 space-x-4 flex-wrap'>
+        {/* Filter Buttons */}
+        <div className="flex justify-center mb-6 space-x-4 flex-wrap">
           <button
             className={`px-4 py-2 rounded ${
-              filter === 'upcoming'
-                ? 'bg-green-500 text-white'
-                : 'bg-gray-200 hover:bg-gray-300'
+              filter === "upcoming"
+                ? "bg-green-500 text-white"
+                : "bg-gray-200 hover:bg-gray-300 text-black"
             }`}
-            onClick={() => setFilter('upcoming')}
+            onClick={() => setFilter("upcoming")}
           >
-            Upcoming Events
+            Upcoming
           </button>
           <button
-            className={`px-4 py-2 rounded ${
-              filter === 'past'
-                ? 'bg-blue-500 text-white'
-                : 'bg-gray-200 hover:bg-gray-300'
+            className={`px-10 py-2 rounded ${
+              filter === "past"
+                ? "bg-blue-500 text-white"
+                : "bg-gray-200 hover:bg-gray-300 text-black"
             }`}
-            onClick={() => setFilter('past')}
+            onClick={() => setFilter("past")}
           >
-            Past Events
+            Past
           </button>
         </div>
 
+        {/* Events List */}
         {filteredEvents.length > 0 ? (
-          <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6'>
-            {filteredEvents?.map((event) => (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {filteredEvents.map((event) => (
               <EventCard
                 key={event._id}
                 event={event}
-                isUpcoming={filter === 'upcoming'}
+                isUpcoming={filter === "upcoming"}
               />
             ))}
           </div>
         ) : (
-          <p className='text-gray-600 text-center dark:text-gray-400 text-lg font-semibold'>
+          <p className="text-gray-600 text-center dark:text-gray-400 text-lg font-semibold">
             No events to display.
           </p>
         )}
       </div>
+
+      {/* Add Button */}
       {!openForm && (
         <div
-          onClick={() => setOpenForm(true)}
-          className='animate-bounce cursor-pointer fixed bottom-8 right-8 text-white  font-bold text-4xl bg-blue-500 hover:bg-blue-700 h-12 text-center aspect-square rounded-xl'
-        >
-          +
-        </div>
+        onClick={() => setOpenForm(true)}
+        className="animate-bounce cursor-pointer fixed bottom-8 right-8 text-white font-bold text-4xl bg-blue-500 hover:bg-blue-700 h-12 text-center aspect-square rounded-full shadow-2xl shadow-blue-500/50"
+      >
+        +
+      </div>
       )}
     </div>
   );

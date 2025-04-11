@@ -1,54 +1,46 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
-import { MdOutlineMenu } from 'react-icons/md';
-import { IoCloseSharp } from 'react-icons/io5';
-import { useSelector } from 'react-redux';
+import { MdOutlineMenu } from "react-icons/md";
+import { IoCloseSharp } from "react-icons/io5";
+import { useSelector, useDispatch } from 'react-redux';
 import { userService } from '../api/userService';
 import { useMutation } from '@tanstack/react-query';
 import { setError, setSuccess } from '../store/slices/userSlice';
-import { useDispatch } from 'react-redux';
-import { useApprovals } from '../data/approvals.js';
+import { useApprovals } from "../data/approvals.js";
 
 const Sidebar = ({ menuItems }) => {
   const [open, setOpen] = useState(false);
-
-  const dispatch = useDispatch();
-
   const { user } = useSelector((state) => state.user);
-
+  const dispatch = useDispatch();
   const navigate = useNavigate();
-
   const ref = useRef(null);
 
   const hideMenu = (event) => {
-    if (window.innerWidth < 768 && ref && !ref.current.contains(event.target)) {
+    if (window.innerWidth < 768 && ref.current && !ref.current.contains(event.target)) {
       setOpen(false);
     }
   };
 
   useEffect(() => {
-    window.addEventListener('mousedown', hideMenu); // Listen for window mousedown
-
-    return () => window.removeEventListener('mousedown', hideMenu); // Cleanup
+    window.addEventListener('mousedown', hideMenu);
+    return () => window.removeEventListener('mousedown', hideMenu);
   }, []);
 
   const mutationToHODRequest = useMutation({
     mutationFn: userService.updateUser,
     onSuccess: (data) => {
-      // console.log('Request created successfully:', data);
+      console.log('Request created successfully:', data);
       dispatch(setSuccess('Sent Request!'));
-      reset(); // Reset the form after submission
     },
     onError: (error) => {
       dispatch(setError(error?.response?.data?.message));
-      // console.error('Error creating course:', error);
-    },
+      console.error('Error creating course:', error);
+    }
   });
 
-  const makeHOD = () => mutationToHODRequest.mutate({ ...user, role: 'HOD' });
+  const makeHOD = () => mutationToHODRequest.mutate({ ...user, role: "HOD" });
 
   const enabled = user?.role && !['Student', 'User'].includes(user.role);
-
   const approvals = useApprovals(enabled);
 
   const quantities = {
@@ -57,66 +49,58 @@ const Sidebar = ({ menuItems }) => {
 
   return (
     <>
-      <aside
-        className={`absolute z-20 sm:rounded-none rounded top-16 left-0 sm:static text-black  dark:text-white ${
-          open ? 'block' : 'hidden'
-        } sm:block`}
-      >
+      <aside className={`absolute z-20 sm:static top-16 left-0 sm:top-0 text-black dark:text-white ${open ? 'block' : 'hidden'} sm:block transition-all`}>
         <div
           ref={ref}
-          className='dark:bg-gray-800  sm:w-56 mx-1 sm:pl-4 px-2 sm:py-4 py-1 sm:my-1 rounded-md border-2 dark:border-gray-700 border-gray-200'
+          className="backdrop-blur-xl bg-white/60 dark:bg-gray-900/60 sm:w-60 w-64 shadow-lg mx-2 p-4 rounded-xl border border-gray-200 sm:mt-2 dark:border-gray-700 transition-all"
         >
-          <div className='flex my-2 px-2 space-x-4 items-center'>
+          <div className="flex items-center space-x-4 mb-6 px-2">
             <div
               onClick={() => navigate('/dashboard')}
-              className='cursor-pointer h-8 sm:h-12 text-xl aspect-square bg-blue-500 rounded-full flex items-center justify-center text-white font-bold'
+              className="cursor-pointer h-10 w-10 sm:h-12 sm:w-12 text-xl bg-indigo-500 rounded-full flex items-center justify-center text-white font-bold shadow-md hover:scale-105 transition"
             >
               {user?.name?.toUpperCase()[0] || user?.email.toUpperCase()[0]}
             </div>
-            <span className='dark:text-white text-xl font-semibold truncate'>
+            <span className="text-lg font-semibold truncate dark:text-white text-gray-900">
               {user?.name || user?.email.split('@')[0]}
             </span>
           </div>
-          <ul>
+
+          <ul className="space-y-2">
             {menuItems.map((item) => (
               <NavLink
                 key={item.name + item.link}
                 to={item.link}
                 className={({ isActive }) =>
-                  isActive
-                    ? ' text-blue-500 dark:text-blue-600'
-                    : ' hover:text-blue-400 dark:hover:text-blue-600'
+                  `transition duration-300 rounded-full px-4 py-2 font-medium flex justify-between items-center ${
+                    isActive
+                      ? 'bg-indigo-100 text-indigo-600 dark:bg-indigo-900 dark:text-indigo-300'
+                      : 'hover:bg-gray-200 dark:hover:bg-gray-800'
+                  }`
                 }
               >
-                <li
-                  key={item.name}
-                  className='py-2 px-4 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 flex items-center justify-between'
-                >
-                  <span className='text-base'>{item.name}</span>
-
-                  {quantities?.[item.name] > 0 && (
-                    <span className='w-2 h-2 bg-green-500 rounded-full'></span>
-                  )}
-                </li>
+                <span>{item.name}</span>
+                {quantities?.[item.name] > 0 && (
+                  <span className="relative inline-flex w-2.5 h-2.5 bg-green-500 rounded-full animate-ping" />
+                )}
               </NavLink>
             ))}
-            {user?.role === 'faculty' && (
+
+            {user?.role === "faculty" && (
               <li
                 onClick={makeHOD}
-                className='cursor-pointer py-2 px-4 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700'
+                className="cursor-pointer px-4 py-2 rounded-full font-medium hover:bg-yellow-100 dark:hover:bg-yellow-900 text-yellow-700 dark:text-yellow-300 transition"
               >
-                <span>
-                  <span>Request for HOD</span>
-                </span>
+                Request for HOD
               </li>
             )}
           </ul>
         </div>
       </aside>
-
+      {/* Toggle Button */}
       <div
         onClick={() => setOpen(!open)}
-        className='text-black absolute top-7 left-4 sm:hidden text-2xl cursor-pointer'
+        className="text-black dark:text-white fixed sm:top-24 top-20 left-4 sm:hidden text-3xl cursor-pointer z-30"
       >
         {open ? <IoCloseSharp /> : <MdOutlineMenu />}
       </div>

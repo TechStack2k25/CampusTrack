@@ -8,7 +8,7 @@ import { setError, setSuccess } from '../../store/slices/userSlice';
 import { useQueryClient } from '@tanstack/react-query';
 import { FaSpinner, FaTrash, FaUserMinus } from 'react-icons/fa';
 import { courseService } from '../../api/courseService';
-import ConfirmModal from '../Utils/ConfirmModal';
+import { ConfirmModal } from '../Utils';
 
 const Attendance = () => {
   const { register, handleSubmit, reset } = useForm();
@@ -18,22 +18,20 @@ const Attendance = () => {
   const [loading, setLoading] = useState(false);
   const [marking, setMarking] = useState(false);
   const [removeStudents, setRemoveStudents] = useState(false);
-
-  const dispatch = useDispatch();
-
-  // Example students database for simplicity
   const [studentsData, setStudentsData] = useState([]);
 
+  const dispatch = useDispatch();
   const { college, department } = useSelector((state) => state.user?.user);
-
   const { data: allCourses } = useCourses();
 
-  // Fetch students based on course details
   const onSubmit = async (data) => {
-    // console.log(data);
     try {
-      setStudentsData([]);
       setLoading(true);
+      setStudentsData([]);
+      const selectedCourse = allCourses.find(
+        (item) => item._id === data.course
+      );
+      setCourseDetails(selectedCourse);
 
       const reqData = {
         college,
@@ -42,15 +40,21 @@ const Attendance = () => {
         course: data?.course,
       };
 
-      const studentsList = await userService.getUsers(reqData); // fetching students
+      const studentsList = await userService.getUsers(reqData);
       setStudentsData(studentsList);
+
+      // Auto-scroll to list
+      setTimeout(() => {
+        document
+          .getElementById('student-list')
+          ?.scrollIntoView({ behavior: 'smooth' });
+      }, 200);
     } catch (error) {
-      // console.error(error);
+      dispatch(setError('Failed to load students.'));
     } finally {
       setLoading(false);
     }
   };
-  // console.log(courseDetails);
 
   const handleAttendanceChange = (id) => {
     setMarked((prev) =>
@@ -59,8 +63,10 @@ const Attendance = () => {
   };
 
   const submitAttendance = async () => {
-    // console.log(marked);
-    // console.log(courseDetails);
+    if (marked.length === 0) {
+      dispatch(setError('No students selected!'));
+      return;
+    }
 
     try {
       setMarking(true);
@@ -68,6 +74,7 @@ const Attendance = () => {
         courseId: courseDetails?._id,
         presentStudentIds: marked,
       });
+
       if (response) {
         dispatch(setSuccess('Attendance Marked!'));
         setMarked([]);
@@ -79,7 +86,7 @@ const Attendance = () => {
         dispatch(setError('Try Again!'));
       }
     } catch (error) {
-      dispatch(setError(error?.response?.data?.message));
+      dispatch(setError(error?.response?.data?.message || 'Error marking attendance'));
     } finally {
       setMarking(false);
     }
@@ -87,18 +94,16 @@ const Attendance = () => {
 
   const removeStudent = async (student, message) => {
     try {
-      // console.log({ ...student, message: 'Individual' });
-
       const res = await courseService.removeStudent_s({
         _id: courseDetails._id,
         student_id: student._id,
         message,
       });
       if (res) {
-        onSubmit(courseDetails);
+        onSubmit({ course: courseDetails._id });
       }
     } catch (error) {
-      // console.log(error);
+      dispatch(setError('Failed to remove student.'));
     }
   };
 
@@ -108,65 +113,34 @@ const Attendance = () => {
         Attendance
       </h1>
 
-      {/* Course Input Form */}
-
+      {/* Course Form */}
       <form
         onSubmit={handleSubmit(onSubmit)}
         className='bg-white dark:bg-gray-900 border dark:border-gray-700 p-6 shadow rounded mb-6 max-w-md mx-auto'
       >
         <div className='mb-4'>
-          <label className='block font-medium mb-1 dark:text-gray-400 tracking-tight'>
+          <label className='block font-medium mb-1 dark:text-gray-400'>
             Course:
           </label>
           <select
             {...register('course', { required: 'Course is required' })}
             className='w-full px-3 py-2 border rounded dark:bg-gray-200 dark:text-gray-700'
-            onChange={(e) => {
-              const selectedCourse = allCourses.find(
-                (item) => item._id === e.target.value
-              );
-              setCourseDetails(selectedCourse);
-            }}
           >
             <option value=''>Select a course</option>
-            {/* array of courses  of faculty */}
-            {allCourses &&
-              allCourses?.length > 0 &&
-              allCourses.map((item) => (
-                <option
-                  key={item?._id || item?.name || item?.email}
-                  value={item?._id}
-                >
-                  {item?.name}
-                </option>
-              ))}
+            {allCourses?.map((item) => (
+              <option key={item._id} value={item._id}>
+                {item.name}
+              </option>
+            ))}
           </select>
         </div>
-        {/* <div className="mb-4">
-            <label className="block font-medium mb-1">Semester</label>
-            <select
-              {...register("semester", { required: "Semester is required" })}
-              className="w-full px-3 py-2 border rounded"
-            >
-              <option value="">Select semester</option>
-              <option value="Sem1">Semester 1</option>
-              <option value="Sem2">Semester 2</option>
-            </select>
-          </div> */}
-        {/* <div className="mb-4">
-            <label className="block font-medium mb-1">Date</label>
-            <input
-              type="date"
-              {...register("date", { required: "Date is required" })}
-              className="w-full px-3 py-2 border rounded"
-            />
-          </div> */}
+
         <button
           type='submit'
           className='w-full flex justify-center bg-blue-500 hover:bg-blue-700 transition text-white px-4 py-2 rounded'
         >
           {loading ? (
-            <span className='animate-spin '>
+            <span className='animate-spin'>
               <FaSpinner />
             </span>
           ) : (
@@ -175,9 +149,12 @@ const Attendance = () => {
         </button>
       </form>
 
-      {/* Attendance Marking */}
+      {/* Attendance Section */}
       {studentsData.length > 0 && (
-        <div className='bg-white dark:bg-gray-900 dark:border-gray-800 border p-6 shadow rounded'>
+        <div
+          id='student-list'
+          className='bg-white dark:bg-gray-900 dark:border-gray-800 border p-6 shadow rounded'
+        >
           <div className='flex justify-between items-center mb-6'>
             <h2 className='text-xl font-bold dark:text-gray-400'>
               Course: {courseDetails?.name}
@@ -188,119 +165,128 @@ const Attendance = () => {
                 Total Classes: {courseDetails?.total_classes}
               </h4>
               <button
-                // your handler function
-                className='text-red-500 hover:text-red-700 transition relative group'
-                title='Remove all students'
                 onClick={() => setRemoveStudents(true)}
+                className='text-red-500 hover:text-red-700 transition'
+                title='Remove all students'
               >
                 <FaUserMinus className='w-5 h-5' />
               </button>
             </div>
           </div>
 
-          {studentsData.length > 0 ? (
-            <div>
-              {studentsData.map((student) => {
-                const attendanceRate = student?.attendance
-                  ? Math.round(
-                      (student?.attendance / courseDetails?.total_classes) * 100
-                    )
-                  : 0;
+          <p className='text-sm mb-4 dark:text-gray-300'>
+            Students marked present:{' '}
+            <span className='font-semibold'>{marked.length}</span>
+          </p>
+
+          {studentsData.map((student) => {
+            const attendanceRate = student?.attendance
+              ? Math.round(
+                  (student.attendance / courseDetails.total_classes) * 100
+                )
+              : 0;
+
                 return (
                   <div
                     key={student._id}
-                    className='grid grid-cols-4 space-x-2 mb-4'
+                    className='flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 p-3 rounded-md border dark:border-gray-700 mb-4 bg-gray-100 dark:bg-black dark:bg-opacity-10'
                   >
-                    <p className='font-medium dark:text-white'>
+                    {/* Student Name */}
+                    <p className='text-sm sm:text-base font-medium dark:text-white truncate'>
                       {student?.name || student?.email?.split('@')[0]}
                     </p>
-                    <div className='flex items-center space-x-4'>
-                      <label className='flex items-center cursor-pointer'>
-                        <input
-                          type='checkbox'
-                          checked={marked?.includes(student?._id)}
-                          onChange={() => handleAttendanceChange(student._id)}
-                          className='hidden'
-                        />
-                        <div
-                          className={`w-6 h-6 flex items-center justify-center border-2 rounded-lg transition-all 
-        ${
-          marked?.includes(student?._id)
-            ? 'bg-green-500 border-green-600'
-            : 'bg-gray-200 border-gray-400'
-        } 
-        hover:bg-green-400 hover:border-green-500 active:scale-95`}
-                        >
-                          {marked?.includes(student?._id) && (
-                            <svg
-                              xmlns='http://www.w3.org/2000/svg'
-                              className='w-4 h-4 text-white'
-                              viewBox='0 0 20 20'
-                              fill='currentColor'
-                            >
-                              <path
-                                fillRule='evenodd'
-                                d='M16.707 5.293a1 1 0 010 1.414l-7 7a1 1 0 01-1.414 0l-3-3a1 1 0 111.414-1.414L9 11.586l6.293-6.293a1 1 0 011.414 0z'
-                                clipRule='evenodd'
-                              />
-                            </svg>
-                          )}
-                        </div>
-                        <span
-                          className={`hidden sm:block ml-2 px-3 py-1 text-sm font-medium rounded-md transition-all 
-                      ${
-                        marked?.includes(student?._id)
-                          ? 'bg-green-500 text-white'
-                          : 'bg-gray-200 text-gray-700'
-                      } 
-                      hover:bg-green-400 hover:text-white`}
-                        >
-                          Present
-                        </span>
-                      </label>
-                    </div>
+                  
+                    {/* Present Checkbox */}
+                    <label className='flex items-center gap-2 cursor-pointer'>
+                      <input
+                        type='checkbox'
+                        disabled={marking}
+                        checked={marked.includes(student._id)}
+                        onChange={() => handleAttendanceChange(student._id)}
+                        className='hidden'
+                      />
+                      <div
+                        className={`w-6 h-6 flex items-center justify-center border-2 rounded transition-all ${
+                          marked.includes(student._id)
+                            ? 'bg-green-500 border-green-600'
+                            : 'bg-white border-gray-400 dark:bg-gray-800'
+                        }`}
+                      >
+                        {marked.includes(student._id) && (
+                          <svg
+                            xmlns='http://www.w3.org/2000/svg'
+                            className='w-4 h-4 text-white'
+                            viewBox='0 0 20 20'
+                            fill='currentColor'
+                          >
+                            <path
+                              fillRule='evenodd'
+                              d='M16.707 5.293a1 1 0 010 1.414l-7 7a1 1 0 01-1.414 0l-3-3a1 1 0 111.414-1.414L9 11.586l6.293-6.293a1 1 0 011.414 0z'
+                              clipRule='evenodd'
+                            />
+                          </svg>
+                        )}
+                      </div>
+                      <span
+                        className={`text-xs sm:text-sm font-medium px-2 py-1 rounded-md ${
+                          marked.includes(student._id)
+                            ? 'bg-green-500 text-white'
+                            : 'bg-gray-300 text-gray-800'
+                        }`}
+                      >
+                        Present
+                      </span>
+                    </label>
+                  
+                    {/* Attendance Count */}
                     <p
-                      className={`font-medium flex items-center justify-center gap-2  ${
-                        attendanceRate >= 75
-                          ? 'text-green-500 font-semibold'
-                          : 'text-red-500 font-bold'
+                      className={`text-xs sm:text-sm font-medium ${
+                        attendanceRate >= 75 ? 'text-green-500' : 'text-red-500'
                       }`}
                     >
-                      <span className='truncate'> Attended:</span>{' '}
-                      {student?.attendance || 0}
+                      Attended: {student?.attendance || 0}
                     </p>
+                  
+                    {/* Remove Button */}
                     <button
-                      className='text-red-600 flex items-center justify-center hover:text-red-800 transition'
-                      title='Remove student'
                       onClick={() => removeStudent(student, 'Individual')}
+                      className='text-red-600 hover:text-red-800 transition'
+                      title='Remove student'
                     >
-                      <FaTrash className='w-5 h-5' />
+                      <FaTrash className='w-4 h-4 sm:w-5 sm:h-5' />
                     </button>
                   </div>
-                );
-              })}
-              <button
-                type='button'
-                className='w-full bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-700 transition'
-                onClick={!marking && submitAttendance}
-              >
-                {marking ? 'Marking' : 'Marked Attendance!'}
-              </button>
-            </div>
-          ) : (
-            <p>No students found for this course and semester.</p>
-          )}
+                  )
+          })}
+
+          <button
+            type='button'
+            className={`w-full flex justify-center bg-blue-500 text-white px-4 py-2 rounded transition ${
+              marking ? 'opacity-70 cursor-not-allowed' : 'hover:bg-blue-700'
+            }`}
+            onClick={!marking && submitAttendance}
+            disabled={marking}
+          >
+            {marking ? (
+              <>
+                <FaSpinner className='animate-spin mr-2' /> Marking...
+              </>
+            ) : (
+              'Mark Attendance'
+            )}
+          </button>
         </div>
       )}
+
       {removeStudents && (
         <ConfirmModal
-          heading={'Are you sure?'}
-          cancelText={'Cancel'}
-          doneText={'Confirm'}
-          text={'Want to remove all students?'}
+          heading='Are you sure?'
+          text='Want to remove all students?'
+          doneText='Confirm'
+          cancelText='Cancel'
+          danger
           done={() => removeStudent({ _id: 1 }, 'All')}
           cancel={() => setRemoveStudents(false)}
-          danger={true}
         />
       )}
     </div>
