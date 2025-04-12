@@ -30,7 +30,7 @@ export const create_request = asynchandler(async (req, res, next) => {
     if (!reqcourse) {
       return next(new ApiError('Error in generating request.Try again', 404));
     }
-    // check the qlready requested or not
+    // check the already requested or not
     const existed_request = await Request.findOne({
       requestType,
       request_course: course,
@@ -39,7 +39,7 @@ export const create_request = asynchandler(async (req, res, next) => {
       request_dep: req.user.department,
     });
     if (existed_request) {
-      return next(new ApiError('You are already request for it', 411));
+      return next(new ApiError('You have already request for it', 411));
     }
     //create the request
     const newrequest = await Request.create({

@@ -1,5 +1,5 @@
 import { useForm } from "react-hook-form";
-import { useSelector, useDispatch } from "react-redux";
+import { useDispatch } from "react-redux";
 import { setError, clearError, loginSuccess, setSuccess } from "../store/slices/userSlice";
 import { userService } from "../api/userService";
 import Input from "./Utils/Input";
@@ -9,6 +9,9 @@ import { Loader } from "./Utils";
 const Profile = () => {
   const [user, setUser] = useState(null);
   const dispatch = useDispatch();
+  const [showPasswordFields, setShowPasswordFields] = useState(false);
+  const [updatingProfile, setUpdatingProfile] = useState(false);
+  const [passwordChanging, setPasswordChanging] = useState(false);
   const [password, setPassword] = useState({
     current_password: "",
     new_password: "",
@@ -46,12 +49,13 @@ const Profile = () => {
     fetchUser();
   }, []);
 
-  const onSubmit = async (data) => {
+  const changePassword=async()=>{
     dispatch(clearError());
+    setPasswordChanging(true);
     try {
       const { new_password, confirmpassword, current_password } = password;
 
-      if (new_password || confirmpassword || current_password) {
+      if (showPasswordFields) {
         if (new_password.length < 6) {
           dispatch(setError("Min length is 6!"));
           return;
@@ -75,9 +79,21 @@ const Profile = () => {
             new_password: "",
             confirmpassword: "",
           });
+          setShowPasswordFields(false);
         }
       }
+    } catch (error) {
+      dispatch(setError(error?.response?.data?.message));
+    }
+    finally{
+      setPasswordChanging(false);
+    }
+  }
 
+  const onSubmit = async (data) => {
+    dispatch(clearError());
+    setUpdatingProfile(true);
+    try {
       const newuser = await userService.updateUser(data);
       if (newuser) {
         dispatch(loginSuccess(newuser));
@@ -93,6 +109,9 @@ const Profile = () => {
     } catch (error) {
       dispatch(setError(error?.response?.data?.message));
     }
+    finally{
+      setUpdatingProfile(false);
+    }
   };
 
   return (
@@ -101,7 +120,8 @@ const Profile = () => {
         <h2 className="text-xl font-bold text-center mb-4 dark:text-white">Profile</h2>
 
         {user ? (
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+          <div>
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 my-4">
 
             <div>
               <label className="block text-sm font-medium text-gray-600 dark:text-gray-400">
@@ -152,7 +172,6 @@ const Profile = () => {
                     value={user?.sem || 1}
                     disabled
                     className="w-full p-2 border border-gray-300 rounded mt-1"
-
                   />
                 </div>
 
@@ -165,7 +184,6 @@ const Profile = () => {
                     value={user?.year || 1}
                     disabled
                     className="w-full p-2 border border-gray-300 rounded mt-1"
-
                   />
                 </div>
 
@@ -178,60 +196,90 @@ const Profile = () => {
                     value={user?.currentdegree?.name || ""}
                     disabled
                     className="w-full p-2 border border-gray-300 rounded mt-1"
-
                   />
                 </div>
               </>
             )}
 
-            <Input
-              type="password"
-              value={password?.current_password}
-              label="Current Password"
-              placeholder="Current password here"
-              onChange={(e) =>
-                setPassword((prev) => ({
-                  ...prev,
-                  current_password: e.target.value.trim(),
-                }))
-              }
-            />
+            
+            {/* Toggle Password Section */}
+            <div className="flex items-center justify-between space-x-3">
+              <label
+                htmlFor="passwordToggle"
+                className="text-sm font-medium text-gray-700 dark:text-white cursor-pointer"
+              >
+                Change Password?
+              </label>
+              <input
+                type="checkbox"
+                id="passwordToggle"
+                checked={showPasswordFields}
+                onChange={() => setShowPasswordFields(!showPasswordFields)}
+                className="h-5 w-5 border-gray-300 rounded bg-gray-100 focus:ring-2 focus:ring-blue-500 cursor-pointer"
+              />
+            </div>
 
-            <Input
-              type="password"
-              value={password?.new_password}
-              label="New Password"
-              placeholder="New password here"
-              onChange={(e) =>
-                setPassword((prev) => ({
-                  ...prev,
-                  new_password: e.target.value.trim(),
+            {showPasswordFields && (
+              <div className="mt-2 space-y-3 transition-all duration-300 ease-in-out">
+                <Input
+                  type="password"
+                  value={password?.current_password}
+                  label="Current Password"
+                  placeholder="Current password here"
+                  onChange={(e) =>
+                    setPassword((prev) => ({
+                      ...prev,
+                      current_password: e.target.value.trim(),
+                    }))
+                  }
+                />
 
-                }))
-              }
-            />
+                <Input
+                  type="password"
+                  value={password?.new_password}
+                  label="New Password"
+                  placeholder="New password here"
+                  onChange={(e) =>
+                    setPassword((prev) => ({
+                      ...prev,
+                      new_password: e.target.value.trim(),
+                    }))
+                  }
+                />
 
-            <Input
-              type="password"
-              value={password?.confirmpassword}
-              label="Confirm Password"
-              placeholder="Confirm your password"
-              onChange={(e) =>
-                setPassword((prev) => ({
-                  ...prev,
-                  confirmpassword: e.target.value.trim(),
-
-                }))
-              }
-            />
+                <Input
+                  type="password"
+                  value={password?.confirmpassword}
+                  label="Confirm Password"
+                  placeholder="Confirm your password"
+                  onChange={(e) =>
+                    setPassword((prev) => ({
+                      ...prev,
+                      confirmpassword: e.target.value.trim(),
+                    }))
+                  }
+                />
+              <button
+                type="button"
+                onClick={changePassword}
+                disabled={passwordChanging}
+                className="w-full bg-indigo-500 text-white p-2 rounded hover:bg-indigo-600 transition duration-300"
+              >
+                {passwordChanging?'Updating...':'Update Password'}
+              </button>
+              </div>
+            )}
 
             <button
               type="submit"
-              className="w-full bg-blue-500 text-white p-2 rounded hover:bg-blue-600"
+              disabled={updatingProfile}
+              className="w-full bg-blue-500 text-white p-2 rounded hover:bg-blue-600 transition duration-300"
             >
-              Update Profile
+              {updatingProfile?'Updating...':'Update Profile'}
             </button>
           </form>
+          
+          </div>
         ) : (
           <Loader />
         )}

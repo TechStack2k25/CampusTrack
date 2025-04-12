@@ -9,11 +9,17 @@ import { userService } from '../../api/userService.js';
 import { ConfirmModal, Input } from '../Utils';
 import { useEffect, useState } from 'react';
 import { collegeService } from '../../api/collegeService.js';
-import { FaEdit } from 'react-icons/fa';
+import { FaEdit, FaSpinner } from 'react-icons/fa';
 
 const Profile = () => {
   const user = useSelector((state) => state.user.user);
   const dispatch = useDispatch();
+
+
+  const [showPasswordFields, setShowPasswordFields] = useState(false);
+  const [updatingProfile, setUpdatingProfile] = useState(false);
+  const [passwordChanging, setPasswordChanging] = useState(false);
+  const [updatingSem, setUpdatingSem] = useState(false);
 
   const [password, setPassword] = useState({
     current_password: '',
@@ -44,39 +50,55 @@ const Profile = () => {
     }
   };
 
+  const changePassword = async () => {
+    dispatch(clearError());
+    setPasswordChanging(true);
+    try {
+      const { new_password, confirmpassword, current_password } = password;
+
+      if (showPasswordFields) {
+        // Handle password update
+        const { current_password, new_password, confirmpassword } = password;
+        const isChangingPassword =
+          current_password || new_password || confirmpassword;
+
+        if (isChangingPassword) {
+          if (new_password.length < 6) {
+            return dispatch(setError('Min length is 6!'));
+          }
+          if (!confirmpassword || new_password !== confirmpassword) {
+            return dispatch(setError('Confirm your password!'));
+          }
+          if (!current_password) {
+            return dispatch(setError('Your current password!'));
+          }
+
+          const passwordRes = await userService.passwordUpdate(password);
+          if (!passwordRes) {
+            return dispatch(setError('Try Again later!'));
+          }
+
+          dispatch(setSuccess('Password updated!'));
+          setPassword({
+            current_password: '',
+            new_password: '',
+            confirmpassword: '',
+          });
+        }
+      }
+    } catch (error) {
+      dispatch(setError(error?.response?.data?.message));
+    }
+    finally {
+      setPasswordChanging(false);
+    }
+  }
+
+
   const onSubmit = async (data) => {
     dispatch(clearError());
-
+    setUpdatingProfile(true);
     try {
-      // Handle password update
-      const { current_password, new_password, confirmpassword } = password;
-      const isChangingPassword =
-        current_password || new_password || confirmpassword;
-
-      if (isChangingPassword) {
-        if (new_password.length < 6) {
-          return dispatch(setError('Min length is 6!'));
-        }
-        if (!confirmpassword || new_password !== confirmpassword) {
-          return dispatch(setError('Confirm your password!'));
-        }
-        if (!current_password) {
-          return dispatch(setError('Your current password!'));
-        }
-
-        const passwordRes = await userService.passwordUpdate(password);
-        if (!passwordRes) {
-          return dispatch(setError('Try Again later!'));
-        }
-
-        dispatch(setSuccess('Password updated!'));
-        setPassword({
-          current_password: '',
-          new_password: '',
-          confirmpassword: '',
-        });
-      }
-
       // Handle college update
       const updatedCollege = await collegeService.updateCollege(data);
       if (updatedCollege) {
@@ -105,6 +127,8 @@ const Profile = () => {
 
   const updateSemesters = async () => {
     try {
+      if(updatingSem) return;
+      setUpdatingSem(true);
       const res = await userService.updateSem();
       if (res) {
         dispatch(setSuccess('Semester Updated!'));
@@ -113,6 +137,7 @@ const Profile = () => {
       dispatch(setError(error?.response?.data?.message || 'Update failed.'));
     } finally {
       setConfirmUpdateSem(false);
+      setUpdatingSem(false);
     }
   };
 
@@ -125,9 +150,10 @@ const Profile = () => {
       <button
         className='absolute top-2 right-2 text-blue-600 hover:text-blue-800 transition'
         title='Update Semester'
+        disabled={updatingSem}
         onClick={() => setConfirmUpdateSem(true)}
       >
-        <FaEdit className='w-5 h-5' />
+        {updatingSem? <FaSpinner className='w-5 h-5 animate-spin' />:<FaEdit className='w-5 h-5' />}
       </button>
 
       <div className='max-w-md mx-auto mt-10 p-6 border dark:border-gray-800 shadow-lg rounded-lg'>
@@ -160,51 +186,82 @@ const Profile = () => {
               <p className='text-red-500 text-sm'>{errors.name.message}</p>
             )}
           </div>
+          <div className='mt-4'>
+         <div className="flex items-center justify-between space-x-3">
+              <label
+                htmlFor="passwordToggle"
+                className="text-sm font-medium text-gray-700 dark:text-white cursor-pointer"
+              >
+                Change Password?
+              </label>
+              <input
+                type="checkbox"
+                id="passwordToggle"
+                checked={showPasswordFields}
+                onChange={() => setShowPasswordFields(!showPasswordFields)}
+                className="h-5 w-5 border-gray-300 rounded bg-gray-100 focus:ring-2 focus:ring-blue-500 cursor-pointer"
+              />
+            </div>
 
-          <Input
-            type='password'
-            value={password.current_password}
-            label='Current Password'
-            placeholder='current password here'
-            onChange={(e) =>
-              setPassword((prev) => ({
-                ...prev,
-                current_password: e.target.value.trim(),
-              }))
-            }
-          />
+            {showPasswordFields && (
+              <div className="mt-2 space-y-3 transition-all duration-300 ease-in-out">
+                <Input
+                  type="password"
+                  value={password?.current_password}
+                  label="Current Password"
+                  placeholder="Current password here"
+                  onChange={(e) =>
+                    setPassword((prev) => ({
+                      ...prev,
+                      current_password: e.target.value.trim(),
+                    }))
+                  }
+                />
 
-          <Input
-            type='password'
-            value={password.new_password}
-            label='New Password'
-            placeholder='New password here'
-            onChange={(e) =>
-              setPassword((prev) => ({
-                ...prev,
-                new_password: e.target.value.trim(),
-              }))
-            }
-          />
+                <Input
+                  type="password"
+                  value={password?.new_password}
+                  label="New Password"
+                  placeholder="New password here"
+                  onChange={(e) =>
+                    setPassword((prev) => ({
+                      ...prev,
+                      new_password: e.target.value.trim(),
+                    }))
+                  }
+                />
 
-          <Input
-            type='password'
-            value={password.confirmpassword}
-            label='Confirm Password'
-            placeholder='Confirm your password'
-            onChange={(e) =>
-              setPassword((prev) => ({
-                ...prev,
-                confirmpassword: e.target.value.trim(),
-              }))
-            }
-          />
+                <Input
+                  type="password"
+                  value={password?.confirmpassword}
+                  label="Confirm Password"
+                  placeholder="Confirm your password"
+                  onChange={(e) =>
+                    setPassword((prev) => ({
+                      ...prev,
+                      confirmpassword: e.target.value.trim(),
+                    }))
+                  }
+                />
+              <button
+                type="button"
+                onClick={changePassword}
+                disabled={passwordChanging}
+                className="w-full bg-indigo-500 text-white p-2 rounded hover:bg-indigo-600 transition duration-300"
+              >
+                {passwordChanging?'Updating...':'Update Password'}
+              </button>
+              </div>
+            )}
+         </div>
+
 
           <button
             type='submit'
+            disabled={updatingProfile}
             className='w-full bg-blue-500 text-white p-2 rounded hover:bg-blue-600'
           >
-            Update
+            {updatingProfile?'Updating':'Update'}
           </button>
         </form>
 
@@ -214,7 +271,7 @@ const Profile = () => {
           onClick={() => setConfirmDelete(true)}
         >
           Delete
-        </button>
+        </button>         
       </div>
 
       {confirmDelete && (

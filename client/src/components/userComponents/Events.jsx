@@ -105,9 +105,9 @@ const Events = () => {
       {!openForm && (
         <div
         onClick={() => setOpenForm(true)}
-        className="animate-bounce cursor-pointer fixed bottom-8 right-8 text-white font-bold text-4xl bg-blue-500 hover:bg-blue-700 h-12 text-center aspect-square rounded-full shadow-2xl shadow-blue-500/50"
+        className="animate-bounce cursor-pointer fixed bottom-8 right-8 text-4xl bg-blue-500 hover:bg-blue-700 flex justify-center items-center h-12 aspect-square rounded-full shadow-2xl shadow-blue-500/50 hover:shadow-blue-500"
       >
-        +
+        <span className=" text-white font-bold text-center">+</span>
       </div>
       )}
     </div>

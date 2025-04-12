@@ -156,7 +156,7 @@ const Request = () => {
                 })}
                 className={`transition duration-200 cursor-pointer mt-2 p-3 border rounded-lg focus:outline-none focus:ring-2 ${
                   errors.course_id ? "border-red-500" : "border-gray-300"
-                } focus:ring-blue-500`}
+                } focus:ring-blue-500 text-black`}
               >
                 <option value="">Select a course...</option>
                 {allCourses?.map((course) => (

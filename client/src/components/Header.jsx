@@ -3,6 +3,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import UserMenu from './UserMenu';
 import { toast } from 'react-toastify';
+import Logo from './Logo';
 
 function Header() {
   const location = useLocation();
@@ -26,9 +27,7 @@ function Header() {
   return (
     <header className="sticky top-0 z-50 bg-white dark:bg-black border-b dark:border-gray-700 border-gray-200 shadow-sm dark:text-white text-black rounded-b-md transition-all duration-300">
       <div className="container mx-auto flex justify-between items-center p-4 sm:px-8 md:px-12">
-        <h1 className="text-2xl font-bold text-indigo-600 dark:text-indigo-400">
-          CampusTrack
-        </h1>
+        <Logo />
 
         {!status && location.pathname === '/' && (
           <nav className="hidden sm:block">
